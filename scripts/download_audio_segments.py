@@ -435,7 +435,7 @@ def main() -> None:
     )
     parser.add_argument("--outdir", "-o", default="downloads", help="Output directory")
     parser.add_argument("--ytdlp", default="yt-dlp", help="Path to yt-dlp executable")
-    parser.add_argument("--skip-header", action="store_true", help="Skip first CSV header row")
+    parser.add_argument("--skip-header", action="store_true", help="Skip first CSV row")
     parser.add_argument("--dry-run", action="store_true", help="Print commands without running")
     parser.add_argument(
         "--workers",
