@@ -214,6 +214,12 @@ def classify_error(stderr: str) -> t.Tuple[str, str]:
         "not available",
         "removed",
         "deleted",
+        "unavailable",
+        "blocked",
+        "does not exist",
+        "inappropriate",
+        "the uploader has not made this video available in your country",
+        "downloading webpage"
     ]
     for kw in unavailable_keywords:
         if kw in stderr_lower:
@@ -226,13 +232,14 @@ def classify_error(stderr: str) -> t.Tuple[str, str]:
         "throttled",
         "connection reset",
         "temporarily unavailable",
+        "a bot"
     ]
     for kw in rate_limit_keywords:
         if kw in stderr_lower:
             return "rate_limit", f"Rate limit error: {kw}"
 
     # Default: treat unknown error as transient
-    return "rate_limit", f"Transient error"
+    return "rate_limit", f"Transient error: {stderr_lower}"
 
 
 def load_stats_from_disk(stats_file: str) -> t.Dict[str, t.List[str]]:
@@ -351,6 +358,8 @@ def download_worker(
         with stats_lock:
             if vid not in stats_dict["downloaded"]:
                 stats_dict["downloaded"].append(vid)
+            if vid in stats_dict["failed"]:
+                stats_dict["failed"].remove(vid)
         return vid, "success", "Dry-run completed"
 
     try:
@@ -387,6 +396,8 @@ def download_worker(
             with stats_lock:
                 if vid not in stats_dict["downloaded"]:
                     stats_dict["downloaded"].append(vid)
+                if vid in stats_dict["failed"]:
+                    stats_dict["failed"].remove(vid)
             return vid, "success", "Downloaded and converted to 64kbps"
         else:
             # Classify the error
@@ -396,6 +407,8 @@ def download_worker(
                 if category == "unavailable":
                     if vid not in stats_dict["unavailable"]:
                         stats_dict["unavailable"].append(vid)
+                    if vid in stats_dict["failed"]:
+                        stats_dict["failed"].remove(vid)
                 else:
                     if vid not in stats_dict["failed"]:
                         stats_dict["failed"].append(vid)
@@ -470,6 +483,11 @@ def main() -> None:
 
     # Load persisted stats from disk
     persisted_stats = load_stats_from_disk(stats_file)
+    # Clean up stats: remove items from 'failed' if they are already in 'downloaded' or 'unavailable'
+    # This fixes issues where a video was retried and succeeded but wasn't removed from failed list
+    persisted_stats["failed"] -= persisted_stats["downloaded"]
+    persisted_stats["failed"] -= persisted_stats["unavailable"]
+    
     rows: t.List[RowRecord] = []
     with open(args.csvfile, newline="") as fh:
         reader = csv.reader(fh)
@@ -478,11 +496,13 @@ def main() -> None:
         for row in reader:
             if not row or all(not c.strip() for c in row):
                 continue
+            if row[0].strip().startswith("#"):
+                continue # Skip comment lines
             if len(row) >= 3:
                 # Handle labels that contain commas (they may have been split by csv.reader)
                 # Expected format: [video_id, start_time, end_time, label, ...]
                 # If more than 4 fields, fields[3:] are parts of the label
-                video_id = row[0]
+                video_id = row[0].strip()
                 start_time = row[1]
                 end_time = row[2]
                 label = ",".join(row[3:]) if len(row) > 3 else ""
@@ -501,9 +521,6 @@ def main() -> None:
         # Include: either new or failed (rate-limit retry)
         rows_to_process.append(row)
 
-    if not rows_to_process:
-        print("No rows to process (all already handled).")
-        return
 
     # Handle --split-batches mode: split pending rows into N CSV files and exit
     if args.split_batches:
@@ -541,7 +558,7 @@ def main() -> None:
             len(stats_dict["downloaded"]),
             len(stats_dict["unavailable"]),
             len(stats_dict["failed"]),
-            stats.processed - len(stats_dict["downloaded"]) - len(stats_dict["unavailable"]) - len(stats_dict["failed"]),
+            total_num_rows - len(stats_dict["downloaded"]) - len(stats_dict["unavailable"]) - len(stats_dict["failed"]),
         )
         sys.exit(0)
 
@@ -610,7 +627,7 @@ def main() -> None:
         len(stats_dict["downloaded"]),
         len(stats_dict["unavailable"]),
         len(stats_dict["failed"]),
-        stats.processed - len(stats_dict["downloaded"]) - len(stats_dict["unavailable"]) - len(stats_dict["failed"]),
+        total_num_rows - len(stats_dict["downloaded"]) - len(stats_dict["unavailable"]) - len(stats_dict["failed"]),
     )
 
 
