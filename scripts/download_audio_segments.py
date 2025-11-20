@@ -29,7 +29,6 @@ import time
 import typing as t
 from dataclasses import dataclass
 from multiprocessing import Pool, Manager, cpu_count, Lock
-from pathlib import Path
 
 import tqdm
 
@@ -52,131 +51,6 @@ class DownloadStats:
     unavailable: int = 0
     pending: int = 0
     retried: int = 0
-
-
-class ProgressTracker:
-    """Manages progress state saved to JSON."""
-
-    def __init__(self, progress_file: str):
-        self.progress_file = progress_file
-        self.state = {
-            "downloaded": [],
-            "failed": [],
-            "unavailable": [],
-            "pending": [],
-        }
-        self.load()
-
-    def load(self) -> None:
-        """Load progress from file."""
-        if os.path.exists(self.progress_file):
-            try:
-                with open(self.progress_file, "r") as fh:
-                    self.state = json.load(fh)
-                print(f"Loaded progress from {self.progress_file}")
-            except Exception as e:
-                print(f"Warning: Could not load progress file: {e}")
-
-    def save(self) -> None:
-        """Save progress to file."""
-        try:
-            with open(self.progress_file, "w") as fh:
-                json.dump(self.state, fh, indent=2)
-        except Exception as e:
-            print(f"Warning: Could not save progress file: {e}")
-
-    def mark_downloaded(self, vid: str) -> None:
-        """Mark video as successfully downloaded."""
-        self.state["downloaded"].append(vid)
-        self._remove_from_others(vid)
-        self.save()
-
-    def mark_unavailable(self, vid: str) -> None:
-        """Mark video as unavailable (404, private, etc.)."""
-        self.state["unavailable"].append(vid)
-        self._remove_from_others(vid)
-        self.save()
-
-    def mark_failed(self, vid: str) -> None:
-        """Mark video as failed (will retry later)."""
-        if vid not in self.state["failed"]:
-            self.state["failed"].append(vid)
-        self._remove_from_others(vid)
-        self.save()
-
-    def mark_pending(self, vid: str) -> None:
-        """Mark video as pending (not yet processed)."""
-        if vid not in self.state["pending"]:
-            self.state["pending"].append(vid)
-        self._remove_from_others(vid)
-        self.save()
-
-    def _remove_from_others(self, vid: str) -> None:
-        """Remove video from other lists."""
-        for key in ["downloaded", "failed", "unavailable", "pending"]:
-            if isinstance(self.state[key], list):
-                self.state[key] = [v for v in self.state[key] if v != vid]
-
-    def is_downloaded(self, vid: str) -> bool:
-        return vid in self.state["downloaded"]
-
-    def is_unavailable(self, vid: str) -> bool:
-        return vid in self.state["unavailable"]
-
-    def is_failed(self, vid: str) -> bool:
-        return vid in self.state["failed"]
-
-    def get_pending(self) -> t.List[str]:
-        return list(self.state.get("pending", []))
-
-    def get_stats(self) -> DownloadStats:
-        return DownloadStats(
-            downloaded=len(self.state["downloaded"]),
-            unavailable=len(self.state["unavailable"]),
-            failed=len(self.state["failed"]),
-            pending=len(self.state["pending"]),
-        )
-
-
-class RateLimitErrorLog:
-    """Logs rate-limit errors separately for retry."""
-
-    def __init__(self, error_file: str):
-        self.error_file = error_file
-        self.errors = {}
-        self.load()
-
-    def load(self) -> None:
-        """Load error log from file."""
-        if os.path.exists(self.error_file):
-            try:
-                with open(self.error_file, "r") as fh:
-                    self.errors = json.load(fh)
-            except Exception as e:
-                print(f"Warning: Could not load error log: {e}")
-
-    def save(self) -> None:
-        """Save error log to file."""
-        try:
-            with open(self.error_file, "w") as fh:
-                json.dump(self.errors, fh, indent=2)
-        except Exception as e:
-            print(f"Warning: Could not save error log: {e}")
-
-    def log_rate_limit(self, vid: str, error_msg: str) -> None:
-        """Log a rate-limit or transient error."""
-        self.errors[vid] = {
-            "error": error_msg,
-            "timestamp": time.time(),
-        }
-        self.save()
-
-    def clear_rate_limit(self, vid: str) -> None:
-        """Clear rate-limit error for a video."""
-        if vid in self.errors:
-            del self.errors[vid]
-            self.save()
-
 
 def normalize_time(ts: str) -> str:
     """Convert time to a consistent format."""
