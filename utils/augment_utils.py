@@ -160,24 +160,3 @@ class SpectrogramAugmentor:
             views.append(tf.convert_to_tensor(aug_spec, dtype=tf.float32))
 
         return views
-
-# ================= 使用示例 =================
-if __name__ == "__main__":
-    # 模拟一个频谱图 (H=1025, W=500, C=2)
-    origin_spec = np.random.randn(1025, 500, 2).astype(np.float32)
-    
-    # 初始化增强器
-    augmentor = SpectrogramAugmentor(prob_augment=1.0) # 强制 100% 概率以便观察
-    
-    # 调用接口
-    output_list = augmentor.generate_views(
-        origin_np=origin_spec, 
-        global_view_num=2, 
-        local_view_num=4
-    )
-    
-    print(f"输入形状: {origin_spec.shape}")
-    print(f"输出列表长度: {len(output_list)}")
-    for i, tensor in enumerate(output_list):
-        view_type = "Global" if i < 2 else "Local"
-        print(f"View {i} [{view_type}]: Shape={tensor.shape}, Type={type(tensor)}")
