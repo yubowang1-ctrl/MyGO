@@ -81,9 +81,28 @@ class ViT(tf.keras.layers.Layer):
             trainable=True,
             name="cls_token",
         )
+        
+        # validate patching parameters
+        ph, pw, po = self.config.patch_height, self.config.patch_width, self.config.patch_overlap
+        assert (self.config.image_height - po) % (ph - po) == 0, "Image height not compatible with patch height and overlap"
+        assert (self.config.image_width - po) % (pw - po) == 0, "Image width not compatible with patch width and overlap"   
     
     def call(self, x, training):
-        # x shape: (batch_size, num_patches, image_height, image_width, num_channels)
+        # x shape: (batch_size, view_number, image_height, image_width, num_channels)
+        V = tf.shape(x)[1]  # number of views
+        x = tf.reshape(x, [-1, self.config.image_height, self.config.image_width, self.config.num_channels])
+        
+        # Now, cut into patches
+        patches = tf.image.extract_patches(
+            images=x,
+            sizes=[1, self.config.patch_height, self.config.patch_width, 1],
+            strides=[1, self.config.patch_height - self.config.patch_overlap, self.config.patch_width - self.config.patch_overlap, 1],
+            rates=[1, 1, 1, 1],
+            padding='VALID'
+        )
+        
+        # x now has shape (batch_size * V, num_rows_patches, num_cols_patches, patch_height * patch_width * num_channels)
+        
         # Ordering of patches matter!
         # This is a spectrogram image:
         # [ [patch_1, patch_2, ..., patch_n],
@@ -93,7 +112,7 @@ class ViT(tf.keras.layers.Layer):
         # --> time goes along rows, frequency along columns
         # where each patch is of shape (patch_height, patch_width, num_channels)
         
-        x = tf.reshape(x, [tf.shape(x)[0], tf.shape(x)[1], -1])  # flatten patches
+        x = tf.reshape(patches, [tf.shape(patches)[0], tf.shape(patches)[1] * tf.shape(patches)[2], tf.shape(patches)[3]])  # flatten patches
         x = self.linear_projection(x)  # project to hidden_dim
         # prepend cls token to the sequence
         batch_size = tf.shape(x)[0]
@@ -102,7 +121,11 @@ class ViT(tf.keras.layers.Layer):
         # pass through transformer blocks
         for block in self.transformer_blocks:
             x = block(x, training=training)
-        return x # (batch_size, num_patches + 1, hidden_dim)
+        # x is now (batch_size*V, num_patches + 1, hidden_dim)
+        
+        # Reshape back to (batch_size, view_number, num_patches + 1, hidden_dim)
+        x = tf.reshape(x, [-1, V, tf.shape(x)[1], tf.shape(x)[2]])
+        return x  # return all embeddings including cls token embeddings
 
 class TransformerBlock(tf.keras.layers.Layer):
     def __init__(self, config: ViTConfig, **kwargs):
