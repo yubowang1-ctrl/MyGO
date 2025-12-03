@@ -59,7 +59,7 @@ We utilize the **AudioSet** dataset. Currently, we leverages the Balanced Set, w
 
 
 ### 4.2. Distributed Training
-The training loop is implemented in TensorFlow 2.x and supports Distributed Data Parallelism via `tf.distribute.MirroredStrategy`. This allows for training using multiple GPUs.
+The training loop is implemented in TensorFlow 2.x and supports distributed training via `tf.distribute.MirroredStrategy`. A batch is divided among multiple GPUs. Each GPU computes the forward pass on its own, and the gradients are averaged across all GPUs. This allows for large batch sizes and faster training.
 
 ## 5. Usage
 
