@@ -50,11 +50,11 @@ The training objective minimizes the distance between the average output embeddi
 ## 4. Implementation Details
 
 ### 4.1. Data Pipeline
-We utilize the **AudioSet** dataset. Currently, we leverages the Balanced Set, which consists of roughly 20,000 audio clips. The full dataset consists of over 2M audio clips. Preprocessing all clips beforehand is not feasible. To ensure the scalability and avoid IO bottlenecks, we implemented the following TensorFlow data pipeline:
+We utilize the **AudioSet** dataset. Currently, we leverage the Balanced Set, which consists of roughly 20,000 audio clips. The full dataset consists of over 2M audio clips. Preprocessing all clips beforehand is not feasible. To ensure the scalability and avoid IO bottlenecks, we implemented the following TensorFlow data pipeline:
 *   On-the-fly Processing: The dataset only keeps a list of paths to audio clips. Only when a batch is requested, the dataset fetches, processes, and augments audio files.
 *   Chunking: Audio files longer than 10 seconds are split into multiple segments, while shorter files are looped or padded.
 *   Augmentation: We apply multiple augmentations to generate different views. Techniques include random cropping on time axis, random masking, mild time stretch, mild pitch shift, random spectral convolution, and random channel drop. The processings are heavior for local views and lighter for global views. Note that all augmentations are stochastic, except that there is no time crop on global views.
-*   Parallelism and Prefetching: We leverages TensorFlow's `tf.data` API to maximize the performance of data loading and processing. Prefetching is employed to reduce waiting time of GPU.
+*   Parallelism and Prefetching: We leverage TensorFlow's `tf.data` API to maximize the performance of data loading and processing. Prefetching is employed to reduce waiting time of GPU.
 
 
 ### 4.2. Distributed Training
