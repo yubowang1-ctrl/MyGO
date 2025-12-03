@@ -1,4 +1,4 @@
-# MyGo: Audio Foundation Model via LeJEPA
+# MyGO: Audio Foundation Model via LeJEPA
 
 **Repository:** [https://github.com/yubowang1-ctrl/MyGo](https://github.com/yubowang1-ctrl/MyGo)
 
@@ -22,8 +22,7 @@ AST converts audio to spectrograms (images) and makes use of ViT for audio class
 A self-supervised learning method that trains the model to predict global view embeddings from local views, thus extracting semantic meanings consistently. It enforces isotropic Gaussian distribution among output embeddings, which prevent collapse by construction.
 
 - **Self-supervised Audio Spectrogram Transformer (SSAST)**
-Patches to AST are randomly masked and for each masked patch, the model is trained to both reconstruct the patch and identify among all masked patches which patch this is, called "Joint Discriminative and Generative Masked
-Spectrogram Patch Modeling" in the paper. A separate linear head is applied to the mean of all output embeddings. The model outperforms AST on downstream classificatio tasks.
+Patches to AST are randomly masked and for each masked patch, the model is trained to both reconstruct the patch and identify among all masked patches which patch this is, called "Joint Discriminative and Generative Masked Spectrogram Patch Modeling" in the paper. A separate linear head is applied to the mean of all output embeddings. The model outperforms AST on downstream classification tasks.
 
 ## 3. Methodology
 
