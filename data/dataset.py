@@ -140,8 +140,9 @@ def make_spectrogram(audio):
     
     # 4. Normalization (Min-Max Scaling to 0~1)
     # Scale to [0, 1]
-    # log_mel = (log_mel - tf.reduce_min(log_mel)) / (tf.reduce_max(log_mel) - tf.reduce_min(log_mel) + EPSILON)
-    tf.print("log_mel stats:", tf.reduce_max(log_mel), tf.reduce_min(log_mel), tf.reduce_mean(log_mel))
+    log_mel = (log_mel - tf.reduce_min(log_mel)) / (tf.reduce_max(log_mel) - tf.reduce_min(log_mel) + EPSILON)
+    # tf.print("log_mel stats:", tf.reduce_max(log_mel), tf.reduce_min(log_mel), tf.reduce_mean(log_mel))
+    
     # 5. Reshape for ViT
     # Current: (Channels, Time, Mels)
     # Target: (Mels, Time, Channels) -> (H, W, C)
@@ -150,7 +151,7 @@ def make_spectrogram(audio):
     # 6. Resize to fixed input size for ViT (224x224)
     # Note: This distorts time/freq aspect ratio
     # log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
-    
+    tf.print("Before resize:", tf.shape(log_mel))
     return log_mel
 
 # ==============================================================================
@@ -169,15 +170,188 @@ def generate_views(spectrogram):
     
     # 1. Global Views
     for _ in range(NUM_GLOBAL_VIEWS):
-        # Just duplicate for now
-        views.append(spectrogram)
+        masked = random_mask(spectrogram, num_masks=2, mask_size=30, fill_value=0.0)
+        shifted = random_pitch_shift(masked, max_shift=2)
+        views.append(shifted)
         
     # 2. Local Views
     for _ in range(NUM_LOCAL_VIEWS):
-        # Just duplicate for now
-        views.append(spectrogram)
+        cropped = random_time_crop(spectrogram, percent=0.3)
+        dilated = random_time_dilation(cropped, scale_range=(0.7, 1.3))
+        shifted = random_pitch_shift(dilated, max_shift=5)
+        conved = random_conv2d(shifted, magnitude=0.1)
+        
+        masked = random_mask(conved, num_masks=20, mask_size=30, fill_value=0.0)
+        dropped = random_drop_channels(masked, prob=0.05)
+        views.append(dropped)
         
     return tf.stack(views)
+
+def random_mask(spec, num_masks=1, mask_size=20, fill_value=0.0):
+    """
+    Applies random time-frequency masks to the spectrogram.
+    spec: (H, W, C)
+    num_masks: number of masks to apply
+    mask_size: size of each mask in time and frequency
+    fill_value: value to fill in the masked area
+    """
+    spec_shape = tf.shape(spec)
+    H = spec_shape[0]
+    W = spec_shape[1]
+    
+    for _ in range(num_masks):
+        # Randomly choose start positions
+        t_start = tf.random.uniform([], minval=0, maxval=W - mask_size, dtype=tf.int32)
+        f_start = tf.random.uniform([], minval=0, maxval=H - mask_size, dtype=tf.int32)
+        
+        # 1. Create the "hole" (block of ones)
+        patch = tf.ones([mask_size, mask_size, 2])
+        
+        # 2. Calculate padding to place the patch at (f_start, t_start)
+        # paddings = [[top, bottom], [left, right], [channels_before, channels_after]]
+        paddings = [
+            [f_start, H - f_start - mask_size], 
+            [t_start, W - t_start - mask_size], 
+            [0, 0]
+        ]
+        
+        # 3. Create the full-size mask
+        mask = tf.pad(patch, paddings)
+        # 4. Apply the mask
+        spec = tf.where(mask==1, tf.fill(tf.shape(spec), fill_value), spec)
+        
+    return spec
+
+def random_time_crop(spec, percent=0.3):
+    """
+    Randomly crops a segment of the spectrogram in the time dimension.
+    spec: (H, W, C)
+    percent: percentage of width to crop
+    
+    Returns (H, W, C) where extra widths is filled with 0.0s
+    """
+    if percent <= 0.0 or percent >= 1.0:
+        return spec
+    spec_shape = tf.shape(spec)
+    H = spec_shape[0]
+    W = spec_shape[1]
+    
+    crop_w = tf.cast(tf.cast(W, tf.float32) * percent, tf.int32)
+    
+    start = tf.random.uniform([], minval=0, maxval=W - crop_w, dtype=tf.int32)
+    cropped = spec[:, start:start+crop_w, :]
+    
+    # Pad to original width
+    pad_left = start
+    pad_right = W - (start + crop_w)
+    paddings = [[0, 0], [pad_left, pad_right], [0, 0]]
+    cropped = tf.pad(cropped, paddings, constant_values=0.0)
+    
+    return cropped
+
+def random_time_dilation(spec, scale_range=(0.8, 1.2)):
+    """
+    Randomly time-stretches the spectrogram.
+    spec: (H, W, C)
+    scale_range: tuple of (min_scale, max_scale)
+    
+    Returns (H, W, C) resized back to original width.
+    """
+    spec_shape = tf.shape(spec)
+    H = spec_shape[0]
+    W = spec_shape[1]
+    
+    scale = tf.random.uniform([], minval=scale_range[0], maxval=scale_range[1])
+    new_W = tf.cast(tf.cast(W, tf.float32) * scale, tf.int32)
+    
+    # Resize to new width
+    dilated = tf.image.resize(spec, [H, new_W])
+    
+    # Reshape back to original width
+    if new_W < W:
+        # Pad
+        pad_right = W - new_W
+        paddings = [[0, 0], [0, pad_right], [0, 0]]
+        dilated = tf.pad(dilated, paddings, constant_values=0.0)
+    else:
+        # Crop
+        dilated = dilated[:, :W, :] 
+    
+    return dilated
+
+def random_pitch_shift(spec, max_shift=5):
+    """
+    Randomly shifts the pitch of the spectrogram.
+    spec: (H, W, C)
+    max_shift: maximum number of semitones to shift (positive or negative)
+    
+    Returns (H, W, C)
+    """
+    shift = tf.random.uniform([], minval=-max_shift, maxval=max_shift, dtype=tf.int32)
+    
+    # shift the spectrogram along the frequency axis
+    spec_shape = tf.shape(spec)
+    H = spec_shape[0]
+    W = spec_shape[1]
+    pad = tf.zeros([shift, W, spec_shape[2]]) if shift > 0 else tf.zeros([-shift, W, spec_shape[2]])
+    if shift > 0:
+        shifted = tf.concat([spec[:-shift, :, :], pad], axis=0)
+    else:
+        shifted = tf.concat([pad, spec[-shift:, :, :]], axis=0)
+    
+    return shifted
+
+def random_drop_channels(spec, prob=0.1):
+    """
+    Randomly drops one of the channels (Left or Right) with a given probability.
+    spec: (H, W, C)
+    prob: probability of dropping a channel
+    
+    Returns (H, W, C)
+    """
+    drop = tf.random.uniform([], 0, 1) < prob
+    if drop:
+        channel_to_drop = tf.random.uniform([], 0, 2, dtype=tf.int32)
+        if channel_to_drop == 0:
+            spec = tf.concat([tf.zeros_like(spec[:, :, 0:1]), spec[:, :, 1:2]], axis=2)
+        else:
+            spec = tf.concat([spec[:, :, 0:1], tf.zeros_like(spec[:, :, 1:2])], axis=2)
+    return spec
+
+def random_conv2d(spec, magnitude=0.5):
+    """
+    Applies a random 2D convolution to the spectrogram.
+    spec: (H, W, C)
+    
+    Returns (H, W, C)
+    """
+    spec_expanded = tf.expand_dims(spec, axis=0) # (1, H, W, C)
+    C = tf.shape(spec)[2]
+    
+    # Random kernel size (e.g., 3, 4, 5, 6)
+    k_size = tf.random.uniform([], minval=3, maxval=7, dtype=tf.int32)
+    
+    # Create random filters manually
+    # Shape: [filter_height, filter_width, in_channels, out_channels]
+    
+    # Generate random weights
+    # Using a small stddev to act as noise
+    filters = tf.random.normal([k_size, k_size, C, 1], mean=0.0, stddev=0.1)
+    
+    # Apply convolution
+    convolved = tf.nn.conv2d(
+        spec_expanded,
+        filters,
+        strides=[1, 1, 1, 1],
+        padding='SAME'
+    ) # Output shape: (1, H, W, 1)
+    
+    convolved = tf.squeeze(convolved, axis=0) # (H, W, 1)
+    summed = tf.clip_by_value((1 - magnitude) * spec + magnitude * convolved, 0.0, 1.0)
+    
+    # Add to original spec
+    # spec is (H, W, C), convolved is (H, W, 1). Broadcasting handles the addition.
+    return summed
 
 # ==============================================================================
 # 5. Dataset Pipeline
@@ -229,20 +403,28 @@ def visualize_sample(data_dir):
         num_views = views.shape[0]
         
         # Plot
-        fig, axes = plt.subplots(2, (num_views + 1) // 2, figsize=(15, 6))
+        # Increased figure width to accommodate stereo views
+        fig, axes = plt.subplots(2, (num_views + 1) // 2, figsize=(20, 8))
         axes = axes.flatten()
         
         for i in range(num_views):
             # Get the i-th view
-            # Shape: (H, W, C) -> We visualize the first channel (Left)
-            spec = views[i, :, :, 0].numpy()
+            # Shape: (H, W, C)
+            spec_l = views[i, :, :, 0].numpy()
+            spec_r = views[i, :, :, 1].numpy()
             
             # Flip Y axis so low freq is at bottom
-            spec = np.flipud(spec)
+            spec_l = np.flipud(spec_l)
+            spec_r = np.flipud(spec_r)
+            
+            # Concatenate Left and Right channels horizontally
+            # Add a small separator (10 pixels wide) using the min value (background color)
+            separator = np.full((spec_l.shape[0], 10), np.min(spec_l))
+            combined = np.concatenate([spec_l, separator, spec_r], axis=1)
             
             ax = axes[i]
-            im = ax.imshow(spec, aspect='auto')
-            ax.set_title(f"View {i} {'(Global)' if i < NUM_GLOBAL_VIEWS else '(Local)'}")
+            im = ax.imshow(combined, aspect='auto', cmap='magma')
+            ax.set_title(f"View {i} {'(Global)' if i < NUM_GLOBAL_VIEWS else '(Local)'} [Left | Right]")
             ax.axis('off')
             
         plt.tight_layout()
