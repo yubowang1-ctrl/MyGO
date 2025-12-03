@@ -88,7 +88,8 @@ def classify_error(stderr: str) -> t.Tuple[str, str]:
         "does not exist",
         "inappropriate",
         "the uploader has not made this video available in your country",
-        "downloading webpage"
+        # "downloading webpage"
+        "ffmpeg exited with code 234"
     ]
     for kw in unavailable_keywords:
         if kw in stderr_lower:
@@ -200,6 +201,8 @@ def download_worker(
     if not vid or not start or not end:
         return vid, "failed", "Incomplete row"
 
+    # print(f"→ {vid}: Starting...")
+
     start_n = normalize_time(start)
     end_n = normalize_time(end)
     section = f"*{start_n}-{end_n}"
@@ -223,12 +226,13 @@ def download_worker(
     cmd += [url]
 
     if dry_run:
-        print("DRY-RUN:", " ".join(shlex.quote(a) for a in cmd))
+        print(f"DRY-RUN: {' '.join(shlex.quote(a) for a in cmd)}")
         with stats_lock:
             if vid not in stats_dict["downloaded"]:
                 stats_dict["downloaded"].append(vid)
             if vid in stats_dict["failed"]:
                 stats_dict["failed"].remove(vid)
+        print(f"✓ {vid}: Dry-run completed")
         return vid, "success", "Dry-run completed"
 
     try:
@@ -267,6 +271,8 @@ def download_worker(
                     stats_dict["downloaded"].append(vid)
                 if vid in stats_dict["failed"]:
                     stats_dict["failed"].remove(vid)
+            
+            print(f"✓ {vid}: Downloaded and converted to 64kbps")
             return vid, "success", "Downloaded and converted to 64kbps"
         else:
             # Classify the error
@@ -281,16 +287,23 @@ def download_worker(
                 else:
                     if vid not in stats_dict["failed"]:
                         stats_dict["failed"].append(vid)
+            
+            if category == "unavailable":
+                print(f"✗ {vid}: {reason} (unavailable)")
+            else:
+                print(f"⚠ {vid}: {reason} (will retry)")
             return vid, category, reason
     except subprocess.TimeoutExpired:
         with stats_lock:
             if vid not in stats_dict["failed"]:
                 stats_dict["failed"].append(vid)
+        print(f"⚠ {vid}: Timeout (likely rate-limited) (will retry)")
         return vid, "rate_limit", "Timeout (likely rate-limited)"
     except Exception as e:
         with stats_lock:
             if vid not in stats_dict["failed"]:
                 stats_dict["failed"].append(vid)
+        print(f"⚠ {vid}: Exception: {str(e)} (will retry)")
         return vid, "rate_limit", f"Exception: {str(e)}"
     
 def main() -> None:
@@ -436,33 +449,18 @@ def main() -> None:
     # Process rows with worker pool
     try:
         with Pool(processes=workers) as pool:
-            results = []
             for i, row in enumerate(rows_to_process):
-                result = pool.apply_async(
+                pool.apply_async(
                     download_worker,
                     (row, args.outdir, args.ytdlp, args.extra_arg, args.dry_run, stats_dict, stats_lock),
                 )
-                results.append((row, result))
 
                 # Add delay between batches
                 if args.delay and (i + 1) % workers == 0:
                     time.sleep(args.delay)
 
-            # Collect results (stats already updated by workers via shared dict)
-            for row, result in results:
-                try:
-                    vid, status, message = result.get(timeout=600)
-                    if status == "success":
-                        print(f"✓ {vid}: {message}")
-                    elif status == "unavailable":
-                        print(f"✗ {vid}: {message} (unavailable)")
-                    elif status == "rate_limit":
-                        print(f"⚠ {vid}: {message} (will retry)")
-                except KeyboardInterrupt:
-                    # Re-raise to trigger signal handler
-                    raise
-                except Exception as e:
-                    print(f"⚠ {row.video_id}: Exception during download: {e}")
+            pool.close()
+            pool.join()
 
     except KeyboardInterrupt:
         # Convert manager.list to regular list for serialization

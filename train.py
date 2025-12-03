@@ -3,92 +3,8 @@ import time
 import tensorflow as tf
 from models.transformer import ViT, ViTConfig
 from models.loss import LeJEPA
-
-# ==============================================================================
-# 1. Configuration & Hyperparameters
-# ==============================================================================
-# Distributed Training Config
-GLOBAL_BATCH_SIZE = 64  # Total batch size across all GPUs
-LEARNING_RATE = 1e-4
-NUM_EPOCHS = 100
-LOG_EVERY_STEPS = 10
-
-# Data Config
-IMAGE_HEIGHT = 224
-IMAGE_WIDTH = 224
-NUM_CHANNELS = 2
-
-# LeJEPA Config
-NUM_GLOBAL_VIEWS = 2    # G
-NUM_LOCAL_VIEWS = 8     # Local views
-TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
-LAMBDA_SIGREG = 0.5
-
-    
-# Tiny ViT with 16x16 patches, ~5M parameters
-ViT-Ti-16 = ViTConfig(
-    image_height=224,
-    image_width=224,
-    num_channels=3,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=0,
-    num_layers=12,
-    hidden_dim=192,
-    mlp_dim=768,
-    num_heads=3,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-) 
-
-# Small ViT with 16x16 patches, ~22M parameters
-ViT-S-16 = ViTConfig(
-    image_height=224,
-    image_width=224,
-    num_channels=3,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=0,
-    num_layers=12,
-    hidden_dim=384,
-    mlp_dim=1536,
-    num_heads=6,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-) 
-
-# Base ViT with 16x16 patches, ~86M parameters
-ViT-B-16 = ViTConfig(
-    image_height=224,
-    image_width=224,
-    num_channels=3,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=0,
-    num_layers=12,
-    hidden_dim=768,
-    mlp_dim=3072,
-    num_heads=12,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-)
-
-
-# Model Config (ViT-Ti-16 as example)
-VIT_CONFIG = ViTConfig(
-    image_height=IMAGE_HEIGHT,
-    image_width=IMAGE_WIDTH,
-    num_channels=NUM_CHANNELS,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=6,
-    num_layers=12,
-    hidden_dim=192,
-    mlp_dim=768,
-    num_heads=3,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-)
+from data.dataset import get_dataset
+from constants import *
 
 # ==============================================================================
 # 2. Setup Distributed Strategy
@@ -136,7 +52,7 @@ with strategy.scope():
 # ==============================================================================
 with strategy.scope():
     # Initialize Model
-    model = ViT(VIT_CONFIG)
+    model = ViT(CONFIG)
     
     # Initialize Optimizer
     optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE)

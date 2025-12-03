@@ -2,32 +2,8 @@ import tensorflow as tf
 import librosa
 import numpy as np
 import os
-
-# ==============================================================================
-# 1. Configuration & Hyperparameters
-# ==============================================================================
-# Audio Config
-TARGET_SR = 48000
-DURATION = 10.0 # seconds
-SAMPLE_SAMPLES = int(TARGET_SR * DURATION) # 480,000 samples
-
-# Spectrogram Config
-N_FFT = 4096 # the frequency resolution is TARGET_SR / N_FFT = ~11.7 Hz
-HOP_LEN = 2048 # int(0.1 * TARGET_SR) # 0.1 seconds hop
-N_MELS = 256
-FMIN = 60.0
-FMAX = 12000.0
-EPSILON = 1e-6
-
-# View Generation Config
-NUM_GLOBAL_VIEWS = 2
-NUM_LOCAL_VIEWS = 6
-TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
-
-# Image Output Config
-IMAGE_HEIGHT = 224
-IMAGE_WIDTH = 224
-NUM_CHANNELS = 2 # Stereo
+from models.transformer import mask_patches, mask_timeframe
+from constants import *
 
 # ==============================================================================
 # 2. Audio Loading (Python Function)
@@ -151,7 +127,12 @@ def make_spectrogram(audio):
     # 6. Resize to fixed input size for ViT (224x224)
     # Note: This distorts time/freq aspect ratio
     # log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
-    tf.print("Before resize:", tf.shape(log_mel))
+    # tf.print("Before resize:", tf.shape(log_mel))
+    shape_match = tf.shape(log_mel)[0] == IMAGE_HEIGHT and tf.shape(log_mel)[2] == 2
+    if not shape_match:
+        log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
+        tf.print("Warning: Spectrogram shape mismatch, given", tf.shape(log_mel), "but defined in constants.py as", IMAGE_HEIGHT, "x", IMAGE_WIDTH, "x2. Reshaped accordingly.")
+    
     return log_mel
 
 # ==============================================================================
@@ -167,26 +148,27 @@ def generate_views(spectrogram):
     
     # 1. Global Views
     for _ in range(NUM_GLOBAL_VIEWS):
-        masked = random_mask(spectrogram, num_masks=2, mask_size=30, fill_value=0.0)
-        shifted = random_pitch_shift(masked, max_shift=2)
-        views.append(shifted)
+        # masked = random_mask(spectrogram, num_masks=2, mask_size=30, fill_value=0.0) # mask handled at patch-level masking in transformer
+        shifted = random_pitch_shift(spectrogram, max_shift=2)
+        dilated = random_time_dilation(shifted, scale_range=(1.0, 1.1))
+        views.append(dilated)
         
     # 2. Local Views
     for _ in range(NUM_LOCAL_VIEWS):
-        cropped = random_time_crop(spectrogram, percent=0.3)
-        dilated = random_time_dilation(cropped, scale_range=(0.7, 1.3))
-        shifted = random_pitch_shift(dilated, max_shift=5)
+        # cropped = random_time_crop(spectrogram, percent=0.3) # time crop handled at patch-level masking in transformer
+        dilated = random_time_dilation(spectrogram, scale_range=(0.7, 1.3))
+        shifted = random_pitch_shift(spectrogram, max_shift=5)
         conved = random_conv2d(shifted, magnitude=0.1)
         
-        masked = random_mask(conved, num_masks=20, mask_size=30, fill_value=0.0)
-        dropped = random_drop_channels(masked, prob=0.05)
+        # masked = random_mask(conved, num_masks=20, mask_size=30, fill_value=0.0) # mask handled at patch-level masking in transformer
+        dropped = random_drop_channels(conved, prob=0.05)
         views.append(dropped)
         
     return tf.stack(views)
 
 def random_mask(spec, num_masks=1, mask_size=20, fill_value=0.0):
     """
-    Applies random time-frequency masks to the spectrogram.
+    Applies image-level random time-frequency masks to the spectrogram.
     spec: (H, W, C)
     num_masks: number of masks to apply
     mask_size: size of each mask in time and frequency
@@ -221,7 +203,7 @@ def random_mask(spec, num_masks=1, mask_size=20, fill_value=0.0):
 
 def random_time_crop(spec, percent=0.3):
     """
-    Randomly crops a segment of the spectrogram in the time dimension.
+    Randomly apply image-level crops to a segment of the spectrogram in the time dimension.
     spec: (H, W, C)
     percent: percentage of width to crop
     
@@ -391,13 +373,62 @@ def visualize_sample(data_dir):
     # Take 1 batch
     for batch in ds.take(1):
         # batch shape: (1, TOTAL_VIEWS, H, W, C)
+        # preview patch masking 
+        # 1. Split into patches
+        batch = tf.reshape(batch, [-1, IMAGE_HEIGHT, IMAGE_WIDTH, NUM_CHANNELS]) # (B*V, H, W, C)
+        patches = tf.image.extract_patches(
+            images=batch,
+            sizes=[1, CONFIG.patch_height, CONFIG.patch_width, 1],
+            strides=[1, CONFIG.patch_height - CONFIG.patch_overlap, CONFIG.patch_width - CONFIG.patch_overlap, 1],
+            rates=[1, 1, 1, 1],
+            padding='VALID'
+        )
+        batch_size = tf.shape(patches)[0]
+        num_row_patches = tf.shape(patches)[1]
+        num_col_patches = tf.shape(patches)[2]
+        # patches now has shape (batch_size * V, num_rows_patches, num_cols_patches, patch_height * patch_width * num_channels)
+        x = tf.reshape(patches, [tf.shape(patches)[0], tf.shape(patches)[1] * tf.shape(patches)[2], tf.shape(patches)[3]])  # flatten patches
+        # 2. Apply masking
+        mask = mask_patches(batch_size, num_row_patches, num_col_patches, CONFIG.G, CONFIG.V)
+        mask |= mask_timeframe(batch_size, num_row_patches, num_col_patches, CONFIG.G, CONFIG.V)
+        x = tf.where(mask, tf.zeros_like(x), x)
+        # 3. Unflatten patches
+        patches = tf.reshape(x, [batch_size, num_row_patches, num_col_patches, CONFIG.patch_height, CONFIG.patch_width, CONFIG.num_channels])
+        # 4. Reconstruct images
+        # batch_size here is actually B * V because of the earlier reshape
+        out = tf.zeros((batch_size, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels))
+        # add patches one by one
+        for i in range(num_row_patches):
+            for j in range(num_col_patches):
+                patch = patches[:, i, j, :, :, :] # shape: (batch_size, patch_height, patch_width, num_channels)
+                if i < num_row_patches - 1:
+                    patch = patch[:, :-CONFIG.patch_overlap, :, :]
+                if j < num_col_patches - 1:
+                    patch = patch[:, :, :-CONFIG.patch_overlap, :]
+                top_left_corner_icoor = (CONFIG.patch_height - CONFIG.patch_overlap) * i
+                top_left_corner_jcoor = (CONFIG.patch_width - CONFIG.patch_overlap) * j
+                
+                # Pad for (Batch, Height, Width, Channels)
+                # Use tf.stack to ensure we create a valid tensor from mixed ints/tensors
+                pad_h = tf.stack([top_left_corner_icoor, CONFIG.image_height - (top_left_corner_icoor + tf.shape(patch)[1])])
+                pad_w = tf.stack([top_left_corner_jcoor, CONFIG.image_width - (top_left_corner_jcoor + tf.shape(patch)[2])])
+                pad = tf.stack([
+                    tf.constant([0, 0], dtype=tf.int32),
+                    pad_h,
+                    pad_w,
+                    tf.constant([0, 0], dtype=tf.int32)
+                ])
+                
+                padded_patch = tf.pad(patch, pad)
+                out += padded_patch
+        out = tf.reshape(out, [-1, CONFIG.V, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels])
+        batch = out     
         views = batch[0] # (TOTAL_VIEWS, H, W, C)
-        
         num_views = views.shape[0]
         
         # Plot
         # Increased figure width to accommodate stereo views
-        fig, axes = plt.subplots(2, (num_views + 1) // 2, figsize=(20, 8))
+        fig, axes = plt.subplots(4, (num_views + 1) // 4, figsize=(8, 8/IMAGE_HEIGHT*IMAGE_WIDTH))
         axes = axes.flatten()
         
         for i in range(num_views):
@@ -416,7 +447,7 @@ def visualize_sample(data_dir):
             combined = np.concatenate([spec_l, separator, spec_r], axis=1)
             
             ax = axes[i]
-            im = ax.imshow(combined, aspect='auto', cmap='magma')
+            im = ax.imshow(combined, aspect='auto', cmap='viridis')
             ax.set_title(f"View {i} {'(Global)' if i < NUM_GLOBAL_VIEWS else '(Local)'} [Left | Right]")
             ax.axis('off')
             
