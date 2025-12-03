@@ -15,57 +15,6 @@ class ViTConfig:
     num_heads: int
     dropout_rate: float
     attention_dropout_rate: float
-    
-# Tiny ViT with 16x16 patches, ~5M parameters
-ViT-Ti-16 = ViTConfig(
-    image_height=224,
-    image_width=224,
-    num_channels=3,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=0,
-    num_layers=12,
-    hidden_dim=192,
-    mlp_dim=768,
-    num_heads=3,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-    max_token_length=197, # 14*14 + 1 for CLS token
-) 
-
-# Small ViT with 16x16 patches, ~22M parameters
-ViT-S-16 = ViTConfig(
-    image_height=224,
-    image_width=224,
-    num_channels=3,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=0,
-    num_layers=12,
-    hidden_dim=384,
-    mlp_dim=1536,
-    num_heads=6,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-    max_token_length=197, # 14*14 + 1 for CLS token
-) 
-
-# Base ViT with 16x16 patches, ~86M parameters
-ViT-B-16 = ViTConfig(
-    image_height=224,
-    image_width=224,
-    num_channels=3,
-    patch_height=16,
-    patch_width=16,
-    patch_overlap=0,
-    num_layers=12,
-    hidden_dim=768,
-    mlp_dim=3072,
-    num_heads=12,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
-    max_token_length=197, # 14*14 + 1 for CLS token
-)
 
 class ViT(tf.keras.layers.Layer):
     def __init__(self, config: ViTConfig, **kwargs):
