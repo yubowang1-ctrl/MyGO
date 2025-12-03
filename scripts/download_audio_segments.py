@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 """Download audio segments from YouTube using yt-dlp with parallel workers and progress tracking.
 
-CSV format expected (per line):
-  video_id,start_time,end_time,label
+Example command:
 
-Features:
-  - Parallel downloads using multiple yt-dlp workers
-  - Progress saved to JSON file (resumable)
-  - Error classification: unavailable videos vs rate-limit errors
-  - Tracks: downloaded, failed, unavailable, pending, and retried videos
-  - On startup, automatically resumes from last checkpoint
-  - On exit, prints session statistics
-
-Usage:
-  python3 scripts/download_audio_segments_v2.py path/to/file.csv --outdir downloads --workers 4
+python3 scripts/download_audio_segments.py \
+    --csvfile "data/audioset/unbalanced_train_segments_batch_0.csv" \
+    --workers 42 \
+    --skip-header \
+    --outdir "external_drive/audioset/unbalanced_train_segments/"
+    
 """
 from __future__ import annotations
 

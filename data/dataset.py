@@ -165,9 +165,6 @@ def generate_views(spectrogram):
     """
     views = []
     
-    # Placeholder for Data Augmentation
-    # Ideally, you would use random crops, masking, etc.
-    
     # 1. Global Views
     for _ in range(NUM_GLOBAL_VIEWS):
         masked = random_mask(spectrogram, num_masks=2, mask_size=30, fill_value=0.0)
@@ -333,9 +330,6 @@ def random_conv2d(spec, magnitude=0.5):
     
     # Create random filters manually
     # Shape: [filter_height, filter_width, in_channels, out_channels]
-    
-    # Generate random weights
-    # Using a small stddev to act as noise
     filters = tf.random.normal([k_size, k_size, C, 1], mean=0.0, stddev=0.1)
     
     # Apply convolution
@@ -347,10 +341,10 @@ def random_conv2d(spec, magnitude=0.5):
     ) # Output shape: (1, H, W, 1)
     
     convolved = tf.squeeze(convolved, axis=0) # (H, W, 1)
-    summed = tf.clip_by_value((1 - magnitude) * spec + magnitude * convolved, 0.0, 1.0)
     
     # Add to original spec
     # spec is (H, W, C), convolved is (H, W, 1). Broadcasting handles the addition.
+    summed = tf.clip_by_value((1 - magnitude) * spec + magnitude * convolved, 0.0, 1.0)
     return summed
 
 # ==============================================================================
@@ -361,11 +355,10 @@ def get_dataset(data_dir, batch_size):
     Creates the full training dataset pipeline.
     """
     # 1. List files (Lazy)
-    # Supports both .wav and .m4a if using the python loader
     file_pattern = str(data_dir) + "/*.m4a" 
     ds = tf.data.Dataset.list_files(file_pattern, shuffle=True)
     
-    # 2. Load Audio (Parallel Python - CPU)
+    # 2. Load Audio
     # Use interleave to flatten chunks from each file
     ds = ds.interleave(
         load_audio_dataset,
@@ -374,10 +367,10 @@ def get_dataset(data_dir, batch_size):
         deterministic=False
     )
     
-    # 3. Convert to Spectrogram (Native TF - GPU/CPU)
+    # 3. Convert to Spectrogram
     ds = ds.map(make_spectrogram, num_parallel_calls=tf.data.AUTOTUNE)
     
-    # 4. Generate Views (Native TF - GPU/CPU)
+    # 4. Generate Views
     ds = ds.map(generate_views, num_parallel_calls=tf.data.AUTOTUNE)
     
     # 5. Batch and Prefetch
