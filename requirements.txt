@@ -1,0 +1,9 @@
+librosa==0.11.0
+tensorboard==2.17.1
+tensorboard-data-server==0.7.2
+tensorflow==2.17.0
+matplotlib==3.9.2
+numpy==1.26.4
+pandas==2.2.3
+tqdm==4.66.5
+scikit-learn==1.5.1
