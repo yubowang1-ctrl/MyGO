@@ -335,7 +335,6 @@ class SingleHeadAttention(tf.keras.layers.Layer):
         dk = tf.cast(self.key_dim, embeddings.dtype)
         scaled_attention_logits = matmul_qk / tf.math.sqrt(dk)
 
-        attention_weights = tf.nn.softmax(scaled_attention_logits, axis=-1) # (batch_size, seq_len, seq_len)
         # Add relative position bias
         # class embedding receives bias normally as other embeddings
         # Assuming seq_len is always fixed during training and inference
@@ -358,8 +357,9 @@ class SingleHeadAttention(tf.keras.layers.Layer):
             axis=1
         ) # (seq_len, seq_len)
         
-        attention_weights += relative_time_bias
+        scaled_attention_logits += relative_time_bias
         
+        attention_weights = tf.nn.softmax(scaled_attention_logits, axis=-1) # (batch_size, seq_len, seq_len)
         attention_weights = self.attention_dropout(attention_weights, training=training)
 
         output = tf.matmul(attention_weights, V) # (batch_size, seq_len, key_dim)

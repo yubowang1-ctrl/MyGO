@@ -421,6 +421,7 @@ def get_dataset(data_dir, csv_path, batch_size, dataset="audioset", training=Tru
             # During evaluation, just expand dims to have one view
             def expand_view(spec, label):
                 spec = tf.expand_dims(spec, axis=0) # (1, H, W, C)
+                label = tf.expand_dims(label, axis=0) # (1, NUM_CLASSES)
                 return spec, label
             ds = ds.map(expand_view, num_parallel_calls=tf.data.AUTOTUNE)
         # 5. Batch and Prefetch

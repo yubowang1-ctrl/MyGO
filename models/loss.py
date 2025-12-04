@@ -130,8 +130,9 @@ class SIGReg(tf.keras.losses.Loss):
         
         # Generate random projection matrix A: (D, num_slices)
         # We use stateless_normal to ensure determinism with the seed
-        A = tf.random.normal(
+        A = tf.random.stateless_normal(
             shape=[D, num_slices], 
+            seed=[seed, 0],
             dtype=tf.float32
         )
         

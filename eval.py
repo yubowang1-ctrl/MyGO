@@ -1,12 +1,15 @@
 import argparse
 import os
 import numpy as np
+from sklearn.decomposition import PCA
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 from models.transformer import ViT
 from models.probe import LinearProbe
 from data.dataset import get_dataset
 from constants import CONFIG, AUDIOSET_NUM_CLASSES
+from tqdm import tqdm 
 
 def compute_map_numpy(y_true, y_score):
     """
@@ -71,13 +74,71 @@ def evaluate(data_dir, csv_path, ckpt_dir, batch_size):
     def forward_step(batch_views):
         # batch_views: (B, 1, H, W, C)
         outputs = model(batch_views, training=False)          # (B, 1, Seq, D)
+        
+        # patch_embeds = outputs[:, 0, 1:, :][0].numpy()       # (N_patches, D)
+
+        # # 4) Patch grid size
+        # ph, pw, po = CONFIG.patch_height, CONFIG.patch_width, CONFIG.patch_overlap
+        # num_rows = (CONFIG.image_height - po) // (ph - po)
+        # num_cols = (CONFIG.image_width  - po) // (pw - po)
+        # expected = int(num_rows * num_cols)
+        # if patch_embeds.shape[0] != expected:
+        #     raise RuntimeError(f"Patch count mismatch: got {patch_embeds.shape[0]}, expected {expected}")
+
+        # # 5) PCA -> 3D -> [0,1] RGB
+        # pca = PCA(n_components=3, svd_solver="auto", random_state=0)
+        # rgb = pca.fit_transform(patch_embeds)                # (N_patches, 3)
+        # rgb = rgb - rgb.mean(axis=0, keepdims=True)
+        # rgb_min = rgb.min(axis=0, keepdims=True)
+        # rgb_max = rgb.max(axis=0, keepdims=True)
+        # rgb = (rgb - rgb_min) / (rgb_max - rgb_min + 1e-8)
+        # rgb = np.clip(rgb, 0.0, 1.0)
+
+        # # 6) Reshape to grid and upsample
+        # color_grid = rgb.reshape(num_rows, num_cols, 3)      # (rows, cols, 3)
+        # color_big = tf.image.resize(
+        #     color_grid[None, ...],
+        #     [CONFIG.image_height, CONFIG.image_width],
+        #     method="nearest"
+        # )[0].numpy()                                         # (H, W, 3)
+
+        # # 7) Background spectrogram and overlay
+        # spec = batch_views[0, 0].numpy()                     # (H, W, C)
+        # spec_gray = spec.mean(axis=-1)                       # (H, W)
+
+        # plt.figure(figsize=(10, 4))
+
+        # # Left: patch-level color grid
+        # plt.subplot(1, 2, 1)
+        # plt.imshow(np.flipud(color_grid), aspect="auto")
+        # plt.title("Patch PCA Coloring (grid)")
+        # plt.xlabel("Frequency (patch cols)")
+        # plt.ylabel("Time (patch rows)")
+
+        # # Right: overlay on spectrogram
+        # plt.subplot(1, 2, 2)
+        # plt.imshow(np.flipud(spec_gray), cmap="gray", aspect="auto")
+        # plt.imshow(np.flipud(color_big), alpha=0.45, aspect="auto")
+        # plt.title("PCA Colors over Spectrogram")
+        # plt.axis("off")
+
+        # plt.tight_layout()
+        # plt.show()
+        
+        
+        
+        
         cls_embed = outputs[:, 0, 0, :]                       # (B, D)
         logits = probe(cls_embed)                              # (B, C)
         probs = tf.nn.sigmoid(logits)                          # (B, C)
+        # tf.print(probs[0])
+        tf.print(cls_embed[0])
         return probs
 
-    for batch_views, batch_labels in ds:
+    for batch_views, batch_labels in tqdm(ds, desc="Evaluating"):
+        # shape: batch_views: (B, 1, H, W, C), batch_labels: (B, 1, CLASSES)
         probs = forward_step(batch_views)
+        batch_labels = tf.squeeze(batch_labels, axis=1)  # (B, CLASSES)
         y_true_list.append(batch_labels.numpy())
         y_score_list.append(probs.numpy())
 
