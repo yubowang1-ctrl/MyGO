@@ -156,7 +156,7 @@ def mask_timeframe(batch_size, num_row_patches, num_col_patches, G, V, ratio=0.5
     full_mask = tf.expand_dims(mask_expanded, axis=-1) # (B, Seq, 1)
     return full_mask
 
-class ViT(tf.keras.layers.Layer):
+class ViT(tf.keras.Model):
     def __init__(self, config: ViTConfig, **kwargs):
         super(ViT, self).__init__(**kwargs)
         self.config = config
@@ -332,7 +332,7 @@ class SingleHeadAttention(tf.keras.layers.Layer):
 
         # Scaled dot-product attention
         matmul_qk = tf.matmul(Q, K, transpose_b=True) # (batch_size, seq_len, seq_len)
-        dk = tf.cast(self.key_dim, tf.float32)
+        dk = tf.cast(self.key_dim, embeddings.dtype)
         scaled_attention_logits = matmul_qk / tf.math.sqrt(dk)
 
         attention_weights = tf.nn.softmax(scaled_attention_logits, axis=-1) # (batch_size, seq_len, seq_len)

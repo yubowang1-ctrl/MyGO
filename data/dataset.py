@@ -174,10 +174,10 @@ def make_spectrogram(audio, label):
     # Note: This distorts time/freq aspect ratio
     # log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
     # tf.print("Before resize:", tf.shape(log_mel))
-    shape_match = tf.shape(log_mel)[0] == IMAGE_HEIGHT and tf.shape(log_mel)[2] == 2
+    shape_match = (tf.shape(log_mel)[0] == IMAGE_HEIGHT and tf.shape(log_mel)[1] == IMAGE_WIDTH and tf.shape(log_mel)[2] == 2)
     if not shape_match:
+        # tf.print("Warning: Spectrogram shape mismatch, given", tf.shape(log_mel), "but defined in constants.py as", IMAGE_HEIGHT, "x", IMAGE_WIDTH, "x2. Reshaped accordingly.")
         log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
-        tf.print("Warning: Spectrogram shape mismatch, given", tf.shape(log_mel), "but defined in constants.py as", IMAGE_HEIGHT, "x", IMAGE_WIDTH, "x2. Reshaped accordingly.")
     
     return log_mel, label
 

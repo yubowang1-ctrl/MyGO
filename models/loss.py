@@ -54,6 +54,9 @@ class EppsPulley(tf.keras.layers.Layer):
         # x shape: (Batch_Size, K) where K is number of slices/features
         # We want to compute the test statistic for each slice independently.
         
+        # Cast x to float32 to match self.t and self.phi dtypes and ensure precision
+        x = tf.cast(x, tf.float32)
+        
         # Get N (Batch Size)
         N = tf.cast(tf.shape(x)[0], tf.float32)
         
@@ -111,6 +114,9 @@ class SIGReg(tf.keras.losses.Loss):
             global_step: Tensor or integer for random seed synchronization
             num_slices: Number of random slices to project onto
         """
+        # Cast input to float32 for stability
+        x = tf.cast(x, tf.float32)
+        
         D = tf.shape(x)[-1]
         
         # Ensure global_step is a tensor for consistency
@@ -167,5 +173,8 @@ class LeJEPA(tf.keras.losses.Loss):
         global_centers = tf.reduce_mean(global_emb, axis=1, keepdims=True) # (B, 1, D)
         diff = all_emb - global_centers  # (B, V, D)
         inv_loss = tf.reduce_mean(tf.square(diff))  # (scalar)
+        
+        # Cast inv_loss to float32 to match sigreg_loss (which is float32)
+        inv_loss = tf.cast(inv_loss, tf.float32)
         
         return inv_loss * (1 - self.lambd) + sigreg_loss * self.lambd

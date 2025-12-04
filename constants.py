@@ -27,7 +27,7 @@ SAMPLE_SAMPLES = int(TARGET_SR * DURATION) # 480,000 samples
 
 # Spectrogram Config
 N_FFT = 4096 # the frequency resolution is TARGET_SR / N_FFT = ~11.7 Hz
-HOP_LEN = 2020 # this number to ensure compatibility with image width and patch sizes     # use int(0.1 * TARGET_SR) if want 0.1 seconds hop
+HOP_LEN = 2048    # use int(0.1 * TARGET_SR) if want 0.1 seconds hop
 N_MELS = 256
 FMIN = 60.0
 FMAX = 12000.0
@@ -41,14 +41,14 @@ TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
 # Distributed Training Config
 GLOBAL_BATCH_SIZE = 8  # Total batch size across all GPUs
 BASE_LEARNING_RATE = 5e-3
-NUM_EPOCHS = 400
+NUM_EPOCHS = 100
 LOG_EVERY_STEPS = 10
 
 # Data Config
 DATA_DIR = "downloads/audioset/balanced_train_segments"
 CSV_PATH = "data/audioset/balanced_train_segments.csv"
 IMAGE_HEIGHT = 256
-IMAGE_WIDTH = 236
+IMAGE_WIDTH = 236 #208
 NUM_CHANNELS = 2
 AUDIOSET_NUM_CLASSES = 527
 
@@ -117,7 +117,7 @@ CONFIG = ViTConfig(
     patch_height=16,
     patch_width=16,
     patch_overlap=6,
-    num_layers=12,
+    num_layers=2, # num_layers=12, 
     hidden_dim=192,
     mlp_dim=768,
     num_heads=3,
@@ -126,3 +126,21 @@ CONFIG = ViTConfig(
     G=NUM_GLOBAL_VIEWS,
     V=TOTAL_VIEWS,
 )
+
+# # Use this for final training with larger model
+# CONFIG = ViTConfig(
+#     image_height=IMAGE_HEIGHT,
+#     image_width=IMAGE_WIDTH,
+#     num_channels=NUM_CHANNELS,
+#     patch_height=16,
+#     patch_width=16,
+#     patch_overlap=0,
+#     num_layers=12,
+#     hidden_dim=512,
+#     mlp_dim=2048,
+#     num_heads=12,
+#     dropout_rate=0.1,
+#     attention_dropout_rate=0.1,
+#     G=NUM_GLOBAL_VIEWS,
+#     V=TOTAL_VIEWS,
+# )

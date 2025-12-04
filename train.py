@@ -10,6 +10,12 @@ from data.dataset import get_dataset
 from constants import *
 from tqdm import tqdm
 
+try:
+    tf.keras.mixed_precision.set_global_policy('mixed_bfloat16')
+    print("Mixed precision (bfloat16) enabled.")
+except Exception as e:
+    print(f"Could not enable mixed precision: {e}")
+
 # ==============================================================================
 # 2. Setup Distributed Strategy
 # ==============================================================================
@@ -17,9 +23,14 @@ from tqdm import tqdm
 # But on Mac's Metal backend, MirroredStrategy triggers a known bug. 
 # So use default strategy for debugging on Mac.
 
-# strategy = tf.distribute.MirroredStrategy()
-strategy = tf.distribute.get_strategy()
-tf.print(f"Number of devices: {strategy.num_replicas_in_sync}")
+# If on CUDA, use MirroredStrategy
+if len(tf.config.list_physical_devices('GPU')) > 1:
+    strategy = tf.distribute.MirroredStrategy()
+    print("Using MirroredStrategy for multi-GPU training.")
+else:
+    strategy = tf.distribute.get_strategy()
+    print("Using default strategy (single device or non-GPU).")
+print(f"Number of devices: {strategy.num_replicas_in_sync}")
 
 
 # Create and distribute the dataset
@@ -32,7 +43,7 @@ with strategy.scope():
         training=True
     )
     dist_dataset = strategy.experimental_distribute_dataset(dataset)
-    num_batches = (17895 + GLOBAL_BATCH_SIZE - 1) // GLOBAL_BATCH_SIZE
+    tot_num_batches = (17895 * 2 + GLOBAL_BATCH_SIZE - 1) // GLOBAL_BATCH_SIZE
 # ============================================================================== 
 # 4. Model, Optimizer, and Loss Initialization
 # ============================================================================== 
@@ -41,7 +52,7 @@ with strategy.scope():
     model = ViT(CONFIG)
     probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
     # Initialize Optimizer
-    steps_per_epoch = num_batches
+    steps_per_epoch = tot_num_batches
     total_steps = steps_per_epoch * NUM_EPOCHS
     warmup_steps = steps_per_epoch * 5 # warmup
     decay_steps = total_steps - warmup_steps
@@ -62,6 +73,13 @@ with strategy.scope():
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory="./checkpoints", max_to_keep=5
     )
+    
+    # print model summary
+    dummy_input = tf.zeros((1, 1, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels))
+    _ = model(dummy_input, training=False)
+    _ = probe(tf.zeros((1, CONFIG.hidden_dim)), training=False)
+    model.summary()
+    probe.summary()
 
 def balanced_acc(y_true, y_pred):
     """
@@ -142,9 +160,12 @@ def train_step(inputs):
         
         # Binary Cross Entropy for Multi-label classification
         # Sum over classes, mean over batch
+        # Cast probe_logits to float32 for loss calculation stability
+        probe_logits = tf.cast(probe_logits, tf.float32)
+        
         per_replica_loss_probe = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.sigmoid_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits),
+                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=20.0),
                 axis=1
             )
         )
@@ -200,7 +221,7 @@ def main():
         num_batches = 0
         
         # Iterate over the distributed dataset
-        for step, batch_inputs in tqdm(enumerate(dist_dataset), total=num_batches, desc=f"Training Epoch {epoch+1}/{NUM_EPOCHS}", unit="batch"):
+        for step, batch_inputs in tqdm(enumerate(dist_dataset), total=tot_num_batches, desc=f"Training Epoch {epoch+1}/{NUM_EPOCHS}", unit="batch"):
             loss_backbone, loss_probe, acc = distributed_train_step(batch_inputs)
             
             total_loss_backbone += loss_backbone
