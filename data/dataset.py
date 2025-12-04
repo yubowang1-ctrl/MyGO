@@ -533,4 +533,4 @@ def visualize_sample(data_dir, csv_path):
         break
 
 # visualize_sample("/Users/elly/Desktop/T7/test", )
-visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")
+# visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")
