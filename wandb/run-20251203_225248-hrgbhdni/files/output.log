@@ -182,3 +182,142 @@ Training Epoch 1/400: 320batch [12:07,  1.92s/batch]
   Step 1720: Backbone Loss = 0.7993, Probe Loss = 234.1382, Acc = 0.9931
   Step 1730: Backbone Loss = 0.7899, Probe Loss = 226.0879, Acc = 0.9917
   Step 1740: Backbone Loss = 0.7957, Probe Loss = 238.0941, Acc = 0.9889
+  Step 1750: Backbone Loss = 0.7851, Probe Loss = 236.6902, Acc = 0.9872
+  Step 1760: Backbone Loss = 0.8059, Probe Loss = 208.6115, Acc = 0.9941
+  Step 1770: Backbone Loss = 0.7902, Probe Loss = 201.7744, Acc = 0.9969
+  Step 1780: Backbone Loss = 0.7942, Probe Loss = 222.0876, Acc = 0.9948
+  Step 1790: Backbone Loss = 0.8019, Probe Loss = 232.3395, Acc = 0.9912
+  Step 1800: Backbone Loss = 0.7664, Probe Loss = 228.8070, Acc = 0.9953
+  Step 1810: Backbone Loss = 0.7913, Probe Loss = 222.9370, Acc = 0.9941
+  Step 1820: Backbone Loss = 0.7900, Probe Loss = 202.6229, Acc = 0.9936
+  Step 1830: Backbone Loss = 0.7999, Probe Loss = 214.7509, Acc = 0.9943
+Error loading downloads/audioset/balanced_train_segments/kKf9OprN9nw.m4a:
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+Training Epoch 1/400: 2150batch [1:12:04,  1.94s/batch]
+  Step 1840: Backbone Loss = 0.7873, Probe Loss = 205.6135, Acc = 0.9948
+  Step 1850: Backbone Loss = 0.7769, Probe Loss = 197.4725, Acc = 0.9955
+  Step 1860: Backbone Loss = 0.7796, Probe Loss = 215.8729, Acc = 0.9962
+  Step 1870: Backbone Loss = 0.7918, Probe Loss = 217.9077, Acc = 0.9931
+  Step 1880: Backbone Loss = 0.7640, Probe Loss = 214.0284, Acc = 0.9955
+  Step 1890: Backbone Loss = 0.7922, Probe Loss = 224.7241, Acc = 0.9929
+  Step 1900: Backbone Loss = 0.7709, Probe Loss = 233.6210, Acc = 0.9910
+  Step 1910: Backbone Loss = 0.7668, Probe Loss = 235.5817, Acc = 0.9938
+  Step 1920: Backbone Loss = 0.7737, Probe Loss = 205.1471, Acc = 0.9931
+  Step 1930: Backbone Loss = 0.7830, Probe Loss = 202.0756, Acc = 0.9931
+  Step 1940: Backbone Loss = 0.7985, Probe Loss = 197.7515, Acc = 0.9960
+  Step 1950: Backbone Loss = 0.7984, Probe Loss = 216.1431, Acc = 0.9879
+  Step 1960: Backbone Loss = 0.7859, Probe Loss = 226.6999, Acc = 0.9945
+  Step 1970: Backbone Loss = 0.7866, Probe Loss = 211.7126, Acc = 0.9934
+  Step 1980: Backbone Loss = 0.7824, Probe Loss = 205.0155, Acc = 0.9957
+  Step 1990: Backbone Loss = 0.8039, Probe Loss = 196.0758, Acc = 0.9924
+  Step 2000: Backbone Loss = 0.7621, Probe Loss = 206.0713, Acc = 0.9953
+  Step 2010: Backbone Loss = 0.8174, Probe Loss = 191.2146, Acc = 0.9938
+  Step 2020: Backbone Loss = 0.7806, Probe Loss = 210.9807, Acc = 0.9964
+  Step 2030: Backbone Loss = 0.7826, Probe Loss = 190.4507, Acc = 0.9941
+  Step 2040: Backbone Loss = 0.7826, Probe Loss = 198.7273, Acc = 0.9964
+  Step 2050: Backbone Loss = 0.7459, Probe Loss = 208.4671, Acc = 0.9955
+  Step 2060: Backbone Loss = 0.7737, Probe Loss = 193.1955, Acc = 0.9964
+  Step 2070: Backbone Loss = 0.7932, Probe Loss = 188.9867, Acc = 0.9967
+  Step 2080: Backbone Loss = 0.8077, Probe Loss = 207.4289, Acc = 0.9931
+  Step 2090: Backbone Loss = 0.7976, Probe Loss = 199.3842, Acc = 0.9960
+  Step 2100: Backbone Loss = 0.7718, Probe Loss = 210.3060, Acc = 0.9960
+  Step 2110: Backbone Loss = 0.7738, Probe Loss = 176.4031, Acc = 0.9957
+  Step 2120: Backbone Loss = 0.8027, Probe Loss = 179.8225, Acc = 0.9962
+  Step 2130: Backbone Loss = 0.8022, Probe Loss = 185.1360, Acc = 0.9955
+  Step 2140: Backbone Loss = 0.7918, Probe Loss = 181.5798, Acc = 0.9969
+  Step 2150: Backbone Loss = 0.7949, Probe Loss = 180.1309, Acc = 0.9969
+  Step 2160: Backbone Loss = 0.7835, Probe Loss = 181.7396, Acc = 0.9938
+  Step 2170: Backbone Loss = 0.7521, Probe Loss = 166.9505, Acc = 0.9948
+  Step 2180: Backbone Loss = 0.7864, Probe Loss = 185.7606, Acc = 0.9964
+  Step 2190: Backbone Loss = 0.8039, Probe Loss = 173.8086, Acc = 0.9962
+  Step 2200: Backbone Loss = 0.7943, Probe Loss = 171.2461, Acc = 0.9953
+  Step 2210: Backbone Loss = 0.7822, Probe Loss = 171.2553, Acc = 0.9948
+  Step 2220: Backbone Loss = 0.7860, Probe Loss = 173.7291, Acc = 0.9953
+  Step 2230: Backbone Loss = 0.7711, Probe Loss = 186.6087, Acc = 0.9960
+  Step 2240: Backbone Loss = 0.7844, Probe Loss = 164.2494, Acc = 0.9960
+  Step 2250: Backbone Loss = 0.7803, Probe Loss = 174.1748, Acc = 0.9945
+  Step 2260: Backbone Loss = 0.8032, Probe Loss = 168.8911, Acc = 0.9962
+  Step 2270: Backbone Loss = 0.7567, Probe Loss = 164.7005, Acc = 0.9955
+  Step 2280: Backbone Loss = 0.7728, Probe Loss = 163.0317, Acc = 0.9964
+  Step 2290: Backbone Loss = 0.7952, Probe Loss = 186.3079, Acc = 0.9950
+  Step 2300: Backbone Loss = 0.7645, Probe Loss = 177.3655, Acc = 0.9950
+  Step 2310: Backbone Loss = 0.7773, Probe Loss = 169.6731, Acc = 0.9945
+  Step 2320: Backbone Loss = 0.7863, Probe Loss = 175.8185, Acc = 0.9941
+  Step 2330: Backbone Loss = 0.7799, Probe Loss = 173.0716, Acc = 0.9948
+  Step 2340: Backbone Loss = 0.7977, Probe Loss = 164.2950, Acc = 0.9950
+  Step 2350: Backbone Loss = 0.7741, Probe Loss = 175.0843, Acc = 0.9960
+  Step 2360: Backbone Loss = 0.7625, Probe Loss = 158.5874, Acc = 0.9969
+  Step 2370: Backbone Loss = 0.7944, Probe Loss = 163.8403, Acc = 0.9950
+  Step 2380: Backbone Loss = 0.7615, Probe Loss = 158.4306, Acc = 0.9969
+  Step 2390: Backbone Loss = 0.7908, Probe Loss = 160.4621, Acc = 0.9969
+  Step 2400: Backbone Loss = 0.7672, Probe Loss = 169.1749, Acc = 0.9960
+  Step 2410: Backbone Loss = 0.7588, Probe Loss = 160.9148, Acc = 0.9931
+  Step 2420: Backbone Loss = 0.7914, Probe Loss = 166.1772, Acc = 0.9938
+  Step 2430: Backbone Loss = 0.7793, Probe Loss = 153.3865, Acc = 0.9964
+  Step 2440: Backbone Loss = 0.7809, Probe Loss = 161.3671, Acc = 0.9955
+  Step 2450: Backbone Loss = 0.7824, Probe Loss = 142.1298, Acc = 0.9936
+  Step 2460: Backbone Loss = 0.7604, Probe Loss = 149.8776, Acc = 0.9960
+  Step 2470: Backbone Loss = 0.7713, Probe Loss = 150.0700, Acc = 0.9962
+  Step 2480: Backbone Loss = 0.7804, Probe Loss = 142.7409, Acc = 0.9955
+  Step 2490: Backbone Loss = 0.7534, Probe Loss = 150.2942, Acc = 0.9972
+  Step 2500: Backbone Loss = 0.7646, Probe Loss = 139.9700, Acc = 0.9948
+  Step 2510: Backbone Loss = 0.7753, Probe Loss = 138.3434, Acc = 0.9957
+  Step 2520: Backbone Loss = 0.8015, Probe Loss = 132.5331, Acc = 0.9950
+  Step 2530: Backbone Loss = 0.7939, Probe Loss = 143.4873, Acc = 0.9950
+  Step 2540: Backbone Loss = 0.7987, Probe Loss = 142.4933, Acc = 0.9957
+  Step 2550: Backbone Loss = 0.8101, Probe Loss = 143.9898, Acc = 0.9953
+  Step 2560: Backbone Loss = 0.7928, Probe Loss = 155.4570, Acc = 0.9931
+  Step 2570: Backbone Loss = 0.8090, Probe Loss = 148.5956, Acc = 0.9938
+  Step 2580: Backbone Loss = 0.7801, Probe Loss = 144.7103, Acc = 0.9960
+  Step 2590: Backbone Loss = 0.7768, Probe Loss = 130.6476, Acc = 0.9948
+  Step 2600: Backbone Loss = 0.7739, Probe Loss = 140.7600, Acc = 0.9953
+  Step 2610: Backbone Loss = 0.7986, Probe Loss = 153.9942, Acc = 0.9950
+  Step 2620: Backbone Loss = 0.7839, Probe Loss = 140.6262, Acc = 0.9962
+  Step 2630: Backbone Loss = 0.7644, Probe Loss = 140.0748, Acc = 0.9945
+  Step 2640: Backbone Loss = 0.7859, Probe Loss = 136.1783, Acc = 0.9953
+  Step 2650: Backbone Loss = 0.7828, Probe Loss = 147.2471, Acc = 0.9964
+  Step 2660: Backbone Loss = 0.7990, Probe Loss = 126.5826, Acc = 0.9974
+  Step 2670: Backbone Loss = 0.7797, Probe Loss = 140.1930, Acc = 0.9962
+  Step 2680: Backbone Loss = 0.7820, Probe Loss = 137.3843, Acc = 0.9955
+  Step 2690: Backbone Loss = 0.8011, Probe Loss = 127.1113, Acc = 0.9953
+  Step 2700: Backbone Loss = 0.8006, Probe Loss = 136.6714, Acc = 0.9945
+  Step 2710: Backbone Loss = 0.7941, Probe Loss = 129.8601, Acc = 0.9960
+Traceback (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 216, in <module>
+    "probe_accuracy": acc,
+    ^^^^^^
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 179, in main
+    # Run train_step on all replicas
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 833, in __call__
+    result = self._call(*args, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 869, in _call
+    return tracing_compilation.call_function(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py", line 139, in call_function
+    return function._call_flat(  # pylint: disable=protected-access
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/concrete_function.py", line 1322, in _call_flat
+    return self._inference_function.call_preflattened(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py", line 216, in call_preflattened
+    flat_outputs = self.call_flat(*args)
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py", line 251, in call_flat
+    outputs = self._bound_context.call_function(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/context.py", line 1552, in call_function
+    outputs = execute.execute(
+              ^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/execute.py", line 53, in quick_execute
+    tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

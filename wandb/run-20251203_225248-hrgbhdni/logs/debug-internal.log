@@ -4,3 +4,8 @@
 {"time":"2025-12-03T22:52:48.887408-05:00","level":"INFO","msg":"stream: started","id":"hrgbhdni"}
 {"time":"2025-12-03T22:52:48.887412-05:00","level":"INFO","msg":"writer: started","stream_id":"hrgbhdni"}
 {"time":"2025-12-03T22:52:48.88742-05:00","level":"INFO","msg":"sender: started","stream_id":"hrgbhdni"}
+{"time":"2025-12-04T00:24:15.362822-05:00","level":"INFO","msg":"stream: closing","id":"hrgbhdni"}
+{"time":"2025-12-04T00:24:15.751097-05:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-12-04T00:24:16.003611-05:00","level":"INFO","msg":"handler: closed","stream_id":"hrgbhdni"}
+{"time":"2025-12-04T00:24:16.004073-05:00","level":"INFO","msg":"sender: closed","stream_id":"hrgbhdni"}
+{"time":"2025-12-04T00:24:16.004109-05:00","level":"INFO","msg":"stream: closed","id":"hrgbhdni"}

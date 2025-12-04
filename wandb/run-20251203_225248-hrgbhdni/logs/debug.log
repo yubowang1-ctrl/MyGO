@@ -19,3 +19,18 @@ config: {'image_height': 256, 'image_width': 236, 'num_channels': 2, 'patch_heig
 2025-12-03 22:52:49,518 INFO    MainThread:86114 [wandb_run.py:_redirect():2423] Wrapping output streams.
 2025-12-03 22:52:49,518 INFO    MainThread:86114 [wandb_run.py:_redirect():2446] Redirects installed.
 2025-12-03 22:52:49,519 INFO    MainThread:86114 [wandb_init.py:init():1073] run started, returning control to user process
+2025-12-04 00:24:15,360 INFO    wandb-AsyncioManager-main:86114 [service_client.py:_forward_responses():80] Reached EOF.
+2025-12-04 00:24:15,360 INFO    wandb-AsyncioManager-main:86114 [mailbox.py:close():137] Closing mailbox, abandoning 1 handles.
+2025-12-04 00:24:16,016 ERROR   wandb-AsyncioManager-main:86114 [asyncio_manager.py:fn_wrap_exceptions():183] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/wandb/sdk/lib/asyncio_manager.py", line 181, in fn_wrap_exceptions
+    await fn()
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/wandb/sdk/lib/service/service_client.py", line 38, in publish
+    await self._send_server_request(request)
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/wandb/sdk/lib/service/service_client.py", line 64, in _send_server_request
+    await self._writer.drain()
+  File "/Users/elly/anaconda3/lib/python3.12/asyncio/streams.py", line 392, in drain
+    await self._protocol._drain_helper()
+  File "/Users/elly/anaconda3/lib/python3.12/asyncio/streams.py", line 166, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost

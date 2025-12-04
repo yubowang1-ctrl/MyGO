@@ -63,6 +63,32 @@ with strategy.scope():
         checkpoint, directory="./checkpoints", max_to_keep=5
     )
 
+def balanced_acc(y_true, y_pred):
+    """
+    Computes balanced accuracy for multi-label classification.
+    y_true, y_pred: Tensors of shape (Batch, Num_Classes)
+    """
+    y_pred_binary = tf.cast(y_pred >= 0.5, tf.float32)
+    
+    true_positives = tf.reduce_sum(y_true * y_pred_binary, axis=0)
+    true_negatives = tf.reduce_sum((1 - y_true) * (1 - y_pred_binary), axis=0)
+    
+    positives = tf.reduce_sum(y_true, axis=0)
+    negatives = tf.reduce_sum(1 - y_true, axis=0)
+    
+    sensitivity = tf.where(positives > 0, true_positives / positives, 0.0)
+    specificity = tf.where(negatives > 0, true_negatives / negatives, 0.0)
+    
+    num_valid_positive_classes = tf.reduce_sum(tf.cast(positives > 0, tf.float32))
+    num_valid_negative_classes = tf.reduce_sum(tf.cast(negatives > 0, tf.float32))
+    
+    avg_sensitivity = tf.reduce_sum(sensitivity) / (num_valid_positive_classes + 1e-8)
+    avg_specificity = tf.reduce_sum(specificity) / (num_valid_negative_classes + 1e-8)
+    
+    balanced_accuracy = (avg_sensitivity + avg_specificity) / 2.0
+    
+    return balanced_accuracy
+
 # ============================================================================== 
 # 5. Training Step
 # ============================================================================== 
@@ -129,8 +155,7 @@ def train_step(inputs):
         
         # 8. Calculate Accuracy (Binary Accuracy for Multi-label)
         preds = tf.nn.sigmoid(probe_logits)
-        # binary_accuracy returns (batch_size,)
-        acc = tf.keras.metrics.binary_accuracy(batch_labels, preds)
+        acc = balanced_acc(batch_labels, preds)
         per_replica_acc = tf.reduce_mean(acc)
         scaled_acc = per_replica_acc / float(strategy.num_replicas_in_sync)
 
