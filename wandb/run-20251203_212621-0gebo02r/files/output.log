@@ -1,0 +1,90 @@
+
+Epoch 1/100
+Training Epoch 1/100: 0batch [00:00, ?batch/s]/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+Training Epoch 1/100: 0batch [00:30, ?batch/s]
+Traceback (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 205, in <module>
+    main()
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 168, in main
+    loss_backbone, loss_probe, acc = distributed_train_step(batch_inputs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/execute.py", line 59, in quick_execute
+    except TypeError as e:
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Graph execution error:
+
+Detected at node vi_t_1/loop_body/cond/range/pfor/TensorArrayV2Stack/TensorListStack defined at (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 205, in <module>
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 168, in main
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 144, in distributed_train_step
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 76, in train_step
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/layers/layer.py", line 910, in __call__
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/ops/operation.py", line 58, in __call__
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 229, in call
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 100, in mask_patches
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 92, in gen_maskid_patch
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/ops/parallel_for/pfor.py", line 4565, in f
+
+Detected at node vi_t_1/loop_body/cond/range/pfor/TensorArrayV2Stack/TensorListStack defined at (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 205, in <module>
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 168, in main
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 144, in distributed_train_step
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 76, in train_step
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/layers/layer.py", line 910, in __call__
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 117, in error_handler
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/ops/operation.py", line 58, in __call__
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 156, in error_handler
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 229, in call
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 100, in mask_patches
+
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 92, in gen_maskid_patch
+
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/ops/parallel_for/pfor.py", line 4565, in f
+
+2 root error(s) found.
+  (0) INVALID_ARGUMENT:  PartialTensorShape: Incompatible shapes during merge: [5] vs. [3]
+	 [[{{node vi_t_1/loop_body/cond/range/pfor/TensorArrayV2Stack/TensorListStack}}]]
+	 [[vi_t_1/loop_body/cond/pfor/DynamicStitch/_2870]]
+  (1) INVALID_ARGUMENT:  PartialTensorShape: Incompatible shapes during merge: [5] vs. [3]
+	 [[{{node vi_t_1/loop_body/cond/range/pfor/TensorArrayV2Stack/TensorListStack}}]]
+0 successful operations.
+0 derived errors ignored. [Op:__inference_distributed_train_step_132805]
+[0m

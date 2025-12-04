@@ -1,0 +1,37 @@
+{
+  "os": "macOS-15.7.2-arm64-arm-64bit",
+  "python": "CPython 3.12.7",
+  "startedAt": "2025-12-04T02:48:41.661198Z",
+  "program": "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py",
+  "codePath": "train.py",
+  "codePathLocal": "train.py",
+  "git": {
+    "remote": "https://github.com/yubowang1-ctrl/MyGo.git",
+    "commit": "9c8c3cf39468e98ea514236f52a05febe53bbd02"
+  },
+  "email": "sabrina_xm@me.com",
+  "root": "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo",
+  "host": "Eleanors-MacBook-Pro-11909.local",
+  "executable": "/Users/elly/anaconda3/bin/python",
+  "cpu_count": 14,
+  "cpu_count_logical": 14,
+  "disk": {
+    "/": {
+      "total": "1995218165760",
+      "used": "1649359273984"
+    }
+  },
+  "memory": {
+    "total": "38654705664"
+  },
+  "apple": {
+    "name": "Apple M3 Max",
+    "ecpuCores": 4,
+    "pcpuCores": 10,
+    "gpuCores": 30,
+    "memoryGb": 36,
+    "swapTotalBytes": "3221225472",
+    "ramTotalBytes": "38654705664"
+  },
+  "writerId": "4wqngwx6u3ibiq0tb1c2gbpzbl3j8edo"
+}

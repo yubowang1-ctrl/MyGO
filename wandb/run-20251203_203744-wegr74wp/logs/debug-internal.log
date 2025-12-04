@@ -1,0 +1,6 @@
+{"time":"2025-12-03T20:37:45.243776-05:00","level":"INFO","msg":"stream: starting","core version":"0.22.3"}
+{"time":"2025-12-03T20:37:45.441227-05:00","level":"INFO","msg":"stream: created new stream","id":"wegr74wp"}
+{"time":"2025-12-03T20:37:45.441296-05:00","level":"INFO","msg":"handler: started","stream_id":"wegr74wp"}
+{"time":"2025-12-03T20:37:45.441439-05:00","level":"INFO","msg":"writer: started","stream_id":"wegr74wp"}
+{"time":"2025-12-03T20:37:45.44144-05:00","level":"INFO","msg":"stream: started","id":"wegr74wp"}
+{"time":"2025-12-03T20:37:45.441661-05:00","level":"INFO","msg":"sender: started","stream_id":"wegr74wp"}

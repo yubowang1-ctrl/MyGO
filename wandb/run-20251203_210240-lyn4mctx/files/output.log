@@ -1,0 +1,38 @@
+
+Epoch 1/100
+Training Epoch 1/100:   0%|                                                                                                           | 0/2 [00:00<?, ?batch/s]/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+Training Epoch 1/100:   0%|                                                                                                           | 0/2 [00:07<?, ?batch/s]
+Traceback (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 201, in <module>
+    main()
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 164, in main
+    loss_backbone, loss_probe, acc = distributed_train_step(batch_inputs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/var/folders/pl/618nh0gd79d88nmvs5lpdjfw0000gq/T/__autograph_generated_filelx4jxob8.py", line 10, in tf__distributed_train_step
+    per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = ag__.converted_call(ag__.ld(strategy).run, (ag__.ld(train_step),), dict(args=(ag__.ld(dataset_inputs),)), fscope)
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/folders/pl/618nh0gd79d88nmvs5lpdjfw0000gq/T/__autograph_generated_file45xuw60g.py", line 28, in tf__train_step
+    batch_labels = ag__.ld(labels)[:, 0, :]
+                   ~~~~~~~~~~~~~~~^^^^^^^^^
+ValueError: in user code:
+
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 140, in distributed_train_step  *
+        per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = strategy.run(train_step, args=(dataset_inputs,))
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 99, in train_step  *
+        batch_labels = labels[:, 0, :] # (B, Num_Classes)
+
+    ValueError: Index out of range using input dim 2; input has only 2 dims for '{{node strided_slice_3}} = StridedSlice[Index=DT_INT32, T=DT_FLOAT, begin_mask=5, ellipsis_mask=0, end_mask=5, new_axis_mask=0, shrink_axis_mask=2](dataset_inputs_1, strided_slice_3/stack, strided_slice_3/stack_1, strided_slice_3/stack_2)' with input shapes: [2,4216], [3], [3], [3] and with computed input tensors: input[3] = <1 1 1>.
+[0m

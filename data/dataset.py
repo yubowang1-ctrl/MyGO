@@ -4,6 +4,46 @@ import numpy as np
 import os
 from models.transformer import mask_patches, mask_timeframe
 from constants import *
+import pandas as pd
+from tqdm import tqdm
+
+LABEL_MAP = {} # maps YTID to label vector
+CSV_LOADED = set() # to avoid re-loading CSVs multiple times
+LABEL_NAMES = [] # maps index to label name
+
+# ==============================================================================
+# 1. Setup label lookup table
+# ==============================================================================
+def load_audioset_label_map(segments_csv_path):
+    # every row of data in csv has
+    # # YTID, start_seconds, end_seconds, positive_labels
+    
+    # each label can be found in data/audioset/class_labels_indices.csv
+    df = pd.read_csv(segments_csv_path, quotechar='"', skipinitialspace=True, header=2, )
+    label_df = pd.read_csv("data/audioset/class_labels_indices.csv", quotechar='"', skipinitialspace=True, )
+    global LABEL_NAMES
+    LABEL_NAMES = label_df['display_name'].tolist()
+    # create a map from YTID to label (binary vector of length 527)
+    global LABEL_MAP
+    global CSV_LOADED
+    if segments_csv_path in CSV_LOADED: # if already loaded, do nothing
+        return 
+    for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Loading Audioset labels from {segments_csv_path}"):
+        yt_id = row['# YTID']
+        labels = row['positive_labels'].split(',')
+        label_vector = np.zeros((AUDIOSET_NUM_CLASSES,), dtype=np.float32)
+        
+        for label in labels:
+            label_index = label_df[label_df['mid'] == label]['index'].values
+            if len(label_index) > 0:
+                label_vector[label_index[0]] = 1.0
+        
+        LABEL_MAP[yt_id] = label_vector
+
+    CSV_LOADED.add(segments_csv_path)
+    return 
+
+
 
 # ==============================================================================
 # 2. Audio Loading (Python Function)
@@ -14,6 +54,10 @@ def python_load_m4a(file_path_tensor):
     stereo enforcement, and splits into 10s chunks.
     """
     file_path = file_path_tensor.numpy().decode('utf-8')
+    file_name = str(os.path.basename(file_path))
+    
+    # look up label
+    label_vec = LABEL_MAP[file_name.removesuffix('.m4a')]
     
     try:
         # Load with librosa (handles resampling automatically)
@@ -57,32 +101,34 @@ def python_load_m4a(file_path_tensor):
                     chunk = np.tile(chunk, (repeats, 1))[:SAMPLE_SAMPLES]
                 
                 chunks.append(chunk)
-            
-        return np.stack(chunks).astype(np.float32)
+        
+        n_samples = len(chunks)
+        return np.stack(chunks).astype(np.float32), np.tile(label_vec, (n_samples, 1)).astype(np.float32)
         
     except Exception as e:
         # Return 1 silent chunk on error
         print(f"Error loading {file_path}: {e}")
-        return np.zeros((1, SAMPLE_SAMPLES, 2), dtype=np.float32)
+        return np.zeros((1, SAMPLE_SAMPLES, 2), dtype=np.float32), np.zeros((1, AUDIOSET_NUM_CLASSES), dtype=np.float32)
 
 def load_audio_dataset(file_path):
     """
     Wraps the python function and returns a Dataset of chunks.
     """
-    [audio_chunks] = tf.py_function(
+    [audio_chunks, labels] = tf.py_function(
         func=python_load_m4a,
         inp=[file_path],
-        Tout=[tf.float32]
+        Tout=[tf.float32, tf.float32],
     )
     # Set shape: (None, SAMPLE_SAMPLES, 2)
     audio_chunks.set_shape([None, SAMPLE_SAMPLES, 2])
+    labels.set_shape([None, AUDIOSET_NUM_CLASSES])
     
-    return tf.data.Dataset.from_tensor_slices(audio_chunks)
+    return tf.data.Dataset.from_tensor_slices((audio_chunks, labels))
 
 # ==============================================================================
 # 3. Spectrogram Generation (TF Graph)
 # ==============================================================================
-def make_spectrogram(audio):
+def make_spectrogram(audio, label):
     """
     Convert waveform to Log-Mel Spectrogram and Normalize.
     Input: (Time, 2)
@@ -133,16 +179,16 @@ def make_spectrogram(audio):
         log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
         tf.print("Warning: Spectrogram shape mismatch, given", tf.shape(log_mel), "but defined in constants.py as", IMAGE_HEIGHT, "x", IMAGE_WIDTH, "x2. Reshaped accordingly.")
     
-    return log_mel
+    return log_mel, label
 
 # ==============================================================================
 # 4. View Generation (Augmentation)
 # ==============================================================================
-def generate_views(spectrogram):
+def generate_views(spectrogram, label):
     """
     Takes one full spectrogram and generates V views.
-    Input: (H, W, C)
-    Output: (V, H, W, C)
+    Input: (H, W, C), (NUM_CLASSES,)
+    Output: (V, H, W, C), (V, NUM_CLASSES)
     """
     views = []
     
@@ -163,8 +209,9 @@ def generate_views(spectrogram):
         # masked = random_mask(conved, num_masks=20, mask_size=30, fill_value=0.0) # mask handled at patch-level masking in transformer
         dropped = random_drop_channels(conved, prob=0.05)
         views.append(dropped)
-        
-    return tf.stack(views)
+    
+    label = tf.expand_dims(label, axis=0)  # (1, NUM_CLASSES)
+    return tf.stack(views), tf.tile(label, [NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS, 1]) # (V, NUM_CLASSES)
 
 def random_mask(spec, num_masks=1, mask_size=20, fill_value=0.0):
     """
@@ -332,48 +379,72 @@ def random_conv2d(spec, magnitude=0.5):
 # ==============================================================================
 # 5. Dataset Pipeline
 # ==============================================================================
-def get_dataset(data_dir, batch_size):
+def get_dataset(data_dir, csv_path, batch_size, dataset="audioset", training=True):
     """
     Creates the full training dataset pipeline.
+    
+    If training is False, no shuffling or augmentations are applied.
+    Args:
+        data_dir: Directory containing audio files.
+        csv_path: Path to the CSV file with labels.
+        batch_size: Batch size.
+        dataset: Dataset name (currently only "audioset" supported).
+        training: Whether in training mode (applies shuffling and augmentations).
+    Returns:
+        A tf.data.Dataset object.
     """
-    # 1. List files (Lazy)
-    file_pattern = str(data_dir) + "/*.m4a" 
-    ds = tf.data.Dataset.list_files(file_pattern, shuffle=True)
+    global LABEL_MAP
+    global CSV_LOADED
     
-    # 2. Load Audio
-    # Use interleave to flatten chunks from each file
-    ds = ds.interleave(
-        load_audio_dataset,
-        cycle_length=tf.data.AUTOTUNE,
-        num_parallel_calls=tf.data.AUTOTUNE,
-        deterministic=False
-    )
+    if dataset == "audioset":
+        load_audioset_label_map(csv_path)
+        # 1. List files (Lazy)
+        file_pattern = str(data_dir) + "/*.m4a" 
+        ds = tf.data.Dataset.list_files(file_pattern, shuffle=training)
+        
+        # 2. Load Audio
+        # Use interleave to flatten chunks from each file
+        ds = ds.interleave(
+            load_audio_dataset,
+            cycle_length=tf.data.AUTOTUNE,
+            num_parallel_calls=tf.data.AUTOTUNE,
+            deterministic=(not training)
+        )
+        
+        # 3. Convert to Spectrogram
+        ds = ds.map(make_spectrogram, num_parallel_calls=tf.data.AUTOTUNE)
+        
+        if training:
+            # 4. Generate Views
+            ds = ds.map(generate_views, num_parallel_calls=tf.data.AUTOTUNE)
+        else:
+            # During evaluation, just expand dims to have one view
+            def expand_view(spec, label):
+                spec = tf.expand_dims(spec, axis=0) # (1, H, W, C)
+                return spec, label
+            ds = ds.map(expand_view, num_parallel_calls=tf.data.AUTOTUNE)
+        # 5. Batch and Prefetch
+        ds = ds.batch(batch_size, drop_remainder=True)
+        ds = ds.prefetch(tf.data.AUTOTUNE)
+        
+        return ds
     
-    # 3. Convert to Spectrogram
-    ds = ds.map(make_spectrogram, num_parallel_calls=tf.data.AUTOTUNE)
-    
-    # 4. Generate Views
-    ds = ds.map(generate_views, num_parallel_calls=tf.data.AUTOTUNE)
-    
-    # 5. Batch and Prefetch
-    ds = ds.batch(batch_size, drop_remainder=True)
-    ds = ds.prefetch(tf.data.AUTOTUNE)
-    
-    return ds
+    else:
+        raise ValueError(f"Unsupported dataset: {dataset}")
 
-def visualize_sample(data_dir):
+def visualize_sample(data_dir, csv_path):
     """
     Takes one sample from the dataset and plots the generated spectrograms (views).
     """
     import matplotlib.pyplot as plt
     
     # Create a small dataset with batch_size=1
-    ds = get_dataset(data_dir, batch_size=1)
+    ds = get_dataset(data_dir, csv_path, batch_size=1)
     
     # Take 1 batch
-    for batch in ds.take(1):
+    for batch, label in ds.take(1):
         # batch shape: (1, TOTAL_VIEWS, H, W, C)
-        # preview patch masking 
+        # Preview patch masking 
         # 1. Split into patches
         batch = tf.reshape(batch, [-1, IMAGE_HEIGHT, IMAGE_WIDTH, NUM_CHANNELS]) # (B*V, H, W, C)
         patches = tf.image.extract_patches(
@@ -423,12 +494,18 @@ def visualize_sample(data_dir):
                 out += padded_patch
         out = tf.reshape(out, [-1, CONFIG.V, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels])
         batch = out     
+        
+        # Take exactly one sample
         views = batch[0] # (TOTAL_VIEWS, H, W, C)
+        label_vec = label[0] # (TOTAL_VIEWS, AUDIOSET_NUM_CLASSES)
+        label_vec = label_vec[0] # (AUDIOSET_NUM_CLASSES,)
+        label_names = [LABEL_NAMES[i] for i in range(AUDIOSET_NUM_CLASSES) if label_vec[i] == 1.0]
         num_views = views.shape[0]
         
         # Plot
         # Increased figure width to accommodate stereo views
         fig, axes = plt.subplots(4, (num_views + 1) // 4, figsize=(8, 8/IMAGE_HEIGHT*IMAGE_WIDTH))
+        fig.suptitle(f"Generated Views (Labels: {', '.join(label_names)})", fontsize=12)
         axes = axes.flatten()
         
         for i in range(num_views):
@@ -455,4 +532,5 @@ def visualize_sample(data_dir):
         plt.show()
         break
 
-visualize_sample("/Users/elly/Desktop/T7/test")
+# visualize_sample("/Users/elly/Desktop/T7/test", )
+visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")

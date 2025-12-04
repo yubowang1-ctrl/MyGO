@@ -1,0 +1,21 @@
+2025-12-03 20:37:44,981 INFO    MainThread:3090 [wandb_setup.py:_flush():81] Current SDK version is 0.22.3
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_setup.py:_flush():81] Configure stats pid to 3090
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_setup.py:_flush():81] Loading settings from /Users/elly/.config/wandb/settings
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_setup.py:_flush():81] Loading settings from /Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/wandb/settings
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_init.py:setup_run_log_directory():706] Logging user logs to /Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/wandb/run-20251203_203744-wegr74wp/logs/debug.log
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_init.py:setup_run_log_directory():707] Logging internal logs to /Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/wandb/run-20251203_203744-wegr74wp/logs/debug-internal.log
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_init.py:init():833] calling init triggers
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_init.py:init():838] wandb.init called with sweep_config: {}
+config: {'image_height': 256, 'image_width': 236, 'num_channels': 2, 'patch_height': 16, 'patch_width': 16, 'patch_overlap': 6, 'num_layers': 12, 'hidden_dim': 192, 'mlp_dim': 768, 'num_heads': 3, 'dropout_rate': 0.1, 'attention_dropout_rate': 0.1, 'G': 2, 'V': 8, '_wandb': {}}
+2025-12-03 20:37:44,982 INFO    MainThread:3090 [wandb_init.py:init():881] starting backend
+2025-12-03 20:37:45,213 INFO    MainThread:3090 [wandb_init.py:init():884] sending inform_init request
+2025-12-03 20:37:45,240 INFO    MainThread:3090 [wandb_init.py:init():892] backend started and connected
+2025-12-03 20:37:45,244 INFO    MainThread:3090 [wandb_init.py:init():962] updated telemetry
+2025-12-03 20:37:45,274 INFO    MainThread:3090 [wandb_init.py:init():986] communicating run to backend with 90.0 second timeout
+2025-12-03 20:37:45,851 INFO    MainThread:3090 [wandb_init.py:init():1033] starting run threads in backend
+2025-12-03 20:37:46,210 INFO    MainThread:3090 [wandb_run.py:_console_start():2506] atexit reg
+2025-12-03 20:37:46,211 INFO    MainThread:3090 [wandb_run.py:_redirect():2354] redirect: wrap_raw
+2025-12-03 20:37:46,211 INFO    MainThread:3090 [wandb_run.py:_redirect():2423] Wrapping output streams.
+2025-12-03 20:37:46,211 INFO    MainThread:3090 [wandb_run.py:_redirect():2446] Redirects installed.
+2025-12-03 20:37:46,213 INFO    MainThread:3090 [wandb_init.py:init():1073] run started, returning control to user process

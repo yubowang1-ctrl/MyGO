@@ -1,0 +1,60 @@
+
+Epoch 1/100
+Training Epoch 1/100: 0batch [00:00, ?batch/s]/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+  Step 0: Backbone Loss = 5.3890, Probe Loss = 400.7738, Acc = 0.4649
+Training Epoch 1/100: 163batch [02:15,  1.20batch/s]
+  Step 10: Backbone Loss = 1.7974, Probe Loss = 382.7581, Acc = 0.5123
+  Step 20: Backbone Loss = 1.3579, Probe Loss = 370.5184, Acc = 0.5474
+  Step 30: Backbone Loss = 1.5545, Probe Loss = 375.0436, Acc = 0.5474
+  Step 40: Backbone Loss = 1.2939, Probe Loss = 373.4995, Acc = 0.5285
+  Step 50: Backbone Loss = 1.2898, Probe Loss = 373.8325, Acc = 0.5266
+  Step 60: Backbone Loss = 1.4544, Probe Loss = 377.5141, Acc = 0.5304
+  Step 70: Backbone Loss = 1.2724, Probe Loss = 383.7894, Acc = 0.4981
+  Step 80: Backbone Loss = 1.2310, Probe Loss = 379.0119, Acc = 0.5161
+  Step 90: Backbone Loss = 1.2154, Probe Loss = 385.8743, Acc = 0.5019
+  Step 100: Backbone Loss = 1.2022, Probe Loss = 375.6075, Acc = 0.5123
+  Step 110: Backbone Loss = 1.1352, Probe Loss = 383.9713, Acc = 0.4753
+  Step 120: Backbone Loss = 1.3395, Probe Loss = 380.9781, Acc = 0.4953
+  Step 130: Backbone Loss = 1.1559, Probe Loss = 366.6497, Acc = 0.5569
+  Step 140: Backbone Loss = 1.1581, Probe Loss = 377.2093, Acc = 0.5285
+  Step 150: Backbone Loss = 1.3519, Probe Loss = 395.0572, Acc = 0.4744
+  Step 160: Backbone Loss = 1.4262, Probe Loss = 380.0366, Acc = 0.4972
+Traceback (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 205, in <module>
+    main()
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 168, in main
+    loss_backbone, loss_probe, acc = distributed_train_step(batch_inputs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 833, in __call__
+    result = self._call(*args, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 869, in _call
+    return tracing_compilation.call_function(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py", line 139, in call_function
+    return function._call_flat(  # pylint: disable=protected-access
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/concrete_function.py", line 1322, in _call_flat
+    return self._inference_function.call_preflattened(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py", line 216, in call_preflattened
+    flat_outputs = self.call_flat(*args)
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py", line 251, in call_flat
+    outputs = self._bound_context.call_function(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/context.py", line 1552, in call_function
+    outputs = execute.execute(
+              ^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/eager/execute.py", line 53, in quick_execute
+    tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

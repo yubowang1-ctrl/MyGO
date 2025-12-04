@@ -1,3 +1,4 @@
+import sys
 import tensorflow as tf
 import math
 
@@ -72,7 +73,7 @@ class EppsPulley(tf.keras.layers.Layer):
         # Mean across batch (axis 0) -> (K, n_points)
         cos_mean = tf.reduce_mean(cos_vals, axis=0)
         sin_mean = tf.reduce_mean(sin_vals, axis=0)
-        
+
         # --- Distributed Step ---
         # If running on multiple GPUs, average these means across all GPUs
         cos_mean = all_reduce(cos_mean, op="MEAN")
@@ -103,7 +104,7 @@ class SIGReg(tf.keras.losses.Loss):
         super().__init__(name=name, **kwargs)
         self.epps_pulley = EppsPulley()
 
-    def call(self, x, global_step, num_slices=256):
+    def call(self, x, global_step, num_slices=512):
         """
         Args:
             x: Input tensor of shape (Batch, D)
@@ -123,9 +124,8 @@ class SIGReg(tf.keras.losses.Loss):
         
         # Generate random projection matrix A: (D, num_slices)
         # We use stateless_normal to ensure determinism with the seed
-        A = tf.random.stateless_normal(
+        A = tf.random.normal(
             shape=[D, num_slices], 
-            seed=[seed, 0],
             dtype=tf.float32
         )
         
@@ -146,16 +146,20 @@ class SIGReg(tf.keras.losses.Loss):
     
     
 class LeJEPA(tf.keras.losses.Loss):
-    def __init__(self, G, V, name="LeJEPA", **kwargs):
+    def __init__(self, G, V, lambd=0.05, name="LeJEPA", **kwargs):
         super().__init__(name=name, **kwargs)
         self.V = V # number of views for each sample
         self.G = G # number of global views for each sample
+        self.lambd = lambd
         self.sigreg = SIGReg()
     
-    def call(self, global_emb, all_emb, lambd):
+    def call(self, global_emb, all_emb, step=None):
+        # tf.print("DEBUG: Shapes of global_emb and all_emb", tf.shape(global_emb), tf.shape(all_emb), output_stream=sys.stdout)
         # global_emb has shape (B*G, D) where B is batch size
         # all_emb has shape (B*V, D) 
-        sigreg_loss = self.sigreg(all_emb, tf.cast(tf.compat.v1.train.get_or_create_global_step(), tf.int32))
+        if step is None:
+            step = 0
+        sigreg_loss = self.sigreg(all_emb, step)
         
         global_emb = tf.reshape(global_emb, [-1, self.G, tf.shape(global_emb)[-1]])  # (B, G, D)
         all_emb = tf.reshape(all_emb, [-1, self.V, tf.shape(all_emb)[-1]])          # (B, V, D)
@@ -164,4 +168,4 @@ class LeJEPA(tf.keras.losses.Loss):
         diff = all_emb - global_centers  # (B, V, D)
         inv_loss = tf.reduce_mean(tf.square(diff))  # (scalar)
         
-        return inv_loss * (1 - lambd) + sigreg_loss * lambd
+        return inv_loss * (1 - self.lambd) + sigreg_loss * self.lambd

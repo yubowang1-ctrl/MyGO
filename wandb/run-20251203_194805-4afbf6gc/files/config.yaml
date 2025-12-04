@@ -1,0 +1,86 @@
+_wandb:
+    value:
+        cli_version: 0.22.3
+        e:
+            2bfnixg0e646q31n419ajda7nmsbxvfi:
+                apple:
+                    ecpuCores: 4
+                    gpuCores: 30
+                    memoryGb: 36
+                    name: Apple M3 Max
+                    pcpuCores: 10
+                    ramTotalBytes: "38654705664"
+                    swapTotalBytes: "4294967296"
+                codePath: train.py
+                codePathLocal: train.py
+                cpu_count: 14
+                cpu_count_logical: 14
+                disk:
+                    /:
+                        total: "1995218165760"
+                        used: "1653318037504"
+                email: sabrina_xm@me.com
+                executable: /Users/elly/anaconda3/bin/python
+                git:
+                    commit: 9c8c3cf39468e98ea514236f52a05febe53bbd02
+                    remote: https://github.com/yubowang1-ctrl/MyGo.git
+                host: Eleanors-MacBook-Pro-11711.local
+                memory:
+                    total: "38654705664"
+                os: macOS-15.7.2-arm64-arm-64bit
+                program: /Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py
+                python: CPython 3.12.7
+                root: /Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo
+                startedAt: "2025-12-04T00:48:05.518767Z"
+                writerId: 2bfnixg0e646q31n419ajda7nmsbxvfi
+        m: []
+        python_version: 3.12.7
+        t:
+            "1":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+                - 105
+            "2":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+                - 105
+            "3":
+                - 16
+            "4": 3.12.7
+            "5": 0.22.3
+            "12": 0.22.3
+            "13": darwin-arm64
+G:
+    value: 2
+V:
+    value: 8
+attention_dropout_rate:
+    value: 0.1
+dropout_rate:
+    value: 0.1
+hidden_dim:
+    value: 192
+image_height:
+    value: 256
+image_width:
+    value: 236
+mlp_dim:
+    value: 768
+num_channels:
+    value: 2
+num_heads:
+    value: 3
+num_layers:
+    value: 12
+patch_height:
+    value: 16
+patch_overlap:
+    value: 6
+patch_width:
+    value: 16

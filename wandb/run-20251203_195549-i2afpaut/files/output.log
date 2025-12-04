@@ -1,0 +1,38 @@
+
+Epoch 1/100
+/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+Traceback (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 206, in <module>
+    if __name__ == "__main__":
+        ^^^^^^
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 169, in main
+    for step, batch_inputs in enumerate(dist_dataset):
+                                         ^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/var/folders/pl/618nh0gd79d88nmvs5lpdjfw0000gq/T/__autograph_generated_file6l_4_n8x.py", line 10, in tf__distributed_train_step
+    per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = ag__.converted_call(ag__.ld(strategy).run, (ag__.ld(train_step),), dict(args=(ag__.ld(dataset_inputs),)), fscope)
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/folders/pl/618nh0gd79d88nmvs5lpdjfw0000gq/T/__autograph_generated_fileg6574kyr.py", line 27, in tf__train_step
+    per_replica_loss_backbone = ag__.converted_call(ag__.ld(loss_fn), (ag__.ld(global_emb), ag__.ld(all_emb)), dict(lambd=ag__.ld(LAMBDA_SIGREG)), fscope)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: in user code:
+
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 145, in distributed_train_step  *
+        per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = strategy.run(train_step, args=(dataset_inputs,))
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 94, in train_step  *
+        per_replica_loss_backbone = loss_fn(global_emb, all_emb, lambd=LAMBDA_SIGREG)
+
+    TypeError: Loss.__call__() got an unexpected keyword argument 'lambd'
+[0m

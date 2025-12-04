@@ -1,0 +1,54 @@
+
+Epoch 1/100
+Training Epoch 1/100:   0%|                                                                                                           | 0/2 [00:00<?, ?batch/s]/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/data/dataset.py:65: UserWarning: PySoundFile failed. Trying audioread instead.
+  audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+/Users/elly/anaconda3/lib/python3.12/site-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+Training Epoch 1/100:   0%|                                                                                                           | 0/2 [00:08<?, ?batch/s]
+Traceback (most recent call last):
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 202, in <module>
+    main()
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 165, in main
+    loss_backbone, loss_probe, acc = distributed_train_step(batch_inputs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/var/folders/pl/618nh0gd79d88nmvs5lpdjfw0000gq/T/__autograph_generated_filexc32ffeb.py", line 10, in tf__distributed_train_step
+    per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = ag__.converted_call(ag__.ld(strategy).run, (ag__.ld(train_step),), dict(args=(ag__.ld(dataset_inputs),)), fscope)
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/folders/pl/618nh0gd79d88nmvs5lpdjfw0000gq/T/__autograph_generated_fileuow4sdi7.py", line 21, in tf__train_step
+    outputs = ag__.converted_call(ag__.ld(model), (ag__.ld(flat_inputs),), dict(training=True), fscope)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 124, in error_handler
+    del filtered_tb
+        ^^^^^^^^^^^
+  File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 226, in call
+    x = tf.reshape(x, [-1, V, tf.shape(x)[1], tf.shape(x)[2]])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: in user code:
+
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 141, in distributed_train_step  *
+        per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = strategy.run(train_step, args=(dataset_inputs,))
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/train.py", line 73, in train_step  *
+        outputs = model(flat_inputs, training=True)
+    File "/Users/elly/anaconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 122, in error_handler  **
+        raise e.with_traceback(filtered_tb) from None
+    File "/Users/elly/Desktop/Brown/Y3S1/CS1470/MyGo/models/transformer.py", line 226, in call
+        x = tf.reshape(x, [-1, V, tf.shape(x)[1], tf.shape(x)[2]])
+
+    ValueError: Exception encountered when calling ViT.call().
+
+    [1mDimension size must be evenly divisible by 28311552 but is 1769472 for '{{node vi_t_1/Reshape_2}} = Reshape[T=DT_FLOAT, Tshape=DT_INT32](vi_t_1/transformer_block_11_1/mlp_block_11_1/layer_normalization_23_1/add_2, vi_t_1/Reshape_2/shape)' with input shapes: [16,576,192], [4] and with input tensors computed as partial shapes: input[1] = [?,256,576,192].[0m
+
+    Arguments received by ViT.call():
+      • x=tf.Tensor(shape=(16, 256, 236, 2), dtype=float32)
+      • training=True
+[0m

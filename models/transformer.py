@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 from constants import ViTConfig
 
-def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mask=100, cluster_size=3):
+def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mask=200, cluster_size=3):
     """Generates random mask indices for patches.
     Args:
         batch_size: Number of samples in the batch
@@ -20,67 +20,78 @@ def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mas
     num_row_patches = tf.cast(num_row_patches, tf.int32)
     seq_len = num_col_patches * num_row_patches
     
-    # We will generate masks for each sample in parallel using tf.map_fn or vectorized ops
-    # But generating complex clusters is hard to vectorize perfectly.
-    # A simpler approach for TF graph is to generate random centers and expand them.
+    # Attempt 5: Fully vectorized implementation without map_fn or loops.
+    # This is the most robust way to avoid Metal backend control flow bugs.
     
-    def generate_single_mask(batch_idx):
-        
-        if batch_idx % V < G:
-            # Global view: No masking
-            return tf.zeros([seq_len], dtype=tf.bool)
-        
-        this_cluster_size = tf.cast(cluster_size, tf.int32)
-        this_cluster_size += tf.random.uniform([], minval=-1, maxval=3, dtype=tf.int32)  # add some randomness to cluster size
-        # Start with all False
-        mask = tf.zeros([seq_len], dtype=tf.bool)
-        
-        # We need to loop until we have enough masked patches
-        # Since we can't easily do a "while" loop with dynamic updates in a simple way,
-        # we'll generate a fixed number of clusters that is likely to cover enough area.
-        
-        # Generate K random centers, where K is roughly num_mask / (this_cluster_size^2)
-        # This is an approximation but much faster on GPU.
-        
-        # Estimate number of clusters needed
-        est_clusters = tf.cast(tf.math.ceil(tf.cast(num_mask, tf.float32) / (float(this_cluster_size)**2)), tf.int32)
-        # Add some buffer
-        est_clusters = est_clusters + 2
-        
-        # Random centers
-        center_indices = tf.random.uniform([est_clusters], minval=0, maxval=seq_len, dtype=tf.int32)
-        
-        # Expand centers to clusters
-        # Create offsets
-        offsets = []
-        for i in range(this_cluster_size):
-            for j in range(this_cluster_size):
-                offsets.append(i * num_col_patches + j)
-        offsets = tf.stack(offsets) # (this_cluster_size^2,)
-        
-        # Broadcast add: (est_clusters, 1) + (1, this_cluster_size^2) -> (est_clusters, this_cluster_size^2)
-        cluster_indices = tf.expand_dims(center_indices, -1) + tf.expand_dims(offsets, 0)
-        cluster_indices = tf.reshape(cluster_indices, [-1])
-        
-        # Clip to valid range
-        valid_indices = tf.boolean_mask(cluster_indices, cluster_indices < seq_len)
-        
-        # Scatter True to these indices
-        # We use tensor_scatter_nd_update
-        indices = tf.expand_dims(valid_indices, -1)
-        updates = tf.ones_like(valid_indices, dtype=tf.bool)
-        mask = tf.tensor_scatter_nd_update(mask, indices, updates)
-        
-        return mask
-
-    # Apply to batch
-    # Use map_fn to apply to each element in batch
-    # dummy = tf.fill([batch_size], [cluster_size])
-    # generate batch idx 
-    batch_idx = tf.range(batch_size)
-    # dummy = tf.stack([dummy, batch_idx], axis=1)  # shape (batch_size, 2)
-    dummy = batch_idx  # shape (batch_size,)
-    batch_mask = tf.map_fn(generate_single_mask, dummy, fn_output_signature=tf.bool)
+    # 1. Determine which samples are global vs local
+    batch_indices = tf.range(batch_size)
+    is_local = (batch_indices % V) >= G # (batch_size,) boolean
+    
+    # 2. Generate masks for ALL samples assuming they are local
+    # We simplify the cluster generation to be vectorizable: fixed cluster size for the whole batch
+    # or we just generate random centers and scatter.
+    
+    # To keep it simple and vectorizable:
+    # We generate random centers for the whole batch at once.
+    # We assume a fixed cluster size for vectorization simplicity (or max size).
+    
+    # Number of clusters per sample
+    est_clusters = tf.cast(tf.math.ceil(tf.cast(num_mask, tf.float32) / (float(cluster_size)**2)), tf.int32) + 2
+    
+    # Generate centers for all samples: (batch_size, est_clusters)
+    center_indices = tf.random.uniform([batch_size, est_clusters], minval=0, maxval=seq_len, dtype=tf.int32)
+    
+    # Create offsets for a single cluster
+    range_vec = tf.range(cluster_size)
+    grid_i, grid_j = tf.meshgrid(range_vec, range_vec)
+    grid_i = tf.reshape(grid_i, [-1])
+    grid_j = tf.reshape(grid_j, [-1])
+    offsets = grid_i * num_col_patches + grid_j # (cluster_size^2,)
+    
+    # Broadcast add to get all patch indices for all clusters
+    # center_indices: (B, K) -> (B, K, 1)
+    # offsets: (M,) -> (1, 1, M)
+    # Result: (B, K, M)
+    cluster_indices = tf.expand_dims(center_indices, -1) + tf.reshape(offsets, [1, 1, -1])
+    cluster_indices = tf.reshape(cluster_indices, [batch_size, -1]) # (B, K*M)
+    
+    # Handle out of bounds
+    # We can't easily use boolean_mask on a batch with different number of valid indices per sample.
+    # Instead, we clip to a safe value (e.g. 0) and use a separate mask or just let it overwrite index 0.
+    # Better: Replace invalid indices with a dummy index (e.g. 0) and then set index 0 to False later if needed,
+    # or just ignore since overwriting 0 multiple times is fine (it's a boolean mask).
+    # But we don't want to mask index 0 if it wasn't selected.
+    # So we use a dummy index = seq_len (which is out of bounds for the update, so it will be ignored by scatter_nd if we handle it right,
+    # but tensor_scatter_nd_update doesn't support out of bound indices nicely).
+    # Actually, tensor_scatter_nd_update updates specific indices.
+    
+    # Let's use scatter_nd.
+    # Indices must be (Num_Updates, 2) where 2 is (batch_idx, seq_idx)
+    
+    B_grid = tf.expand_dims(tf.range(batch_size), -1) # (B, 1)
+    B_grid = tf.tile(B_grid, [1, tf.shape(cluster_indices)[1]]) # (B, K*M)
+    
+    flat_batch_indices = tf.reshape(B_grid, [-1])
+    flat_seq_indices = tf.reshape(cluster_indices, [-1])
+    
+    # Filter valid indices
+    valid_mask = (flat_seq_indices >= 0) & (flat_seq_indices < seq_len)
+    
+    valid_batch_indices = tf.boolean_mask(flat_batch_indices, valid_mask)
+    valid_seq_indices = tf.boolean_mask(flat_seq_indices, valid_mask)
+    
+    scatter_indices = tf.stack([valid_batch_indices, valid_seq_indices], axis=1) # (N_valid, 2)
+    updates = tf.ones([tf.shape(scatter_indices)[0]], dtype=tf.bool)
+    
+    # Start with all False
+    batch_mask_local = tf.scatter_nd(scatter_indices, updates, [batch_size, seq_len])
+    
+    # 3. Combine Global (all False) and Local masks
+    # Global samples should be all False.
+    # We can just multiply the generated mask by is_local
+    
+    is_local_expanded = tf.expand_dims(is_local, -1) # (B, 1)
+    batch_mask = batch_mask_local & is_local_expanded
     
     return batch_mask
 
@@ -107,35 +118,36 @@ def mask_timeframe(batch_size, num_row_patches, num_col_patches, G, V, ratio=0.5
     # Use tf.cast for float calculation then back to int
     num_unmask = tf.cast(tf.cast(num_time_frames, tf.float32) * (1.0 - ratio), tf.int32)
     
-    def create_sample_mask(i):
-        # Determine if this is a local view
-        # i is the index in the batch
-        is_local = (i % V) >= G
-        if is_local:
-            # Create mask: False for unmasked region, True for masked
-            # Initialize with all True (Masked)
-            mask_row = tf.ones([num_time_frames], dtype=tf.bool)
-            
-            # Random start for unmasked region
-            max_start = num_time_frames - num_unmask
-            start_frame = tf.random.uniform([], minval=0, maxval=max_start + 1, dtype=tf.int32)
-            
-            # Create indices to unmask
-            indices = tf.range(start_frame, start_frame + num_unmask)
-            indices = tf.expand_dims(indices, -1)
-            
-            # Set False (Unmasked) at these indices
-            updates = tf.zeros([tf.shape(indices)[0]], dtype=tf.bool)
-            mask_row = tf.tensor_scatter_nd_update(mask_row, indices, updates)
-            return mask_row
-        else:
-            # Global view: No masking (all False)
-            return tf.zeros([num_time_frames], dtype=tf.bool)
-
-    # Generate for all samples in batch
-    # tf.range(batch_size) gives us the indices [0, 1, ... B-1]
+    # 1. Determine which samples are global vs local
     batch_indices = tf.range(batch_size)
-    mask_time_frames = tf.map_fn(create_sample_mask, batch_indices, fn_output_signature=tf.bool)
+    is_local = (batch_indices % V) >= G # (batch_size,) boolean
+    
+    # 2. Generate masks for ALL samples assuming they are local
+    # We want to mask everything EXCEPT a window of size num_unmask
+    # So we start with all True (Masked) and set a window to False (Unmasked)
+    
+    max_start = num_time_frames - num_unmask
+    # Generate random start for each sample in batch
+    start_frames = tf.random.uniform([batch_size], minval=0, maxval=max_start + 1, dtype=tf.int32) # (B,)
+    
+    # Create a grid of column indices: (1, num_time_frames)
+    col_indices = tf.range(num_time_frames)
+    col_indices = tf.expand_dims(col_indices, 0) # (1, T)
+    
+    # Expand start_frames: (B, 1)
+    start_frames_expanded = tf.expand_dims(start_frames, -1)
+    
+    # Check if index is within [start, start + num_unmask)
+    # These are the UNMASKED indices.
+    is_unmasked = (col_indices >= start_frames_expanded) & (col_indices < (start_frames_expanded + num_unmask))
+    
+    # The mask is the inverse: True where masked
+    mask_time_frames_local = tf.logical_not(is_unmasked) # (B, T)
+    
+    # 3. Combine Global (all False) and Local masks
+    # Global samples should be all False (no masking).
+    is_local_expanded = tf.expand_dims(is_local, -1) # (B, 1)
+    mask_time_frames = mask_time_frames_local & is_local_expanded
     
     # Expand to patch level
     # mask_time_frames: (batch_size, num_col_patches)
@@ -170,11 +182,15 @@ class ViT(tf.keras.layers.Layer):
         assert (self.config.image_height - po) % (ph - po) == 0, "Image height not compatible with patch height and overlap"
         assert (self.config.image_width - po) % (pw - po) == 0, "Image width not compatible with patch width and overlap"   
         assert po < ph and po < pw, "Patch overlap must be smaller than patch dimensions"
-        assert self.config.G > 0 and self.config.V > 0 and self.config.G < self.config.V, "Number of global views G must be positive and less than total views V"
+        assert self.config.G > 0 and self.config.V > 0 and self.config.G <= self.config.V, "Number of global views G must be positive and less than total views V"
         
     def call(self, x, training):
         # x shape: (batch_size, view_number, image_height, image_width, num_channels)
         V = tf.shape(x)[1]  # number of views
+        if not training:
+            V = 1  # during inference, only process one view at a time
+            G = 1
+            tf.debugging.assert_equal(tf.shape(x)[1], 1, "During inference, input must have exactly one view.")
         x = tf.reshape(x, [-1, self.config.image_height, self.config.image_width, self.config.num_channels])
         
         # Now, cut into patches
@@ -247,7 +263,7 @@ class SelfAttention(tf.keras.layers.Layer):
         self.layernorm = tf.keras.layers.LayerNormalization(epsilon=1e-6)
 
     def call(self, x, training):
-        attn_output = self.mha(x, x) # multihead self-attention
+        attn_output = self.mha(x, training=training) # multihead self-attention
         attn_output = self.dropout(attn_output, training=training) # set random embeddings to 0
         out = self.layernorm(x + attn_output) # residual connection, then layernorm
         return out
@@ -335,8 +351,10 @@ class SingleHeadAttention(tf.keras.layers.Layer):
         relative_position_bias = tf.repeat(relative_position_bias, repeats=self.num_patch_per_col, axis=1)
         # Now shape is (seq_len - 1, seq_len - 1), need to add in class token bias table
         # Add class token bias to first row and first column
+        # Expand dims of cls_token_bias_table[1:] to (1, N) to match relative_position_bias (N, N)
+        cls_row = tf.expand_dims(self.cls_token_bias_table[1:], 0)
         relative_time_bias = tf.concat(
-            [self.cls_token_bias_table[:,None], tf.concat([self.cls_token_bias_table[1:], relative_position_bias], axis=0)],
+            [self.cls_token_bias_table[:,None], tf.concat([cls_row, relative_position_bias], axis=0)],
             axis=1
         ) # (seq_len, seq_len)
         

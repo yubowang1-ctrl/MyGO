@@ -39,21 +39,24 @@ NUM_LOCAL_VIEWS = 6
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
 
 # Distributed Training Config
-GLOBAL_BATCH_SIZE = 64  # Total batch size across all GPUs
-LEARNING_RATE = 1e-4
-NUM_EPOCHS = 100
+GLOBAL_BATCH_SIZE = 8  # Total batch size across all GPUs
+BASE_LEARNING_RATE = 5e-3
+NUM_EPOCHS = 400
 LOG_EVERY_STEPS = 10
 
 # Data Config
+DATA_DIR = "downloads/audioset/balanced_train_segments"
+CSV_PATH = "data/audioset/balanced_train_segments.csv"
 IMAGE_HEIGHT = 256
 IMAGE_WIDTH = 236
 NUM_CHANNELS = 2
+AUDIOSET_NUM_CLASSES = 527
 
 # LeJEPA Config
 NUM_GLOBAL_VIEWS = 2    # G
 NUM_LOCAL_VIEWS = 6     # Local views
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
-LAMBDA_SIGREG = 0.5
+LAMBDA_SIGREG = 0.05
 
     
 # Tiny ViT with 16x16 patches, ~5M parameters

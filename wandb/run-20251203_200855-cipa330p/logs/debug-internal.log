@@ -1,0 +1,11 @@
+{"time":"2025-12-03T20:08:55.567267-05:00","level":"INFO","msg":"stream: starting","core version":"0.22.3"}
+{"time":"2025-12-03T20:08:55.756964-05:00","level":"INFO","msg":"stream: created new stream","id":"cipa330p"}
+{"time":"2025-12-03T20:08:55.757024-05:00","level":"INFO","msg":"handler: started","stream_id":"cipa330p"}
+{"time":"2025-12-03T20:08:55.757205-05:00","level":"INFO","msg":"stream: started","id":"cipa330p"}
+{"time":"2025-12-03T20:08:55.757206-05:00","level":"INFO","msg":"writer: started","stream_id":"cipa330p"}
+{"time":"2025-12-03T20:08:55.757217-05:00","level":"INFO","msg":"sender: started","stream_id":"cipa330p"}
+{"time":"2025-12-03T20:09:06.921207-05:00","level":"INFO","msg":"stream: closing","id":"cipa330p"}
+{"time":"2025-12-03T20:09:07.228741-05:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-12-03T20:09:07.515614-05:00","level":"INFO","msg":"handler: closed","stream_id":"cipa330p"}
+{"time":"2025-12-03T20:09:07.516092-05:00","level":"INFO","msg":"sender: closed","stream_id":"cipa330p"}
+{"time":"2025-12-03T20:09:07.516147-05:00","level":"INFO","msg":"stream: closed","id":"cipa330p"}
