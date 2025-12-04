@@ -179,3 +179,6 @@ Training Epoch 1/400: 320batch [12:07,  1.92s/batch]
   Step 1690: Backbone Loss = 0.8039, Probe Loss = 236.5531, Acc = 0.9846
   Step 1700: Backbone Loss = 0.7793, Probe Loss = 238.0683, Acc = 0.9907
   Step 1710: Backbone Loss = 0.7963, Probe Loss = 237.4619, Acc = 0.9917
+  Step 1720: Backbone Loss = 0.7993, Probe Loss = 234.1382, Acc = 0.9931
+  Step 1730: Backbone Loss = 0.7899, Probe Loss = 226.0879, Acc = 0.9917
+  Step 1740: Backbone Loss = 0.7957, Probe Loss = 238.0941, Acc = 0.9889
