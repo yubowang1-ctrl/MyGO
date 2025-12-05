@@ -3,6 +3,8 @@ import random
 import tensorflow as tf 
 import numpy as np
 from constants import ViTConfig
+from transformers import TFViTModel, ViTConfig as HFViTConfig
+
 
 def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mask=75, cluster_size=2):
     """Generates random mask indices for patches.
@@ -356,3 +358,109 @@ class SingleHeadAttention(tf.keras.layers.Layer):
 
         output = tf.matmul(attention_weights, V) # (batch_size, seq_len, key_dim)
         return output
+    
+class ViT_Ti(tf.keras.Model):
+    def __init__(self, config: ViTConfig, **kwargs):
+        super(ViT_Ti, self).__init__(**kwargs)
+        self.config = config
+        
+        # Define Tiny Config
+        # Hidden: 192, Layers: 12, Heads: 3
+        self.hf_config = HFViTConfig(
+            hidden_size=192,
+            num_hidden_layers=12,
+            num_attention_heads=3,
+            intermediate_size=192 * 4,
+            hidden_act="gelu",
+            hidden_dropout_prob=config.dropout_rate,
+            attention_probs_dropout_prob=config.attention_dropout_rate,
+            initializer_range=0.02,
+            layer_norm_eps=1e-12,
+            image_size=256, # We will pad to 256x256
+            patch_size=16,
+            num_channels=3, # We will pad to 3 channels
+            qkv_bias=True,
+            encoder_stride=16,
+        )
+        
+        # Initialize model from config (Random Init)
+        self.vit = TFViTModel(self.hf_config).vit
+        
+        # Mask token
+        self.mask_token = self.add_weight(
+            shape=(1, 1, 192),
+            initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
+            trainable=True,
+            name="mask_token",
+        )
+
+    def call(self, x, training):
+        # x shape: (batch_size, view_number, image_height, image_width, num_channels)
+        # x: (B, V, 256, 208, 2)
+        
+        B = tf.shape(x)[0]
+        V = tf.shape(x)[1]
+        H = self.config.image_height # 256
+        W = self.config.image_width  # 208
+        C = self.config.num_channels # 2
+        
+        # Flatten views
+        x = tf.reshape(x, [-1, H, W, C]) # (B*V, 256, 208, 2)
+        
+        # 1. Pad to 256x256
+        # Pad width from 208 to 256 (48 pixels)
+        paddings = [[0, 0], [0, 0], [0, 256 - W], [0, 0]]
+        x = tf.pad(x, paddings) # (B*V, 256, 256, 2)
+        
+        # 2. Pad channels to 3
+        # Pad channel from 2 to 3
+        paddings_c = [[0, 0], [0, 0], [0, 0], [0, 1]]
+        x = tf.pad(x, paddings_c) # (B*V, 256, 256, 3)
+        
+        # 3. Get Embeddings
+        # TFViTModel.vit.embeddings returns (B*V, SeqLen, D)
+        # SeqLen = (256/16)*(256/16) + 1 = 257
+        # TFViTModel expects NCHW format
+        x_nchw = tf.transpose(x, [0, 3, 1, 2])
+        embedding_output = self.vit.embeddings(pixel_values=x_nchw, training=training)
+        
+        # 4. Apply Masking
+        if training:
+            # Generate mask for 16x16 grid
+            num_row_patches = 256 // 16
+            num_col_patches = 256 // 16
+            
+            # mask_patches expects flattened batch size
+            mask = mask_patches(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
+            mask |= mask_timeframe(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
+            
+            # Mask shape: (B*V, 256, 1)
+            # Embedding shape: (B*V, 257, D) (includes CLS at index 0)
+            
+            # We need to pad mask to (B*V, 257, 1) with False for CLS
+            mask = tf.pad(mask, [[0, 0], [1, 0], [0, 0]], constant_values=False)
+            
+            # Apply mask
+            embedding_output = tf.where(mask, tf.broadcast_to(self.mask_token, tf.shape(embedding_output)), embedding_output)
+
+        # 5. Encoder
+        encoder_outputs = self.vit.encoder(
+            hidden_states=embedding_output,
+            head_mask=[None] * self.hf_config.num_hidden_layers,
+            output_attentions=False,
+            output_hidden_states=False,
+            return_dict=True,
+            training=training
+        )
+        sequence_output = encoder_outputs.last_hidden_state
+        
+        # 6. LayerNorm
+        sequence_output = self.vit.layernorm(sequence_output)
+        
+        # 7. Reshape back
+        # (B*V, 257, D) -> (B, V, 257, D)
+        x = tf.reshape(sequence_output, [B, V, -1, 192])
+        
+        return x
+    
+    

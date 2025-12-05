@@ -2,8 +2,10 @@ import os
 import time
 import wandb
 from dataclasses import asdict
+import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
-from models.transformer import ViT, ViTConfig
+from models.transformer import ViT, ViT_Ti, ViTConfig
 from models.loss import LeJEPA
 from models.probe import LinearProbe
 from data.spec_dataset import get_dataset
@@ -53,7 +55,8 @@ with strategy.scope():
 # ============================================================================== 
 with strategy.scope():
     # Initialize Model
-    model = ViT(CONFIG)
+    # model = ViT(CONFIG)
+    model = ViT_Ti(CONFIG)
     probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
     # Initialize Optimizer
     steps_per_epoch = tot_num_batches
@@ -177,7 +180,7 @@ def train_step(inputs):
         
         per_replica_loss_probe = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=20.0),
+                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=30.0),
                 axis=1
             )
         )
@@ -249,6 +252,34 @@ def main():
                     "probe_accuracy": acc,
                     "epoch": epoch
                 })
+                
+                # also plot the distribution of cls tokens of the first global view
+                # take the first two dimensions for visualization
+                with strategy.scope():
+                    views, labels = batch_inputs
+                    B = tf.shape(views)[0]
+                    V = TOTAL_VIEWS
+                    # only take one view
+                    views = views[:, :1, :, :, :] # (B, 1, H, W, C)
+                    outputs = model(views, training=False)
+                    cls_tokens = outputs[:, :, 0, :]
+                    global_view_0 = cls_tokens[:, 0, :] # (B, D)
+                    cls_2d = global_view_0[:, :2] # (B, 2)
+                    cls_2d_np = cls_2d.numpy()
+                    
+                    plt.figure(figsize=(6,6))
+                    plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
+                    plt.title(f"CLS Token Distribution - Epoch {epoch+1} Step {step} - Mean ({float(np.mean(cls_2d_np[:,0])):.2f}, {float(np.mean(cls_2d_np[:,1])):.2f})")
+                    plt.xlabel("Dimension 1")
+                    plt.ylabel("Dimension 2")
+                    # plt.show()
+                    plt.savefig(f"figures/cls_token_distribution_epoch{epoch+1}_step{step}.png")
+                    wandb.log({
+                        "cls_token_distribution": wandb.Image(plt),
+                        "epoch": epoch,
+                        "step": step
+                    })
+                    plt.close()
         
         avg_loss_backbone = total_loss_backbone / num_batches if num_batches > 0 else 0.0
         avg_loss_probe = total_loss_probe / num_batches if num_batches > 0 else 0.0

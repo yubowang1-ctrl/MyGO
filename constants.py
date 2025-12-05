@@ -56,7 +56,7 @@ AUDIOSET_NUM_CLASSES = 527
 NUM_GLOBAL_VIEWS = 2    # G
 NUM_LOCAL_VIEWS = 6     # Local views
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
-LAMBDA_SIGREG = 0.05
+LAMBDA_SIGREG = 0.2
 
     
 # Tiny ViT with 16x16 patches, ~5M parameters
@@ -117,7 +117,7 @@ CONFIG = ViTConfig(
     patch_height=16,
     patch_width=16,
     patch_overlap=0,
-    num_layers=12, # num_layers=12, 
+    num_layers=4, # num_layers=12, 
     hidden_dim=192,
     mlp_dim=768,
     num_heads=3,

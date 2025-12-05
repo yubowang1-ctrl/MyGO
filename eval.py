@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 
 from models.transformer import ViT
 from models.probe import LinearProbe
-from data.dataset import get_dataset
+# from data.dataset import get_dataset
+from data.spec_dataset import get_dataset
 from constants import CONFIG, AUDIOSET_NUM_CLASSES
 from tqdm import tqdm 
+from train import balanced_acc
 
 def compute_map_numpy(y_true, y_score):
     """
@@ -155,16 +157,17 @@ def evaluate(data_dir, csv_path, ckpt_dir, batch_size):
 
     # Optional: multi-label binary accuracy at 0.5 threshold (coarse reference)
     bin_pred = (y_score >= 0.5).astype(np.float32)
-    bin_acc = float((bin_pred == y_true).mean())
+    # bin_acc = float((bin_pred == y_true).mean())
+    bin_acc = balanced_acc(y_true, bin_pred)
 
     print("\n========== Evaluation ==========")
     print(f"Samples: {y_true.shape[0]}, Classes: {y_true.shape[1]}")
     print(f"mAP (macro): {mAP:.4f}")
-    print(f"Binary accuracy@0.5: {bin_acc:.4f}")
+    print(f"Balanced accuracy@0.5: {bin_acc:.4f}")
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_dir", default="downloads/audioset/eval_segments", help="Directory containing evaluation audio files (.m4a)")
+    parser.add_argument("--data_dir", default="spectrogram/audioset/eval_segments", help="Directory containing evaluation audio files (.m4a)")
     parser.add_argument("--csv_path", default="data/audioset/eval_segments.csv", help="Path to the AudioSet eval CSV")
     parser.add_argument("--ckpt_dir", default="./checkpoints", help="Directory of saved training checkpoints")
     parser.add_argument("--batch_size", type=int, default=8)

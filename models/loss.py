@@ -149,7 +149,9 @@ class SIGReg(tf.keras.losses.Loss):
         stats = self.epps_pulley(x_proj)
         
         # Aggregate results (mean over slices)
-        return tf.reduce_mean(stats)
+        m = tf.reduce_mean(stats)
+        tf.print("SIGReg loss:", m, output_stream=sys.stdout)
+        return m
     
     
 class LeJEPA(tf.keras.losses.Loss):
