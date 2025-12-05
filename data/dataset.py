@@ -6,6 +6,7 @@ from models.transformer import mask_patches, mask_timeframe
 from constants import *
 import pandas as pd
 from tqdm import tqdm
+import tensorflow_io as tfio
 
 LABEL_MAP = {} # maps YTID to label vector
 CSV_LOADED = set() # to avoid re-loading CSVs multiple times
@@ -60,55 +61,68 @@ def python_load_m4a(file_path_tensor):
     label_vec = LABEL_MAP[file_name.removesuffix('.m4a')]
     
     try:
-        # Load with librosa (handles resampling automatically)
-        # mono=False preserves channels
-        audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+        import tensorflow_io as tfio # Import inside function to ensure visibility in worker processes
         
-        # Handle dimensions: Librosa is (Channels, Time), we want (Time, Channels)
-        if audio.ndim == 1:
-            audio = audio[np.newaxis, :]
-        audio = audio.T
+        # Load with tfio (faster than librosa)
+        file_contents = tf.io.read_file(file_path)
+        # decode_aac returns (Time, Channels)
+        tf.print(111)
+        audio = tfio.audio.decode_aac(file_contents)
+        
+        audio = tf.cast(audio, tf.float32) / 32768.0  # normalize int16 to float32
+        
+        # Handle dimensions: tfio is (Time, Channels)
+        if tf.rank(audio) == 1:
+            audio = tf.expand_dims(audio, axis=-1)
         
         # Handle Channels (Force Stereo)
-        if audio.shape[1] == 1:
-            audio = np.tile(audio, (1, 2))
-        elif audio.shape[1] > 2:
+        channels = tf.shape(audio)[1]
+        if channels == 1:
+            audio = tf.tile(audio, [1, 2])
+        elif channels > 2:
             audio = audio[:, :2]
-            
         # Handle Length (Split into chunks)
-        curr_len = audio.shape[0]
+        curr_len = tf.shape(audio)[0]
         chunks = []
         
         if curr_len < SAMPLE_SAMPLES:
             # Loop to fill 1 chunk
-            repeats = int(np.ceil(SAMPLE_SAMPLES / curr_len))
-            chunk = np.tile(audio, (repeats, 1))[:SAMPLE_SAMPLES]
+            repeats = tf.cast(tf.math.ceil(SAMPLE_SAMPLES / tf.cast(curr_len, tf.float32)), tf.int32)
+            chunk = tf.tile(audio, [repeats, 1])[:SAMPLE_SAMPLES]
             chunks.append(chunk)
         else:
             # Split into multiple chunks
-            num_chunks = int(np.ceil(curr_len / SAMPLE_SAMPLES))
+            num_chunks = tf.cast(tf.math.ceil(tf.cast(curr_len, tf.float32) / SAMPLE_SAMPLES), tf.int32)
             for i in range(num_chunks):
                 start = i * SAMPLE_SAMPLES
-                end = start + SAMPLE_SAMPLES
-                chunk = audio[start:end]
+                chunk = audio[start : start + SAMPLE_SAMPLES]
+                chunk_len = tf.shape(chunk)[0]
                 
                 # Pad/Loop the last chunk if needed
                 # if the length of last chunk is less than 1s, discard
-                if chunk.shape[0] < SAMPLE_SAMPLES * 0.1:
+                if chunk_len < int(SAMPLE_SAMPLES * 0.1):
                     continue
-                if chunk.shape[0] < SAMPLE_SAMPLES:
-                    repeats = int(np.ceil(SAMPLE_SAMPLES / chunk.shape[0]))
-                    chunk = np.tile(chunk, (repeats, 1))[:SAMPLE_SAMPLES]
+                if chunk_len < SAMPLE_SAMPLES:
+                    repeats = tf.cast(tf.math.ceil(SAMPLE_SAMPLES / tf.cast(chunk_len, tf.float32)), tf.int32)
+                    chunk = tf.tile(chunk, [repeats, 1])[:SAMPLE_SAMPLES]
                 
                 chunks.append(chunk)
         
-        n_samples = len(chunks)
-        return np.stack(chunks).astype(np.float32), np.tile(label_vec, (n_samples, 1)).astype(np.float32)
+        if not chunks:
+             chunks.append(tf.zeros((SAMPLE_SAMPLES, 2), dtype=tf.float32))
+
+        chunks = tf.stack(chunks)
+        n_samples = tf.shape(chunks)[0]
+        
+        label_tensor = tf.convert_to_tensor(label_vec, dtype=tf.float32)
+        labels = tf.tile(tf.expand_dims(label_tensor, 0), [n_samples, 1])
+        
+        return chunks, labels
         
     except Exception as e:
         # Return 1 silent chunk on error
         print(f"Error loading {file_path}: {e}")
-        return np.zeros((1, SAMPLE_SAMPLES, 2), dtype=np.float32), np.zeros((1, AUDIOSET_NUM_CLASSES), dtype=np.float32)
+        return tf.zeros((1, SAMPLE_SAMPLES, 2), dtype=tf.float32), tf.zeros((1, AUDIOSET_NUM_CLASSES), dtype=tf.float32)
 
 def load_audio_dataset(file_path):
     """
@@ -534,4 +548,4 @@ def visualize_sample(data_dir, csv_path):
         break
 
 # visualize_sample("/Users/elly/Desktop/T7/test", )
-# visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")
+visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")

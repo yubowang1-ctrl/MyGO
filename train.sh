@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1     # total number of tasks across all nodes
 #SBATCH --cpus-per-task=8       # cpu-cores per task (>1 if multi-threaded tasks)
 #SBATCH -t 06:30:00             # total run time limit (HH:MM:SS)
-#SBATCH --mem=64000MB           # INCREASED from 16GB to 32GB
+#SBATCH --mem=32000MB           # INCREASED from 16GB to 32GB
 #SBATCH --job-name='MyGO'
 #SBATCH --output=slurm_logs/R-%x.%j.out
 #SBATCH --error=slurm_logs/R-%x.%j.err
@@ -40,6 +40,7 @@ echo ""
 # echo ""
 
 module load miniconda3/23.11.0s
+source /oscar/runtime/software/external/miniconda3/23.11.0/etc/profile.d/conda.sh
 conda activate mygo
 module load ffmpeg
 which ffmpeg
@@ -60,7 +61,6 @@ echo "Starting main Python script at $(date)"
 echo "=========================================="
 echo ""
 
-cd "${SLURM_SUBMIT_DIR}" || exit 1
 echo "Working directory: $(pwd)"
 echo ""
 
