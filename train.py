@@ -257,6 +257,9 @@ def main():
                 # take the first two dimensions for visualization
                 with strategy.scope():
                     views, labels = batch_inputs
+                    if strategy.num_replicas_in_sync > 1:
+                        views = views.values[0]
+                        labels = labels.values[0]
                     B = tf.shape(views)[0]
                     V = TOTAL_VIEWS
                     # only take one view

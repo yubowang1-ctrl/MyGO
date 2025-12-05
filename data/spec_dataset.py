@@ -472,4 +472,4 @@ def visualize_sample(data_dir, csv_path):
         plt.show()
         break
 
-visualize_sample(DATA_DIR, CSV_PATH)
+#visualize_sample(DATA_DIR, CSV_PATH)

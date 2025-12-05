@@ -42,6 +42,7 @@ echo ""
 module load miniconda3/23.11.0s
 source /oscar/runtime/software/external/miniconda3/23.11.0/etc/profile.d/conda.sh
 conda activate mygo
+echo "mygo conda environment loaded"
 module load ffmpeg
 which ffmpeg
 ffmpeg -version

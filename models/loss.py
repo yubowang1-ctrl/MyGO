@@ -104,7 +104,7 @@ class EppsPulley(tf.keras.layers.Layer):
 
 class SIGReg(tf.keras.losses.Loss):
     def __init__(self, name="SIGReg", **kwargs):
-        super().__init__(name=name, **kwargs)
+        super().__init__(name=name, reduction=tf.keras.losses.Reduction.NONE, **kwargs)
         self.epps_pulley = EppsPulley()
 
     def call(self, x, global_step, num_slices=512):
@@ -156,7 +156,7 @@ class SIGReg(tf.keras.losses.Loss):
     
 class LeJEPA(tf.keras.losses.Loss):
     def __init__(self, G, V, lambd=0.05, name="LeJEPA", **kwargs):
-        super().__init__(name=name, **kwargs)
+        super().__init__(name=name, reduction=tf.keras.losses.Reduction.NONE, **kwargs)
         self.V = V # number of views for each sample
         self.G = G # number of global views for each sample
         self.lambd = lambd

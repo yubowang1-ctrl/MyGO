@@ -1,0 +1,75 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 14720281
+##  Job Name : MyGO
+##  Nodelist : gpu2010
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/MyGO/MyGo
+##   Job Started : Fri Dec  5 01:34:13 PM EST 2025
+###############################################################################
+
+==========================================
+Job started at: Fri Dec  5 01:34:13 PM EST 2025
+Job ID: 14720281
+Node: gpu2010
+==========================================
+
+GPU Information (from host):
+Fri Dec  5 13:34:13 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  Quadro RTX 6000                On  | 00000000:41:00.0 Off |                  Off |
+| 33%   34C    P8               7W / 260W |     10MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  Quadro RTX 6000                On  | 00000000:63:00.0 Off |                  Off |
+| 33%   29C    P8              13W / 260W |     10MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     29486      G   /usr/libexec/Xorg                             8MiB |
+|    1   N/A  N/A     29486      G   /usr/libexec/Xorg                             8MiB |
++---------------------------------------------------------------------------------------+
+
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys/bin/ffmpeg
+ffmpeg version 7.0 Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc 11 (GCC)
+configuration: --prefix=/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys --enable-pic --cc=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/gcc --cxx=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/g++ --disable-libxcb --disable-libxcb-shape --disable-libxcb-shm --disable-libxcb-xfixes --disable-xlib --disable-libfontconfig --disable-libfreetype --disable-libfribidi --enable-bzlib --enable-gpl --disable-libmp3lame --disable-libopenjpeg --disable-libopus --disable-libspeex --disable-libvorbis --enable-libvpx --enable-libx264 --disable-nonfree --disable-openssl --enable-shared --enable-version3 --disable-libzmq --disable-libssh --enable-libwebp --disable-lzma --disable-libsnappy --disable-sdl2 --disable-libaom --disable-libxml2
+libavutil      59.  8.100 / 59.  8.100
+libavcodec     61.  3.100 / 61.  3.100
+libavformat    61.  1.100 / 61.  1.100
+libavdevice    61.  1.100 / 61.  1.100
+libavfilter    10.  1.100 / 10.  1.100
+libswscale      8.  1.100 /  8.  1.100
+libswresample   5.  1.100 /  5.  1.100
+libpostproc    58.  1.100 / 58.  1.100
+TF version: 2.19.1
+Built with CUDA: True
+GPUs detected: 2
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+==========================================
+Installing dependencies
+==========================================
+
+
+==========================================
+Starting main Python script at Fri Dec  5 01:34:22 PM EST 2025
+==========================================
+
+Working directory: /users/lwang223/MyGO/MyGo
+
+
+==========================================
+Python script finished at Fri Dec  5 01:34:28 PM EST 2025
+Exit code: 1
+==========================================
