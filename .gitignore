@@ -4,3 +4,4 @@ env/
 downloads/
 wandb/
 checkpoints/
+spectrograms/
