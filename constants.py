@@ -42,7 +42,7 @@ TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
 GLOBAL_BATCH_SIZE = 128  # Total batch size across all GPUs
 BASE_LEARNING_RATE = 5e-3
 NUM_EPOCHS = 100
-LOG_EVERY_STEPS = 10
+LOG_EVERY_STEPS = 50
 
 # Data Config
 DATA_DIR = "spectrogram/audioset/balanced_train_segments"
@@ -117,7 +117,7 @@ CONFIG = ViTConfig(
     patch_height=16,
     patch_width=16,
     patch_overlap=0,
-    num_layers=2, # num_layers=12, 
+    num_layers=12, # num_layers=12, 
     hidden_dim=192,
     mlp_dim=768,
     num_heads=3,
