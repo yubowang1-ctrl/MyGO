@@ -20,9 +20,6 @@ def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mas
     num_row_patches = tf.cast(num_row_patches, tf.int32)
     seq_len = num_col_patches * num_row_patches
     
-    # Attempt 5: Fully vectorized implementation without map_fn or loops.
-    # This is the most robust way to avoid Metal backend control flow bugs.
-    
     # 1. Determine which samples are global vs local
     batch_indices = tf.range(batch_size)
     is_local = (batch_indices % V) >= G # (batch_size,) boolean
@@ -55,17 +52,6 @@ def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mas
     cluster_indices = tf.expand_dims(center_indices, -1) + tf.reshape(offsets, [1, 1, -1])
     cluster_indices = tf.reshape(cluster_indices, [batch_size, -1]) # (B, K*M)
     
-    # Handle out of bounds
-    # We can't easily use boolean_mask on a batch with different number of valid indices per sample.
-    # Instead, we clip to a safe value (e.g. 0) and use a separate mask or just let it overwrite index 0.
-    # Better: Replace invalid indices with a dummy index (e.g. 0) and then set index 0 to False later if needed,
-    # or just ignore since overwriting 0 multiple times is fine (it's a boolean mask).
-    # But we don't want to mask index 0 if it wasn't selected.
-    # So we use a dummy index = seq_len (which is out of bounds for the update, so it will be ignored by scatter_nd if we handle it right,
-    # but tensor_scatter_nd_update doesn't support out of bound indices nicely).
-    # Actually, tensor_scatter_nd_update updates specific indices.
-    
-    # Let's use scatter_nd.
     # Indices must be (Num_Updates, 2) where 2 is (batch_idx, seq_idx)
     
     B_grid = tf.expand_dims(tf.range(batch_size), -1) # (B, 1)
@@ -79,6 +65,9 @@ def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mas
     
     valid_batch_indices = tf.boolean_mask(flat_batch_indices, valid_mask)
     valid_seq_indices = tf.boolean_mask(flat_seq_indices, valid_mask)
+
+    valid_batch_indices = tf.clip_by_value(valid_batch_indices, 0, batch_size-1)
+    valid_seq_indices = tf.clip_by_value(valid_seq_indices, 0, seq_len - 1)
     
     scatter_indices = tf.stack([valid_batch_indices, valid_seq_indices], axis=1) # (N_valid, 2)
     updates = tf.ones([tf.shape(scatter_indices)[0]], dtype=tf.bool)

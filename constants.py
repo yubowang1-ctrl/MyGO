@@ -39,7 +39,7 @@ NUM_LOCAL_VIEWS = 6
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
 
 # Distributed Training Config
-GLOBAL_BATCH_SIZE = 8  # Total batch size across all GPUs
+GLOBAL_BATCH_SIZE = 16  # Total batch size across all GPUs
 BASE_LEARNING_RATE = 5e-3
 NUM_EPOCHS = 100
 LOG_EVERY_STEPS = 10

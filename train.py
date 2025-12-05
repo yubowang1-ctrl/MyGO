@@ -10,11 +10,13 @@ from data.dataset import get_dataset
 from constants import *
 from tqdm import tqdm
 
-try:
-    tf.keras.mixed_precision.set_global_policy('mixed_bfloat16')
-    print("Mixed precision (bfloat16) enabled.")
-except Exception as e:
-    print(f"Could not enable mixed precision: {e}")
+# silent librosa warning
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+
+tf.keras.mixed_precision.set_global_policy('mixed_bfloat16')
 
 # ==============================================================================
 # 2. Setup Distributed Strategy
@@ -22,6 +24,8 @@ except Exception as e:
 # MirroredStrategy handles both single-GPU and multi-GPU scenarios.
 # But on Mac's Metal backend, MirroredStrategy triggers a known bug. 
 # So use default strategy for debugging on Mac.
+
+print(tf.config.list_physical_devices('GPU'))
 
 # If on CUDA, use MirroredStrategy
 if len(tf.config.list_physical_devices('GPU')) > 1:
@@ -80,6 +84,14 @@ with strategy.scope():
     _ = probe(tf.zeros((1, CONFIG.hidden_dim)), training=False)
     model.summary()
     probe.summary()
+
+    # Explicitly build the optimizer to create variables (slots) 
+    # BEFORE the first distributed_train_step.
+    # This prevents graph errors in MirroredStrategy during lazy initialization.
+    print("Building optimizer variables...")
+    all_trainable_vars = model.trainable_variables + probe.trainable_variables
+    optimizer.build(all_trainable_vars)
+    print("Optimizer built.")
 
 def balanced_acc(y_true, y_pred):
     """

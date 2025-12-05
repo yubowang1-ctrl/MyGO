@@ -15,8 +15,6 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-ENV_NAME="csci1470"
-
 # Check if running on OSCAR
 if [[ ! -d "/oscar" ]]; then
     echo -e "${RED}ERROR: This script must be run on OSCAR!${NC}"
@@ -24,51 +22,37 @@ if [[ ! -d "/oscar" ]]; then
 fi
 
 # Load conda module
-echo -e "${BLUE}[1/5] Loading miniconda module...${NC}"
+echo -e "${BLUE}[1/5] Loading miniconda and ffmpeg module...${NC}"
 module load miniconda3/23.11.0s
+module load ffmpeg
 echo -e "${GREEN}Module loaded :)${NC}"
 echo ""
 
-# Check if environment already exists
-if conda env list | grep -q "^${ENV_NAME} "; then
-    echo -e "${YELLOW}Environment '${ENV_NAME}' already exists.${NC}"
-    read -p "Do you want to remove it and reinstall? (y/n): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${BLUE}Removing existing environment...${NC}"
-        conda env remove -n ${ENV_NAME} -y
-        echo -e "${GREEN}Old environment removed :)${NC}"
-    else
-        echo -e "${YELLOW}Keeping existing environment. Exiting.${NC}"
-        exit 0
-    fi
-fi
+# # Check if environment already exists
+# if conda env list | grep -q "^${ENV_NAME} "; then
+#     echo -e "${YELLOW}Environment '${ENV_NAME}' already exists.${NC}"
+#     read -p "Do you want to remove it and reinstall? (y/n): " -n 1 -r
+#     echo
+#     if [[ $REPLY =~ ^[Yy]$ ]]; then
+#         echo -e "${BLUE}Removing existing environment...${NC}"
+#         conda env remove -n ${ENV_NAME} -y
+#         echo -e "${GREEN}Old environment removed :)${NC}"
+#     else
+#         echo -e "${YELLOW}Keeping existing environment. Exiting.${NC}"
+#         exit 0
+#     fi
+# fi
 
-# Create conda environment
-echo -e "${BLUE}[2/5] Creating conda environment '${ENV_NAME}' with Python 3.10...${NC}"
-conda create -n ${ENV_NAME} python=3.10 -y
-echo -e "${GREEN}Environment created :)${NC}"
-echo ""
+# # Create conda environment
+# echo -e "${BLUE}[2/5] Creating conda environment '${ENV_NAME}' with Python 3.10...${NC}"
+# conda create -n ${ENV_NAME} python=3.10 -y
+# echo -e "${GREEN}Environment created :)${NC}"
+# echo ""
 
 # Activate environment
 echo -e "${BLUE}[3/5] Activating environment...${NC}"
-source activate ${ENV_NAME}
+source activate mygo
 echo -e "${GREEN}Environment activated$ :)${NC}"
-echo ""
-
-# Install packages
-echo -e "${BLUE}[4/5] Installing required packages...${NC}"
-echo "   - tensorflow (this may take a few minutes)"
-pip install --quiet tensorflow==2.15.0
-echo "   - numpy"
-pip install --quiet numpy
-echo "   - wandb"
-pip install --quiet wandb
-echo "   - tqdm"
-pip install --quiet tqdm
-echo "   - pytest"
-pip install --quiet pytest
-echo -e "${GREEN}All packages installed :)${NC}"
 echo ""
 
 # Test installation
