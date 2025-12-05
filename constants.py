@@ -45,10 +45,10 @@ NUM_EPOCHS = 100
 LOG_EVERY_STEPS = 10
 
 # Data Config
-DATA_DIR = "downloads/audioset/balanced_train_segments"
+DATA_DIR = "downloads/audioset/balanced_train_segments_wav"
 CSV_PATH = "data/audioset/balanced_train_segments.csv"
 IMAGE_HEIGHT = 256
-IMAGE_WIDTH = 236 #208
+IMAGE_WIDTH = 208 # 236
 NUM_CHANNELS = 2
 AUDIOSET_NUM_CLASSES = 527
 
@@ -116,7 +116,7 @@ CONFIG = ViTConfig(
     num_channels=NUM_CHANNELS,
     patch_height=16,
     patch_width=16,
-    patch_overlap=6,
+    patch_overlap=0,
     num_layers=2, # num_layers=12, 
     hidden_dim=192,
     mlp_dim=768,

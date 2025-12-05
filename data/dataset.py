@@ -6,7 +6,6 @@ from models.transformer import mask_patches, mask_timeframe
 from constants import *
 import pandas as pd
 from tqdm import tqdm
-import tensorflow_io as tfio
 
 LABEL_MAP = {} # maps YTID to label vector
 CSV_LOADED = set() # to avoid re-loading CSVs multiple times
@@ -409,9 +408,47 @@ def random_conv2d(spec, magnitude=0.5):
 # ==============================================================================
 # 5. Dataset Pipeline
 # ==============================================================================
+def preprocess_batch(audio_batch, label_batch, training=True):
+    """
+    Applies spectrogram conversion and view generation to a whole batch.
+    Designed to run on GPU.
+    """
+    # 1. Make Spectrograms
+    # We use tf.map_fn to apply the single-sample function to the batch.
+    specs, labels = tf.map_fn(
+        lambda x: make_spectrogram(x[0], x[1]),
+        (audio_batch, label_batch),
+        fn_output_signature=(tf.float32, tf.float32),
+        parallel_iterations=32
+    )
+    
+    if training:
+        # 2. Generate Views (Augmentation)
+        views, labels = tf.map_fn(
+            lambda x: generate_views(x[0], x[1]),
+            (specs, labels),
+            fn_output_signature=(tf.float32, tf.float32),
+            parallel_iterations=32
+        )
+    else:
+        # Expand dims for eval
+        def expand_view(spec, label):
+            spec = tf.expand_dims(spec, axis=0) # (1, H, W, C)
+            label = tf.expand_dims(label, axis=0) # (1, NUM_CLASSES)
+            return spec, label
+            
+        views, labels = tf.map_fn(
+            lambda x: expand_view(x[0], x[1]),
+            (specs, labels),
+            fn_output_signature=(tf.float32, tf.float32),
+            parallel_iterations=32
+        )
+
+    return views, labels
+
 def get_dataset(data_dir, csv_path, batch_size, dataset="audioset", training=True):
     """
-    Creates the full training dataset pipeline.
+    Creates the full training dataset pipeline with GPU acceleration.
     
     If training is False, no shuffling or augmentations are applied.
     Args:
@@ -435,7 +472,8 @@ def get_dataset(data_dir, csv_path, batch_size, dataset="audioset", training=Tru
         
         # Filter to keep only supported extensions
         def filter_audio_files(file_path):
-            return tf.strings.regex_full_match(file_path, ".*\\.(m4a|wav)$")
+            ext = tf.strings.substr(file_path, -3, 3)
+            return (ext == "m4a") | (ext == "wav")
             
         ds = ds.filter(filter_audio_files)
         
@@ -448,21 +486,17 @@ def get_dataset(data_dir, csv_path, batch_size, dataset="audioset", training=Tru
             deterministic=(not training)
         )
         
-        # 3. Convert to Spectrogram
-        ds = ds.map(make_spectrogram, num_parallel_calls=tf.data.AUTOTUNE)
-        
-        if training:
-            # 4. Generate Views
-            ds = ds.map(generate_views, num_parallel_calls=tf.data.AUTOTUNE)
-        else:
-            # During evaluation, just expand dims to have one view
-            def expand_view(spec, label):
-                spec = tf.expand_dims(spec, axis=0) # (1, H, W, C)
-                label = tf.expand_dims(label, axis=0) # (1, NUM_CLASSES)
-                return spec, label
-            ds = ds.map(expand_view, num_parallel_calls=tf.data.AUTOTUNE)
-        # 5. Batch and Prefetch
+        # 3. Batch FIRST (Critical for GPU efficiency)
         ds = ds.batch(batch_size, drop_remainder=True)
+        
+        # 4. Move to GPU and Compute Spectrograms + Augmentations
+        gpu_map_func = lambda x, y: preprocess_batch(x, y, training=training)
+        
+        # Explicitly place on GPU
+        with tf.device("/device:GPU:0"):
+            ds = ds.map(gpu_map_func, num_parallel_calls=tf.data.AUTOTUNE)
+        
+        # 5. Prefetch
         ds = ds.prefetch(tf.data.AUTOTUNE)
         
         return ds
@@ -485,6 +519,7 @@ def visualize_sample(data_dir, csv_path):
         # Preview patch masking 
         # 1. Split into patches
         batch = tf.reshape(batch, [-1, IMAGE_HEIGHT, IMAGE_WIDTH, NUM_CHANNELS]) # (B*V, H, W, C)
+
         patches = tf.image.extract_patches(
             images=batch,
             sizes=[1, CONFIG.patch_height, CONFIG.patch_width, 1],
@@ -510,9 +545,9 @@ def visualize_sample(data_dir, csv_path):
         for i in range(num_row_patches):
             for j in range(num_col_patches):
                 patch = patches[:, i, j, :, :, :] # shape: (batch_size, patch_height, patch_width, num_channels)
-                if i < num_row_patches - 1:
+                if i < num_row_patches - 1 and CONFIG.patch_overlap > 0:
                     patch = patch[:, :-CONFIG.patch_overlap, :, :]
-                if j < num_col_patches - 1:
+                if j < num_col_patches - 1 and CONFIG.patch_overlap > 0:
                     patch = patch[:, :, :-CONFIG.patch_overlap, :]
                 top_left_corner_icoor = (CONFIG.patch_height - CONFIG.patch_overlap) * i
                 top_left_corner_jcoor = (CONFIG.patch_width - CONFIG.patch_overlap) * j
@@ -527,7 +562,7 @@ def visualize_sample(data_dir, csv_path):
                     pad_w,
                     tf.constant([0, 0], dtype=tf.int32)
                 ])
-                
+                # tf.print("Patching at:", top_left_corner_icoor, top_left_corner_jcoor, "with pad:", pad)
                 padded_patch = tf.pad(patch, pad)
                 out += padded_patch
         out = tf.reshape(out, [-1, CONFIG.V, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels])
@@ -542,7 +577,7 @@ def visualize_sample(data_dir, csv_path):
         
         # Plot
         # Increased figure width to accommodate stereo views
-        fig, axes = plt.subplots(4, (num_views + 1) // 4, figsize=(8, 8/IMAGE_HEIGHT*IMAGE_WIDTH))
+        fig, axes = plt.subplots(4, (num_views + 1) // 4, figsize=(8, 8/CONFIG.image_width*CONFIG.image_height))
         fig.suptitle(f"Generated Views (Labels: {', '.join(label_names)})", fontsize=12)
         axes = axes.flatten()
         
@@ -572,4 +607,4 @@ def visualize_sample(data_dir, csv_path):
 
 # visualize_sample("/Users/elly/Desktop/T7/test", )
 # visualize_sample("downloads/audioset/balanced_train_segments_wav", "data/audioset/balanced_train_segments.csv")
-visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")
+# visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")

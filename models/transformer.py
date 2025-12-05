@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 from constants import ViTConfig
 
-def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mask=200, cluster_size=3):
+def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mask=200, cluster_size=2):
     """Generates random mask indices for patches.
     Args:
         batch_size: Number of samples in the batch
@@ -63,14 +63,17 @@ def gen_maskid_patch(batch_size, num_col_patches, num_row_patches, G, V, num_mas
     # Filter valid indices
     valid_mask = (flat_seq_indices >= 0) & (flat_seq_indices < seq_len)
     
-    valid_batch_indices = tf.boolean_mask(flat_batch_indices, valid_mask)
-    valid_seq_indices = tf.boolean_mask(flat_seq_indices, valid_mask)
+    valid_locs = tf.where(valid_mask) # (N_valid, 1)
+    
+    valid_batch_indices = tf.gather_nd(flat_batch_indices, valid_locs)
+    valid_seq_indices = tf.gather_nd(flat_seq_indices, valid_locs)
 
     valid_batch_indices = tf.clip_by_value(valid_batch_indices, 0, batch_size-1)
     valid_seq_indices = tf.clip_by_value(valid_seq_indices, 0, seq_len - 1)
     
     scatter_indices = tf.stack([valid_batch_indices, valid_seq_indices], axis=1) # (N_valid, 2)
-    updates = tf.ones([tf.shape(scatter_indices)[0]], dtype=tf.bool)
+    num_updates = tf.shape(scatter_indices)[0]
+    updates = tf.ones([num_updates], dtype=tf.bool)
     
     # Start with all False
     batch_mask_local = tf.scatter_nd(scatter_indices, updates, [batch_size, seq_len])
