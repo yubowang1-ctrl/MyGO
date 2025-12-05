@@ -55,8 +55,8 @@ with strategy.scope():
 # ============================================================================== 
 with strategy.scope():
     # Initialize Model
-    model = ViT(CONFIG)
-    # model = ViT_Ti(CONFIG)
+    # model = ViT(CONFIG)
+    model = ViT_Ti(CONFIG)
     probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
     # Initialize Optimizer
     steps_per_epoch = tot_num_batches
@@ -75,7 +75,7 @@ with strategy.scope():
         weight_decay=1e-2,
         beta_1=0.9,
         beta_2=0.999,
-        global_clipnorm=1.0
+        global_clipnorm=1.0 # gradient clipping
     )
     
     # Initialize Loss
