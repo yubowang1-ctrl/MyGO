@@ -58,20 +58,35 @@ def python_load_m4a(file_path_tensor):
     file_name = str(os.path.basename(file_path))
     
     # look up label
-    label_vec = LABEL_MAP[file_name.removesuffix('.m4a')]
+    label_vec = LABEL_MAP[file_name.removesuffix('.m4a').removesuffix('.wav')]
     
     try:
-        import tensorflow_io as tfio # Import inside function to ensure visibility in worker processes
+        if file_name.endswith('.m4a'):
+            # Load with librosa (ffmpeg backend) for m4a
+            # mono=False preserves channels
+            audio, _ = librosa.load(file_path, sr=TARGET_SR, mono=False)
+            
+            # Handle dimensions: Librosa is (Channels, Time), we want (Time, Channels)
+            if audio.ndim == 1:
+                audio = audio[np.newaxis, :]
+            audio = audio.T
+            
+            # Convert to tensor for consistent processing below
+            audio = tf.convert_to_tensor(audio, dtype=tf.float32)
+            
+        else:
+            # Load with tf.audio.decode_wav for wav
+            file_contents = tf.io.read_file(file_path)
+            # decode_wav returns (Time, Channels) in float32 [-1, 1] if desired_channels is set? 
+            # Actually decode_wav returns float32 in [-1, 1] by default if not specified otherwise, 
+            # but let's be safe. It returns (audio, sample_rate).
+            audio, _ = tf.audio.decode_wav(file_contents, desired_channels=2)
+            
+            # decode_wav output is already float32 in [-1, 1], no need to divide by 32768.0
+            # unless the input wav was not PCM 16-bit. 
+            # If we assume standard WAV, it's already normalized.
         
-        # Load with tfio (faster than librosa)
-        file_contents = tf.io.read_file(file_path)
-        # decode_aac returns (Time, Channels)
-        tf.print(111)
-        audio = tfio.audio.decode_aac(file_contents)
-        
-        audio = tf.cast(audio, tf.float32) / 32768.0  # normalize int16 to float32
-        
-        # Handle dimensions: tfio is (Time, Channels)
+        # Handle dimensions: (Time, Channels)
         if tf.rank(audio) == 1:
             audio = tf.expand_dims(audio, axis=-1)
         
@@ -81,6 +96,7 @@ def python_load_m4a(file_path_tensor):
             audio = tf.tile(audio, [1, 2])
         elif channels > 2:
             audio = audio[:, :2]
+            
         # Handle Length (Split into chunks)
         curr_len = tf.shape(audio)[0]
         chunks = []
@@ -413,8 +429,15 @@ def get_dataset(data_dir, csv_path, batch_size, dataset="audioset", training=Tru
     if dataset == "audioset":
         load_audioset_label_map(csv_path)
         # 1. List files (Lazy)
-        file_pattern = str(data_dir) + "/*.m4a" 
+        # Match both .m4a and .wav files
+        file_pattern = str(data_dir) + "/*" 
         ds = tf.data.Dataset.list_files(file_pattern, shuffle=training)
+        
+        # Filter to keep only supported extensions
+        def filter_audio_files(file_path):
+            return tf.strings.regex_full_match(file_path, ".*\\.(m4a|wav)$")
+            
+        ds = ds.filter(filter_audio_files)
         
         # 2. Load Audio
         # Use interleave to flatten chunks from each file
@@ -548,4 +571,5 @@ def visualize_sample(data_dir, csv_path):
         break
 
 # visualize_sample("/Users/elly/Desktop/T7/test", )
+# visualize_sample("downloads/audioset/balanced_train_segments_wav", "data/audioset/balanced_train_segments.csv")
 visualize_sample("downloads/audioset/eval_segments", "data/audioset/eval_segments.csv")

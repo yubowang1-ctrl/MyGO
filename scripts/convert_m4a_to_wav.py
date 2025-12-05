@@ -32,14 +32,14 @@ def convert_file(args):
         # Run ffmpeg command
         # -i: input file
         # -ac 2: force stereo (2 channels)
-        # -ar 48000: sample rate 48kHz
+        # -ar 24000: sample rate 24kHz
         # -y: overwrite output
         # -loglevel error: suppress output unless error
         command = [
             'ffmpeg', 
             '-i', file_path,
             '-ac', '2',
-            '-ar', '48000',
+            '-ar', '24000',
             '-y', 
             '-loglevel', 'error',
             wav_path
