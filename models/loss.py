@@ -150,7 +150,7 @@ class SIGReg(tf.keras.losses.Loss):
         
         # Aggregate results (mean over slices)
         m = tf.reduce_mean(stats)
-        tf.print("SIGReg loss:", m, output_stream=sys.stdout)
+        # tf.print("SIGReg loss:", m, output_stream=sys.stdout)
         return m
     
     

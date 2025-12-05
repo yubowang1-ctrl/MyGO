@@ -171,6 +171,18 @@ class ViT(tf.keras.Model):
             name="mask_token",
         )
         
+        # number of rows and cols of patches
+        self.num_row_patch = (config.image_height - config.patch_overlap) // (config.patch_height - config.patch_overlap)
+        self.num_col_patch = (config.image_width - config.patch_overlap) // (config.patch_width - config.patch_overlap)
+        
+        # initialize frequency positional embedding, each horizontal band of patch gets same frequency embedding
+        self.freq_position_embedding = self.add_weight(
+            shape=(1, self.num_row_patch, 1, config.hidden_dim),
+            initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
+            trainable=True,
+            name="freq_position_embedding",
+        )
+        
         # validate patching parameters
         ph, pw, po = self.config.patch_height, self.config.patch_width, self.config.patch_overlap
         assert (self.config.image_height - po) % (ph - po) == 0, "Image height not compatible with patch height and overlap"
@@ -198,6 +210,8 @@ class ViT(tf.keras.Model):
         batch_size = tf.shape(patches)[0]
         num_row_patches = tf.shape(patches)[1]
         num_col_patches = tf.shape(patches)[2]
+        tf.debugging.assert_equal(num_row_patches, self.num_row_patch, "Number of row patches mismatch")
+        tf.debugging.assert_equal(num_col_patches, self.num_col_patch, "Number of column patches mismatch")
         # tf.print(tf.shape(patches))
         # patches now has shape (batch_size * V, num_row_patches, num_col_patches, patch_height * patch_width * num_channels)
         
@@ -212,12 +226,20 @@ class ViT(tf.keras.Model):
         
         x = tf.reshape(patches, [tf.shape(patches)[0], tf.shape(patches)[1] * tf.shape(patches)[2], tf.shape(patches)[3]])  # flatten patches
         x = self.linear_projection(x)  # project to hidden_dim
+        
         # x shape: (batch_size * V, num_patches, hidden_dim)
         if training: # mask patches
             mask = mask_patches(batch_size, num_row_patches, num_col_patches, self.config.G, self.config.V)
             mask |= mask_timeframe(batch_size, num_row_patches, num_col_patches, self.config.G, self.config.V)
             x = tf.where(mask, tf.broadcast_to(self.mask_token, tf.shape(x)), x)
-            
+        
+        # add frequency positional embedding
+        # expand to (1, num_row_patches * num_col_patches, hidden_dim)
+        freq_position_embedding_expanded = tf.tile(self.freq_position_embedding, [1, 1, num_col_patches, 1])
+        # flatten 
+        freq_position_embedding_expanded = tf.reshape(freq_position_embedding_expanded, [1, num_row_patches * num_col_patches, self.config.hidden_dim])
+        x += freq_position_embedding_expanded  # broadcasting addition
+        
         # prepend cls token to the sequence
         cls_tokens = tf.broadcast_to(self.cls_token, [batch_size, 1, self.config.hidden_dim])
         x = tf.concat([cls_tokens, x], axis=1)  # (batch_size, num_patches + 1, hidden_dim)
@@ -308,13 +330,13 @@ class SingleHeadAttention(tf.keras.layers.Layer):
         self.max_time_distance = 2 * self.num_patch_per_col - 1 # relative position bias for time dimension
         self.attention_bias_table = self.add_weight(
             shape=(2 * self.max_time_distance - 1,),
-            initializer=tf.keras.initializers.Zeros(),
+            initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
             trainable=True,
             name="time_attention_bias_table",
         )
         self.cls_token_bias_table = self.add_weight(
             shape=(self.num_patch_per_col * self.num_patch_per_row + 1,),
-            initializer=tf.keras.initializers.Zeros(),
+            initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
             trainable=True,
             name="cls_token_bias_table",
         )
