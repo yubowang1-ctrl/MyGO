@@ -78,7 +78,10 @@ def python_load_spectrogram(file_path_tensor):
         # Convert to float32 and normalize back to [0, 1]
         # We saved as uint8 [0, 255], so divide by 255.0
         spec = spec.astype(np.float32) / 255.0
-        
+        # ensure shape
+        H, W, C = np.shape(spec)
+        if H != IMAGE_HEIGHT or W != IMAGE_WIDTH:
+            spec = tf.image.resize(tf.convert_to_tensor(spec), [IMAGE_HEIGHT, IMAGE_WIDTH], method='bilinear')
         return spec, label_vec
         
     except Exception as e:

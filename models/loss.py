@@ -14,7 +14,13 @@ def all_reduce(x, op="MEAN"):
             reduce_op = tf.distribute.ReduceOp.MEAN
             if op.upper() == "SUM":
                 reduce_op = tf.distribute.ReduceOp.SUM
-            
+            elif op.upper() == "MAX":
+                # merge_call runs on the coordinator; signature must be (strategy, *args)
+                def max_merge(strategy, value):
+                    vals = strategy.experimental_local_results(value)  # tuple per replica
+                    stacked = tf.stack(vals, axis=0)                   # (num_replicas, ...)
+                    return tf.reduce_max(stacked, axis=0)
+                return ctx.merge_call(max_merge, args=(x,))
             return ctx.all_reduce(reduce_op, x)
     
     # If not distributed, just return the input
@@ -125,7 +131,7 @@ class SIGReg(tf.keras.losses.Loss):
         # Synchronize global_step across replicas to ensure same seed
         # We use MEAN and cast back to int, assuming all replicas have same step roughly
         global_step_float = tf.cast(global_step, tf.float32)
-        global_step_sync = all_reduce(global_step_float, op="MEAN")
+        global_step_sync = all_reduce(global_step_float, op="MAX")
         seed = tf.cast(global_step_sync, tf.int32)
         
         # Generate random projection matrix A: (D, num_slices)
@@ -135,6 +141,8 @@ class SIGReg(tf.keras.losses.Loss):
             seed=[seed, 0],
             dtype=tf.float32
         )
+
+        A = tf.stop_gradient(A)
         
         # Normalize columns of A to be unit vectors
         norm = tf.norm(A, axis=0, keepdims=True)
@@ -180,4 +188,4 @@ class LeJEPA(tf.keras.losses.Loss):
         # Cast inv_loss to float32 to match sigreg_loss (which is float32)
         inv_loss = tf.cast(inv_loss, tf.float32)
         
-        return inv_loss * (1 - self.lambd) + sigreg_loss * self.lambd
+        return inv_loss * (1 - self.lambd) + sigreg_loss * self.lambd, sigreg_loss

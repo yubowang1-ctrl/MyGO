@@ -72,10 +72,10 @@ with strategy.scope():
 
     optimizer = tf.keras.optimizers.AdamW(
         learning_rate=lr_warmup_decayed_fn, 
-        weight_decay=1e-2,
+        weight_decay=5e-6,
         beta_1=0.9,
         beta_2=0.999,
-        global_clipnorm=1.0 # gradient clipping
+        global_clipnorm=0.5 # gradient clipping
     )
     
     # Initialize Loss
@@ -167,7 +167,7 @@ def train_step(inputs):
         # 5. Calculate LeJEPA Loss (Backbone)
         # LeJEPA returns a scalar (sum of inv_loss and sigreg_loss)
         # We call .call() directly to pass the step argument, bypassing keras.Loss.__call__
-        per_replica_loss_backbone = loss_fn.call(global_emb, all_emb, step=optimizer.iterations)
+        per_replica_loss_backbone, per_replica_sigreg_loss_backbone = loss_fn.call(global_emb, all_emb, step=optimizer.iterations)
         
         # 6. Calculate Probe Loss (Linear Probe)
         # Input to probe: Average of Global Views
@@ -193,6 +193,7 @@ def train_step(inputs):
         
         # 7. Scale Losses for Global Batch
         scaled_loss_backbone = per_replica_loss_backbone / float(strategy.num_replicas_in_sync)
+        scaled_sigreg_loss_backbone = per_replica_sigreg_loss_backbone / float(strategy.num_replicas_in_sync)
         scaled_loss_probe = per_replica_loss_probe / float(strategy.num_replicas_in_sync)
         
         # 8. Calculate Accuracy (Binary Accuracy for Multi-label)
@@ -211,7 +212,7 @@ def train_step(inputs):
     
     del tape # Explicitly delete persistent tape
     
-    return scaled_loss_backbone, scaled_loss_probe, scaled_acc
+    return scaled_loss_backbone, scaled_loss_probe, scaled_acc, scaled_sigreg_loss_backbone
 
 # ============================================================================== 
 # 6. Distributed Training Loop
@@ -219,14 +220,14 @@ def train_step(inputs):
 @tf.function
 def distributed_train_step(dataset_inputs):
     # Run train_step on all replicas
-    per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc = strategy.run(train_step, args=(dataset_inputs,))
+    per_replica_loss_backbone, per_replica_loss_probe, per_replica_acc, per_replica_sigreg_loss_backbone = strategy.run(train_step, args=(dataset_inputs,))
     
     # Aggregate losses (SUM) to get the global average loss
     global_loss_backbone = strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_loss_backbone, axis=None)
     global_loss_probe = strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_loss_probe, axis=None)
     global_acc = strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_acc, axis=None)
-    
-    return global_loss_backbone, global_loss_probe, global_acc
+    global_sigreg_loss_backbone = strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_sigreg_loss_backbone, axis=None)
+    return global_loss_backbone, global_loss_probe, global_acc, global_sigreg_loss_backbone
 
 def main():
     print("Starting training...")
@@ -239,19 +240,21 @@ def main():
         total_loss_backbone = 0.0
         total_loss_probe = 0.0
         total_acc = 0.0
+        total_sigreg_loss_backbone = 0.0
         num_batches = 0
         
         # Iterate over the distributed dataset
         for step, batch_inputs in tqdm(enumerate(dist_dataset), total=tot_num_batches, desc=f"Training Epoch {epoch+1}/{NUM_EPOCHS}", unit="batch"):
-            loss_backbone, loss_probe, acc = distributed_train_step(batch_inputs)
+            loss_backbone, loss_probe, acc, sigreg_loss_backbone = distributed_train_step(batch_inputs)
             
             total_loss_backbone += loss_backbone
             total_loss_probe += loss_probe
             total_acc += acc
+            total_sigreg_loss_backbone += sigreg_loss_backbone
             num_batches += 1
             
             if step % LOG_EVERY_STEPS == 0:
-                print(f"  Step {step}: Backbone Loss = {loss_backbone:.4f}, Probe Loss = {loss_probe:.4f}, Acc = {acc:.4f}")
+                print(f"  Step {step}: Backbone Loss = {loss_backbone:.4f}, SIGReg Loss = {sigreg_loss_backbone:.4f} Probe Loss = {loss_probe:.4f}, Acc = {acc:.4f}")
                 wandb.log({
                     "backbone_loss": loss_backbone,
                     "probe_loss": loss_probe,
@@ -261,35 +264,73 @@ def main():
                 
                 # also plot the distribution of cls tokens of the first global view
                 # take the first two dimensions for visualization
-                with strategy.scope():
+                # with strategy.scope():
+                #     views, labels = batch_inputs
+                #     if tf.distribute.has_strategy():
+                #         ctx = tf.distribute.get_replica_context()
+                #         if ctx is not None:
+                #             views = ctx.all_gather(views, axis=0)
+                #             labels = ctx.all_gather(labels, axis=0)
+                #     B = tf.shape(views)[0]
+                #     V = TOTAL_VIEWS
+                #     # only take one view
+                #     views = views[:, :1, :, :, :] # (B, 1, H, W, C)
+                #     outputs = model(views, training=False)
+                #     cls_tokens = outputs[:, :, 0, :]
+                #     global_view_0 = cls_tokens[:, 0, :] # (B, D)
+                #     cls_2d = global_view_0[:, :2] # (B, 2)
+                #     cls_2d_np = cls_2d.numpy()
+                    
+                #     plt.figure(figsize=(6,6))
+                #     plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
+                #     plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
+                #     plt.xlabel("Dimension 1")
+                #     plt.ylabel("Dimension 2")
+                #     # plt.show()
+                #     plt.savefig(f"figures/cls_token_distribution_epoch{epoch+1}_step{step}.png")
+                #     wandb.log({
+                #         "cls_token_distribution": wandb.Image(plt),
+                #         "epoch": epoch,
+                #         "step": step
+                #     })
+                #     plt.close()
+
+                def replica_step(batch_inputs):
                     views, labels = batch_inputs
-                    if strategy.num_replicas_in_sync > 1:
-                        views = views.values[0]
-                        labels = labels.values[0]
+
+                    ctx = tf.distribute.get_replica_context()
+                    views = ctx.all_gather(views, axis=0)
+                    labels = ctx.all_gather(labels, axis=0)
+
                     B = tf.shape(views)[0]
                     V = TOTAL_VIEWS
+
                     # only take one view
-                    views = views[:, :1, :, :, :] # (B, 1, H, W, C)
+                    views = views[:, :1, :, :, :]  # (B, 1, H, W, C)
+
                     outputs = model(views, training=False)
                     cls_tokens = outputs[:, :, 0, :]
-                    global_view_0 = cls_tokens[:, 0, :] # (B, D)
-                    cls_2d = global_view_0[:, :2] # (B, 2)
-                    cls_2d_np = cls_2d.numpy()
-                    
-                    plt.figure(figsize=(6,6))
-                    plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
-                    plt.title(f"CLS Token Distribution - Epoch {epoch+1} Step {step} - Mean ({float(np.mean(cls_2d_np[:,0])):.2f}, {float(np.mean(cls_2d_np[:,1])):.2f})")
-                    plt.xlabel("Dimension 1")
-                    plt.ylabel("Dimension 2")
-                    # plt.show()
-                    plt.savefig(f"figures/cls_token_distribution_epoch{epoch+1}_step{step}.png")
-                    wandb.log({
-                        "cls_token_distribution": wandb.Image(plt),
-                        "epoch": epoch,
-                        "step": step
-                    })
-                    plt.close()
-        
+                    global_view_0 = cls_tokens[:, 0, :]  # (B, D)
+                    cls_2d = global_view_0[:, :2]        # (B, 2)
+
+                    return cls_2d
+                cls_2d_per_replica = strategy.run(replica_step, args=(batch_inputs,))
+                cls_2d = tf.concat(strategy.experimental_local_results(cls_2d_per_replica), axis=0)
+                cls_2d_np = cls_2d.numpy()
+
+                plt.figure(figsize=(6,6))
+                plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
+                plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
+                plt.xlabel("Dimension 1")
+                plt.ylabel("Dimension 2")
+                # plt.show()
+                plt.savefig(f"figures/cls_token_distribution_epoch{epoch+1}_step{step}.png")
+                wandb.log({
+                    "cls_token_distribution": wandb.Image(plt),
+                    "epoch": epoch,
+                    "step": step
+                })
+                plt.close()
         avg_loss_backbone = total_loss_backbone / num_batches if num_batches > 0 else 0.0
         avg_loss_probe = total_loss_probe / num_batches if num_batches > 0 else 0.0
         avg_acc = total_acc / num_batches if num_batches > 0 else 0.0

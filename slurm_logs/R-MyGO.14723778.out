@@ -1,0 +1,610 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 14723778
+##  Job Name : MyGO
+##  Nodelist : gpu2002
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/MyGO/MyGo
+##   Job Started : Fri Dec  5 11:05:39 PM EST 2025
+###############################################################################
+
+==========================================
+Job started at: Fri Dec  5 11:05:39 PM EST 2025
+Job ID: 14723778
+Node: gpu2002
+==========================================
+
+GPU Information (from host):
+Fri Dec  5 23:05:39 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  Quadro RTX 6000                On  | 00000000:3D:00.0 Off |                  Off |
+| 34%   47C    P8              20W / 260W |     10MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  Quadro RTX 6000                On  | 00000000:3E:00.0 Off |                  Off |
+| 36%   50C    P8              15W / 260W |     10MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     30660      G   /usr/libexec/Xorg                             8MiB |
+|    1   N/A  N/A     30660      G   /usr/libexec/Xorg                             8MiB |
++---------------------------------------------------------------------------------------+
+
+mygo conda environment loaded
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys/bin/ffmpeg
+ffmpeg version 7.0 Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc 11 (GCC)
+configuration: --prefix=/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys --enable-pic --cc=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/gcc --cxx=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/g++ --disable-libxcb --disable-libxcb-shape --disable-libxcb-shm --disable-libxcb-xfixes --disable-xlib --disable-libfontconfig --disable-libfreetype --disable-libfribidi --enable-bzlib --enable-gpl --disable-libmp3lame --disable-libopenjpeg --disable-libopus --disable-libspeex --disable-libvorbis --enable-libvpx --enable-libx264 --disable-nonfree --disable-openssl --enable-shared --enable-version3 --disable-libzmq --disable-libssh --enable-libwebp --disable-lzma --disable-libsnappy --disable-sdl2 --disable-libaom --disable-libxml2
+libavutil      59.  8.100 / 59.  8.100
+libavcodec     61.  3.100 / 61.  3.100
+libavformat    61.  1.100 / 61.  1.100
+libavdevice    61.  1.100 / 61.  1.100
+libavfilter    10.  1.100 / 10.  1.100
+libswscale      8.  1.100 /  8.  1.100
+libswresample   5.  1.100 /  5.  1.100
+libpostproc    58.  1.100 / 58.  1.100
+TF version: 2.16.1
+Built with CUDA: True
+GPUs detected: 2
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+==========================================
+Installing dependencies
+==========================================
+
+
+==========================================
+Starting main Python script at Fri Dec  5 11:05:47 PM EST 2025
+==========================================
+
+Working directory: /users/lwang223/MyGO/MyGo
+
+[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Using MirroredStrategy for multi-GPU training.
+Number of devices: 2
+Model: "vi_t__ti"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ vit (TFViTMainLayer)        multiple                  0 (unused)
+                                                                 
+=================================================================
+Total params: 5536128 (21.12 MB)
+Trainable params: 5536128 (21.12 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Model: "linear_probe"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense (Dense)               multiple                  101711    
+                                                                 
+=================================================================
+Total params: 101711 (397.31 KB)
+Trainable params: 101711 (397.31 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Building optimizer variables...
+Optimizer built.
+Starting training...
+
+Epoch 1/100
+  Step 0: Backbone Loss = 103.6670, Probe Loss = 450.9551, Acc = 0.4848
+  Step 50: Backbone Loss = 5.6410, Probe Loss = 436.7968, Acc = 0.4615
+  Step 100: Backbone Loss = 3.6936, Probe Loss = 427.1879, Acc = 0.4884
+  Step 150: Backbone Loss = 4.2516, Probe Loss = 412.7891, Acc = 0.5292
+  Step 200: Backbone Loss = 4.4564, Probe Loss = 402.9771, Acc = 0.5115
+  Step 250: Backbone Loss = 4.0526, Probe Loss = 393.0771, Acc = 0.5143
+  Step 300: Backbone Loss = 5.8373, Probe Loss = 388.7888, Acc = 0.4682
+Epoch 1 finished in 645.38s.
+  Avg Backbone Loss: 10.3317
+  Avg Probe Loss:    414.2399
+  Avg Probe Accuracy: 0.5023
+
+Epoch 2/100
+  Step 0: Backbone Loss = 5.4275, Probe Loss = 382.9622, Acc = 0.5197
+  Step 50: Backbone Loss = 4.5775, Probe Loss = 399.9373, Acc = 0.5099
+  Step 100: Backbone Loss = 4.2301, Probe Loss = 396.5350, Acc = 0.4920
+  Step 150: Backbone Loss = 4.6401, Probe Loss = 420.3761, Acc = 0.4671
+  Step 200: Backbone Loss = 3.8423, Probe Loss = 434.8550, Acc = 0.4991
+  Step 250: Backbone Loss = 3.5361, Probe Loss = 432.4209, Acc = 0.4879
+  Step 300: Backbone Loss = 3.8456, Probe Loss = 410.0041, Acc = 0.5141
+Epoch 2 finished in 594.68s.
+  Avg Backbone Loss: 4.5729
+  Avg Probe Loss:    410.6514
+  Avg Probe Accuracy: 0.5039
+
+Epoch 3/100
+  Step 0: Backbone Loss = 3.4951, Probe Loss = 390.5690, Acc = 0.5567
+  Step 50: Backbone Loss = 3.4154, Probe Loss = 406.0190, Acc = 0.5309
+  Step 100: Backbone Loss = 3.2583, Probe Loss = 376.2686, Acc = 0.5095
+  Step 150: Backbone Loss = 2.8135, Probe Loss = 414.2969, Acc = 0.5223
+  Step 200: Backbone Loss = 2.8111, Probe Loss = 351.2096, Acc = 0.4979
+  Step 250: Backbone Loss = 2.3640, Probe Loss = 395.3015, Acc = 0.5365
+  Step 300: Backbone Loss = 2.4331, Probe Loss = 357.8976, Acc = 0.5130
+Epoch 3 finished in 592.26s.
+  Avg Backbone Loss: 2.9480
+  Avg Probe Loss:    384.1969
+  Avg Probe Accuracy: 0.5099
+
+Epoch 4/100
+  Step 0: Backbone Loss = 2.4249, Probe Loss = 369.8530, Acc = 0.4903
+  Step 50: Backbone Loss = 2.1758, Probe Loss = 365.0513, Acc = 0.5042
+  Step 100: Backbone Loss = 2.1668, Probe Loss = 384.7922, Acc = 0.4868
+  Step 150: Backbone Loss = 2.1081, Probe Loss = 363.8206, Acc = 0.5383
+  Step 200: Backbone Loss = 2.0464, Probe Loss = 347.9512, Acc = 0.5189
+  Step 250: Backbone Loss = 2.0045, Probe Loss = 351.9493, Acc = 0.5280
+  Step 300: Backbone Loss = 1.8766, Probe Loss = 351.1084, Acc = 0.5111
+Epoch 4 finished in 587.41s.
+  Avg Backbone Loss: 2.0972
+  Avg Probe Loss:    357.0894
+  Avg Probe Accuracy: 0.5146
+
+Epoch 5/100
+  Step 0: Backbone Loss = 1.8981, Probe Loss = 344.5306, Acc = 0.5260
+  Step 50: Backbone Loss = 1.7686, Probe Loss = 334.7231, Acc = 0.5067
+  Step 100: Backbone Loss = 1.8217, Probe Loss = 324.0970, Acc = 0.5016
+  Step 150: Backbone Loss = 1.7375, Probe Loss = 317.5870, Acc = 0.4986
+  Step 200: Backbone Loss = 1.8531, Probe Loss = 327.2756, Acc = 0.5115
+  Step 250: Backbone Loss = 1.7014, Probe Loss = 303.0847, Acc = 0.5340
+  Step 300: Backbone Loss = 1.5837, Probe Loss = 303.9007, Acc = 0.5129
+Epoch 5 finished in 588.87s.
+  Avg Backbone Loss: 1.7502
+  Avg Probe Loss:    320.4598
+  Avg Probe Accuracy: 0.5204
+
+Epoch 6/100
+  Step 0: Backbone Loss = 1.6675, Probe Loss = 314.9727, Acc = 0.5353
+  Step 50: Backbone Loss = 1.5976, Probe Loss = 300.8555, Acc = 0.4973
+  Step 100: Backbone Loss = 1.6078, Probe Loss = 324.3280, Acc = 0.5433
+  Step 150: Backbone Loss = 1.5395, Probe Loss = 284.9401, Acc = 0.5133
+  Step 200: Backbone Loss = 1.4951, Probe Loss = 295.0793, Acc = 0.5354
+  Step 250: Backbone Loss = 1.5058, Probe Loss = 284.7200, Acc = 0.5168
+  Step 300: Backbone Loss = 1.5231, Probe Loss = 291.2176, Acc = 0.5173
+Epoch 6 finished in 595.56s.
+  Avg Backbone Loss: 1.5612
+  Avg Probe Loss:    294.2487
+  Avg Probe Accuracy: 0.5212
+
+Epoch 7/100
+  Step 0: Backbone Loss = 1.4441, Probe Loss = 283.8471, Acc = 0.5273
+  Step 50: Backbone Loss = 1.4160, Probe Loss = 271.2247, Acc = 0.5211
+  Step 100: Backbone Loss = 1.4458, Probe Loss = 293.0611, Acc = 0.5086
+  Step 150: Backbone Loss = 1.4056, Probe Loss = 277.8091, Acc = 0.5120
+  Step 200: Backbone Loss = 1.4700, Probe Loss = 273.6032, Acc = 0.5200
+  Step 250: Backbone Loss = 1.4308, Probe Loss = 259.0198, Acc = 0.5222
+  Step 300: Backbone Loss = 1.3961, Probe Loss = 276.0065, Acc = 0.5339
+Epoch 7 finished in 595.45s.
+  Avg Backbone Loss: 1.4461
+  Avg Probe Loss:    270.7603
+  Avg Probe Accuracy: 0.5210
+
+Epoch 8/100
+  Step 0: Backbone Loss = 1.3436, Probe Loss = 259.6210, Acc = 0.5206
+  Step 50: Backbone Loss = 1.3626, Probe Loss = 258.2697, Acc = 0.5171
+  Step 100: Backbone Loss = 1.3315, Probe Loss = 255.2578, Acc = 0.5187
+  Step 150: Backbone Loss = 1.3065, Probe Loss = 254.8640, Acc = 0.5161
+  Step 200: Backbone Loss = 1.3585, Probe Loss = 254.0244, Acc = 0.5219
+  Step 250: Backbone Loss = 1.4017, Probe Loss = 252.5378, Acc = 0.5241
+  Step 300: Backbone Loss = 1.3489, Probe Loss = 244.9879, Acc = 0.5233
+Epoch 8 finished in 595.20s.
+  Avg Backbone Loss: 1.3636
+  Avg Probe Loss:    251.8342
+  Avg Probe Accuracy: 0.5212
+
+Epoch 9/100
+  Step 0: Backbone Loss = 1.3188, Probe Loss = 222.4798, Acc = 0.5180
+  Step 50: Backbone Loss = 1.3816, Probe Loss = 234.4020, Acc = 0.5261
+  Step 100: Backbone Loss = 1.2801, Probe Loss = 237.9651, Acc = 0.5209
+  Step 150: Backbone Loss = 1.2981, Probe Loss = 243.3081, Acc = 0.5287
+  Step 200: Backbone Loss = 1.3520, Probe Loss = 229.8432, Acc = 0.5236
+  Step 250: Backbone Loss = 1.3191, Probe Loss = 232.2269, Acc = 0.5220
+  Step 300: Backbone Loss = 1.2870, Probe Loss = 219.6966, Acc = 0.5194
+Epoch 9 finished in 595.80s.
+  Avg Backbone Loss: 1.3219
+  Avg Probe Loss:    239.2481
+  Avg Probe Accuracy: 0.5208
+
+Epoch 10/100
+  Step 0: Backbone Loss = 1.3308, Probe Loss = 233.9705, Acc = 0.5166
+  Step 50: Backbone Loss = 1.2771, Probe Loss = 227.9004, Acc = 0.5240
+  Step 100: Backbone Loss = 1.2891, Probe Loss = 236.0903, Acc = 0.5204
+  Step 150: Backbone Loss = 1.2796, Probe Loss = 224.2212, Acc = 0.5272
+  Step 200: Backbone Loss = 1.3232, Probe Loss = 221.0135, Acc = 0.5232
+  Step 250: Backbone Loss = 1.3407, Probe Loss = 219.0752, Acc = 0.5218
+  Step 300: Backbone Loss = 1.2606, Probe Loss = 219.6452, Acc = 0.5259
+Epoch 10 finished in 595.37s.
+  Avg Backbone Loss: 1.2955
+  Avg Probe Loss:    230.3171
+  Avg Probe Accuracy: 0.5204
+
+Epoch 11/100
+  Step 0: Backbone Loss = 1.2636, Probe Loss = 223.0410, Acc = 0.5264
+  Step 50: Backbone Loss = 1.2994, Probe Loss = 226.5756, Acc = 0.5175
+  Step 100: Backbone Loss = 1.2900, Probe Loss = 232.6067, Acc = 0.5158
+  Step 150: Backbone Loss = 1.2483, Probe Loss = 219.4817, Acc = 0.5155
+  Step 200: Backbone Loss = 1.2509, Probe Loss = 232.7532, Acc = 0.5174
+  Step 250: Backbone Loss = 1.2863, Probe Loss = 232.8434, Acc = 0.5187
+  Step 300: Backbone Loss = 1.2767, Probe Loss = 214.1208, Acc = 0.5196
+Epoch 11 finished in 595.15s.
+  Avg Backbone Loss: 1.2753
+  Avg Probe Loss:    222.9934
+  Avg Probe Accuracy: 0.5207
+
+Epoch 12/100
+  Step 0: Backbone Loss = 1.2643, Probe Loss = 221.6481, Acc = 0.5264
+  Step 50: Backbone Loss = 1.2895, Probe Loss = 215.2351, Acc = 0.5166
+  Step 100: Backbone Loss = 1.2465, Probe Loss = 226.6477, Acc = 0.5154
+  Step 150: Backbone Loss = 1.2847, Probe Loss = 205.7487, Acc = 0.5196
+  Step 200: Backbone Loss = 1.2684, Probe Loss = 213.6397, Acc = 0.5168
+  Step 250: Backbone Loss = 1.2860, Probe Loss = 209.0627, Acc = 0.5210
+  Step 300: Backbone Loss = 1.2451, Probe Loss = 213.7292, Acc = 0.5223
+Epoch 12 finished in 594.19s.
+  Avg Backbone Loss: 1.2640
+  Avg Probe Loss:    214.5487
+  Avg Probe Accuracy: 0.5203
+
+Epoch 13/100
+  Step 0: Backbone Loss = 1.2551, Probe Loss = 224.3513, Acc = 0.5147
+  Step 50: Backbone Loss = 1.2329, Probe Loss = 211.0021, Acc = 0.5204
+  Step 100: Backbone Loss = 1.2900, Probe Loss = 222.4281, Acc = 0.5172
+  Step 150: Backbone Loss = 1.2212, Probe Loss = 201.2240, Acc = 0.5175
+  Step 200: Backbone Loss = 1.2763, Probe Loss = 207.4405, Acc = 0.5182
+  Step 250: Backbone Loss = 1.2467, Probe Loss = 214.2300, Acc = 0.5225
+  Step 300: Backbone Loss = 1.2099, Probe Loss = 203.4485, Acc = 0.5175
+Epoch 13 finished in 594.50s.
+  Avg Backbone Loss: 1.2512
+  Avg Probe Loss:    207.8726
+  Avg Probe Accuracy: 0.5206
+
+Epoch 14/100
+  Step 0: Backbone Loss = 1.2339, Probe Loss = 200.7648, Acc = 0.5203
+  Step 50: Backbone Loss = 1.2150, Probe Loss = 208.9461, Acc = 0.5197
+  Step 100: Backbone Loss = 1.2357, Probe Loss = 196.6494, Acc = 0.5231
+  Step 150: Backbone Loss = 1.2603, Probe Loss = 204.8818, Acc = 0.5189
+  Step 200: Backbone Loss = 1.2198, Probe Loss = 202.1574, Acc = 0.5190
+  Step 250: Backbone Loss = 1.2177, Probe Loss = 199.4465, Acc = 0.5222
+  Step 300: Backbone Loss = 1.2680, Probe Loss = 200.6069, Acc = 0.5248
+Epoch 14 finished in 594.68s.
+  Avg Backbone Loss: 1.2394
+  Avg Probe Loss:    203.3851
+  Avg Probe Accuracy: 0.5207
+
+Epoch 15/100
+  Step 0: Backbone Loss = 1.2232, Probe Loss = 204.2493, Acc = 0.5180
+  Step 50: Backbone Loss = 1.2574, Probe Loss = 211.7220, Acc = 0.5194
+  Step 100: Backbone Loss = 1.1967, Probe Loss = 210.6623, Acc = 0.5196
+  Step 150: Backbone Loss = 1.2345, Probe Loss = 194.1033, Acc = 0.5184
+  Step 200: Backbone Loss = 1.2336, Probe Loss = 200.6066, Acc = 0.5143
+  Step 250: Backbone Loss = 1.1861, Probe Loss = 209.4660, Acc = 0.5190
+  Step 300: Backbone Loss = 1.2221, Probe Loss = 186.3551, Acc = 0.5218
+Epoch 15 finished in 595.00s.
+  Avg Backbone Loss: 1.2367
+  Avg Probe Loss:    199.8209
+  Avg Probe Accuracy: 0.5205
+
+Epoch 16/100
+  Step 0: Backbone Loss = 1.2457, Probe Loss = 198.5150, Acc = 0.5198
+  Step 50: Backbone Loss = 1.2357, Probe Loss = 195.7420, Acc = 0.5238
+  Step 100: Backbone Loss = 1.1980, Probe Loss = 211.5778, Acc = 0.5146
+  Step 150: Backbone Loss = 1.2463, Probe Loss = 204.7902, Acc = 0.5194
+  Step 200: Backbone Loss = 1.2335, Probe Loss = 204.8604, Acc = 0.5148
+  Step 250: Backbone Loss = 1.2367, Probe Loss = 196.8568, Acc = 0.5223
+  Step 300: Backbone Loss = 1.1781, Probe Loss = 196.2096, Acc = 0.5198
+Epoch 16 finished in 595.31s.
+  Avg Backbone Loss: 1.2325
+  Avg Probe Loss:    196.9728
+  Avg Probe Accuracy: 0.5203
+
+Epoch 17/100
+  Step 0: Backbone Loss = 1.2601, Probe Loss = 209.8563, Acc = 0.5194
+  Step 50: Backbone Loss = 1.2091, Probe Loss = 208.1375, Acc = 0.5147
+  Step 100: Backbone Loss = 1.2193, Probe Loss = 197.1394, Acc = 0.5208
+  Step 150: Backbone Loss = 1.2181, Probe Loss = 186.5072, Acc = 0.5133
+  Step 200: Backbone Loss = 1.2295, Probe Loss = 195.7049, Acc = 0.5186
+  Step 250: Backbone Loss = 1.1928, Probe Loss = 201.6079, Acc = 0.5140
+  Step 300: Backbone Loss = 1.1984, Probe Loss = 184.1826, Acc = 0.5248
+Epoch 17 finished in 594.67s.
+  Avg Backbone Loss: 1.2266
+  Avg Probe Loss:    195.2485
+  Avg Probe Accuracy: 0.5203
+
+Epoch 18/100
+  Step 0: Backbone Loss = 1.2593, Probe Loss = 184.4846, Acc = 0.5198
+  Step 50: Backbone Loss = 1.1873, Probe Loss = 199.4906, Acc = 0.5203
+  Step 100: Backbone Loss = 1.1943, Probe Loss = 190.6114, Acc = 0.5197
+  Step 150: Backbone Loss = 1.2076, Probe Loss = 186.7470, Acc = 0.5305
+  Step 200: Backbone Loss = 1.2328, Probe Loss = 184.8737, Acc = 0.5197
+  Step 250: Backbone Loss = 1.1934, Probe Loss = 193.6206, Acc = 0.5147
+  Step 300: Backbone Loss = 1.2537, Probe Loss = 191.8438, Acc = 0.5171
+Epoch 18 finished in 594.66s.
+  Avg Backbone Loss: 1.2219
+  Avg Probe Loss:    192.1917
+  Avg Probe Accuracy: 0.5203
+
+Epoch 19/100
+  Step 0: Backbone Loss = 1.2152, Probe Loss = 196.8293, Acc = 0.5176
+  Step 50: Backbone Loss = 1.1788, Probe Loss = 193.0447, Acc = 0.5167
+  Step 100: Backbone Loss = 1.1915, Probe Loss = 195.3196, Acc = 0.5221
+  Step 150: Backbone Loss = 1.2192, Probe Loss = 186.3253, Acc = 0.5182
+  Step 200: Backbone Loss = 1.1933, Probe Loss = 183.8090, Acc = 0.5204
+  Step 250: Backbone Loss = 1.2628, Probe Loss = 187.5163, Acc = 0.5194
+  Step 300: Backbone Loss = 1.2310, Probe Loss = 186.4876, Acc = 0.5192
+Epoch 19 finished in 595.11s.
+  Avg Backbone Loss: 1.2206
+  Avg Probe Loss:    190.6145
+  Avg Probe Accuracy: 0.5205
+
+Epoch 20/100
+  Step 0: Backbone Loss = 1.2120, Probe Loss = 194.7420, Acc = 0.5228
+  Step 50: Backbone Loss = 1.2298, Probe Loss = 192.7282, Acc = 0.5169
+  Step 100: Backbone Loss = 1.1931, Probe Loss = 186.1779, Acc = 0.5216
+  Step 150: Backbone Loss = 1.2018, Probe Loss = 191.1086, Acc = 0.5203
+  Step 200: Backbone Loss = 1.2127, Probe Loss = 186.8356, Acc = 0.5206
+  Step 250: Backbone Loss = 1.2446, Probe Loss = 181.2484, Acc = 0.5214
+  Step 300: Backbone Loss = 1.1618, Probe Loss = 176.7927, Acc = 0.5200
+Epoch 20 finished in 593.56s.
+  Avg Backbone Loss: 1.2138
+  Avg Probe Loss:    188.9039
+  Avg Probe Accuracy: 0.5202
+
+Epoch 21/100
+  Step 0: Backbone Loss = 1.2402, Probe Loss = 184.9532, Acc = 0.5210
+  Step 50: Backbone Loss = 1.2181, Probe Loss = 196.7949, Acc = 0.5173
+  Step 100: Backbone Loss = 1.2114, Probe Loss = 184.6427, Acc = 0.5176
+  Step 150: Backbone Loss = 1.1798, Probe Loss = 180.7290, Acc = 0.5136
+  Step 200: Backbone Loss = 1.2086, Probe Loss = 188.1032, Acc = 0.5218
+  Step 250: Backbone Loss = 1.2556, Probe Loss = 183.6432, Acc = 0.5221
+  Step 300: Backbone Loss = 1.2241, Probe Loss = 177.6335, Acc = 0.5152
+Epoch 21 finished in 594.08s.
+  Avg Backbone Loss: 1.2096
+  Avg Probe Loss:    186.8800
+  Avg Probe Accuracy: 0.5201
+
+Epoch 22/100
+  Step 0: Backbone Loss = 1.1829, Probe Loss = 185.1906, Acc = 0.5211
+  Step 50: Backbone Loss = 1.2462, Probe Loss = 187.8879, Acc = 0.5180
+  Step 100: Backbone Loss = 1.1813, Probe Loss = 187.4694, Acc = 0.5161
+  Step 150: Backbone Loss = 1.1968, Probe Loss = 184.8688, Acc = 0.5225
+  Step 200: Backbone Loss = 1.2162, Probe Loss = 198.9451, Acc = 0.5131
+  Step 250: Backbone Loss = 1.2054, Probe Loss = 180.2153, Acc = 0.5170
+  Step 300: Backbone Loss = 1.1939, Probe Loss = 180.1127, Acc = 0.5211
+Epoch 22 finished in 594.29s.
+  Avg Backbone Loss: 1.2105
+  Avg Probe Loss:    186.5646
+  Avg Probe Accuracy: 0.5203
+
+Epoch 23/100
+  Step 0: Backbone Loss = 1.1491, Probe Loss = 195.3574, Acc = 0.5126
+  Step 50: Backbone Loss = 1.1925, Probe Loss = 174.5172, Acc = 0.5239
+  Step 100: Backbone Loss = 1.1800, Probe Loss = 184.2045, Acc = 0.5225
+  Step 150: Backbone Loss = 1.1825, Probe Loss = 185.8626, Acc = 0.5205
+  Step 200: Backbone Loss = 1.2400, Probe Loss = 192.8535, Acc = 0.5190
+  Step 250: Backbone Loss = 1.2288, Probe Loss = 186.4783, Acc = 0.5183
+  Step 300: Backbone Loss = 1.1972, Probe Loss = 187.3026, Acc = 0.5142
+Epoch 23 finished in 593.90s.
+  Avg Backbone Loss: 1.1994
+  Avg Probe Loss:    184.9938
+  Avg Probe Accuracy: 0.5203
+
+Epoch 24/100
+  Step 0: Backbone Loss = 1.1538, Probe Loss = 184.6329, Acc = 0.5248
+  Step 50: Backbone Loss = 1.1978, Probe Loss = 195.7832, Acc = 0.5184
+  Step 100: Backbone Loss = 1.1799, Probe Loss = 193.8150, Acc = 0.5154
+  Step 150: Backbone Loss = 1.2286, Probe Loss = 182.5050, Acc = 0.5263
+  Step 200: Backbone Loss = 1.1736, Probe Loss = 180.9846, Acc = 0.5184
+  Step 250: Backbone Loss = 1.2067, Probe Loss = 185.4217, Acc = 0.5216
+  Step 300: Backbone Loss = 1.2077, Probe Loss = 188.8421, Acc = 0.5231
+Epoch 24 finished in 594.74s.
+  Avg Backbone Loss: 1.1973
+  Avg Probe Loss:    184.9185
+  Avg Probe Accuracy: 0.5208
+
+Epoch 25/100
+  Step 0: Backbone Loss = 1.1811, Probe Loss = 194.7146, Acc = 0.5176
+  Step 50: Backbone Loss = 1.1992, Probe Loss = 182.3437, Acc = 0.5175
+  Step 100: Backbone Loss = 1.2253, Probe Loss = 191.0628, Acc = 0.5176
+  Step 150: Backbone Loss = 1.2136, Probe Loss = 181.6509, Acc = 0.5260
+  Step 200: Backbone Loss = 1.1721, Probe Loss = 191.5754, Acc = 0.5159
+  Step 250: Backbone Loss = 1.1675, Probe Loss = 182.3929, Acc = 0.5244
+  Step 300: Backbone Loss = 1.2244, Probe Loss = 180.0154, Acc = 0.5170
+Epoch 25 finished in 593.44s.
+  Avg Backbone Loss: 1.1924
+  Avg Probe Loss:    183.7355
+  Avg Probe Accuracy: 0.5203
+
+Epoch 26/100
+  Step 0: Backbone Loss = 1.2027, Probe Loss = 176.7243, Acc = 0.5226
+  Step 50: Backbone Loss = 1.2156, Probe Loss = 189.2076, Acc = 0.5170
+  Step 100: Backbone Loss = 1.2008, Probe Loss = 167.5117, Acc = 0.5184
+  Step 150: Backbone Loss = 1.2303, Probe Loss = 182.1291, Acc = 0.5172
+  Step 200: Backbone Loss = 1.1876, Probe Loss = 177.4620, Acc = 0.5250
+  Step 250: Backbone Loss = 1.1938, Probe Loss = 186.1783, Acc = 0.5198
+  Step 300: Backbone Loss = 1.1964, Probe Loss = 186.7838, Acc = 0.5179
+Epoch 26 finished in 593.34s.
+  Avg Backbone Loss: 1.1879
+  Avg Probe Loss:    183.6018
+  Avg Probe Accuracy: 0.5204
+
+Epoch 27/100
+  Step 0: Backbone Loss = 1.1980, Probe Loss = 185.6470, Acc = 0.5193
+  Step 50: Backbone Loss = 1.1727, Probe Loss = 176.9308, Acc = 0.5206
+  Step 100: Backbone Loss = 1.2077, Probe Loss = 187.1423, Acc = 0.5190
+  Step 150: Backbone Loss = 1.1784, Probe Loss = 183.2135, Acc = 0.5216
+  Step 200: Backbone Loss = 1.1863, Probe Loss = 179.2816, Acc = 0.5205
+  Step 250: Backbone Loss = 1.1758, Probe Loss = 176.0931, Acc = 0.5192
+  Step 300: Backbone Loss = 1.1668, Probe Loss = 170.8066, Acc = 0.5266
+Epoch 27 finished in 594.52s.
+  Avg Backbone Loss: 1.1879
+  Avg Probe Loss:    182.8643
+  Avg Probe Accuracy: 0.5202
+
+Epoch 28/100
+  Step 0: Backbone Loss = 1.1977, Probe Loss = 180.9736, Acc = 0.5240
+  Step 50: Backbone Loss = 1.1573, Probe Loss = 178.4789, Acc = 0.5223
+  Step 100: Backbone Loss = 1.1860, Probe Loss = 178.1364, Acc = 0.5222
+  Step 150: Backbone Loss = 1.1318, Probe Loss = 187.0152, Acc = 0.5162
+  Step 200: Backbone Loss = 1.2039, Probe Loss = 194.7540, Acc = 0.5222
+  Step 250: Backbone Loss = 1.1665, Probe Loss = 181.0839, Acc = 0.5195
+  Step 300: Backbone Loss = 1.2350, Probe Loss = 179.0560, Acc = 0.5222
+Epoch 28 finished in 594.22s.
+  Avg Backbone Loss: 1.1826
+  Avg Probe Loss:    182.3592
+  Avg Probe Accuracy: 0.5203
+
+Epoch 29/100
+  Step 0: Backbone Loss = 1.1370, Probe Loss = 178.6391, Acc = 0.5197
+  Step 50: Backbone Loss = 1.2169, Probe Loss = 185.0618, Acc = 0.5189
+  Step 100: Backbone Loss = 1.1533, Probe Loss = 193.7315, Acc = 0.5178
+  Step 150: Backbone Loss = 1.1892, Probe Loss = 191.3696, Acc = 0.5186
+  Step 200: Backbone Loss = 1.2026, Probe Loss = 189.3426, Acc = 0.5173
+  Step 250: Backbone Loss = 1.1785, Probe Loss = 182.7674, Acc = 0.5215
+  Step 300: Backbone Loss = 1.1571, Probe Loss = 177.2451, Acc = 0.5196
+Epoch 29 finished in 593.57s.
+  Avg Backbone Loss: 1.1810
+  Avg Probe Loss:    182.0919
+  Avg Probe Accuracy: 0.5200
+
+Epoch 30/100
+  Step 0: Backbone Loss = 1.2010, Probe Loss = 181.1002, Acc = 0.5202
+  Step 50: Backbone Loss = 1.1492, Probe Loss = 175.7827, Acc = 0.5208
+  Step 100: Backbone Loss = 1.1783, Probe Loss = 174.2431, Acc = 0.5212
+  Step 150: Backbone Loss = 1.1708, Probe Loss = 188.5391, Acc = 0.5216
+  Step 200: Backbone Loss = 1.1616, Probe Loss = 193.7816, Acc = 0.5185
+  Step 250: Backbone Loss = 1.1896, Probe Loss = 177.8885, Acc = 0.5172
+  Step 300: Backbone Loss = 1.1971, Probe Loss = 191.9312, Acc = 0.5187
+Epoch 30 finished in 594.07s.
+  Avg Backbone Loss: 1.1779
+  Avg Probe Loss:    182.1540
+  Avg Probe Accuracy: 0.5202
+
+Epoch 31/100
+  Step 0: Backbone Loss = 1.1865, Probe Loss = 177.5917, Acc = 0.5224
+  Step 50: Backbone Loss = 1.2042, Probe Loss = 176.6654, Acc = 0.5135
+  Step 100: Backbone Loss = 1.1618, Probe Loss = 189.6390, Acc = 0.5197
+  Step 150: Backbone Loss = 1.1896, Probe Loss = 172.8081, Acc = 0.5182
+  Step 200: Backbone Loss = 1.1885, Probe Loss = 185.4674, Acc = 0.5262
+  Step 250: Backbone Loss = 1.1755, Probe Loss = 192.0085, Acc = 0.5187
+  Step 300: Backbone Loss = 1.1595, Probe Loss = 181.6027, Acc = 0.5177
+Epoch 31 finished in 593.67s.
+  Avg Backbone Loss: 1.1791
+  Avg Probe Loss:    181.9085
+  Avg Probe Accuracy: 0.5199
+
+Epoch 32/100
+  Step 0: Backbone Loss = 1.1959, Probe Loss = 189.1670, Acc = 0.5181
+  Step 50: Backbone Loss = 1.1874, Probe Loss = 186.5799, Acc = 0.5203
+  Step 100: Backbone Loss = 1.1658, Probe Loss = 194.9450, Acc = 0.5170
+  Step 150: Backbone Loss = 1.1553, Probe Loss = 190.9717, Acc = 0.5175
+  Step 200: Backbone Loss = 1.2171, Probe Loss = 182.2251, Acc = 0.5229
+  Step 250: Backbone Loss = 1.1861, Probe Loss = 176.4436, Acc = 0.5240
+  Step 300: Backbone Loss = 1.1858, Probe Loss = 179.4479, Acc = 0.5213
+Epoch 32 finished in 595.32s.
+  Avg Backbone Loss: 1.1764
+  Avg Probe Loss:    181.7830
+  Avg Probe Accuracy: 0.5204
+
+Epoch 33/100
+  Step 0: Backbone Loss = 1.1986, Probe Loss = 180.9378, Acc = 0.5186
+  Step 50: Backbone Loss = 1.1871, Probe Loss = 181.7193, Acc = 0.5164
+  Step 100: Backbone Loss = 1.1804, Probe Loss = 184.6790, Acc = 0.5158
+  Step 150: Backbone Loss = 1.2319, Probe Loss = 184.1376, Acc = 0.5187
+  Step 200: Backbone Loss = 1.1620, Probe Loss = 179.0856, Acc = 0.5294
+  Step 250: Backbone Loss = 1.2311, Probe Loss = 181.8825, Acc = 0.5201
+  Step 300: Backbone Loss = 1.1303, Probe Loss = 183.8352, Acc = 0.5228
+Epoch 33 finished in 595.10s.
+  Avg Backbone Loss: 1.1766
+  Avg Probe Loss:    181.6519
+  Avg Probe Accuracy: 0.5201
+
+Epoch 34/100
+  Step 0: Backbone Loss = 1.1626, Probe Loss = 188.0159, Acc = 0.5181
+  Step 50: Backbone Loss = 1.1849, Probe Loss = 175.5980, Acc = 0.5165
+  Step 100: Backbone Loss = 1.1709, Probe Loss = 180.7722, Acc = 0.5205
+  Step 150: Backbone Loss = 1.1815, Probe Loss = 198.7703, Acc = 0.5181
+  Step 200: Backbone Loss = 1.2091, Probe Loss = 185.3293, Acc = 0.5181
+  Step 250: Backbone Loss = 1.1503, Probe Loss = 187.3419, Acc = 0.5218
+  Step 300: Backbone Loss = 1.1949, Probe Loss = 181.9284, Acc = 0.5130
+Epoch 34 finished in 595.45s.
+  Avg Backbone Loss: 1.1741
+  Avg Probe Loss:    181.6249
+  Avg Probe Accuracy: 0.5202
+
+Epoch 35/100
+  Step 0: Backbone Loss = 1.1778, Probe Loss = 175.7165, Acc = 0.5227
+  Step 50: Backbone Loss = 1.1838, Probe Loss = 181.5628, Acc = 0.5200
+  Step 100: Backbone Loss = 1.1471, Probe Loss = 174.0135, Acc = 0.5220
+  Step 150: Backbone Loss = 1.1697, Probe Loss = 174.8137, Acc = 0.5250
+  Step 200: Backbone Loss = 1.1729, Probe Loss = 176.0178, Acc = 0.5171
+  Step 250: Backbone Loss = 1.1780, Probe Loss = 168.0130, Acc = 0.5204
+  Step 300: Backbone Loss = 1.1966, Probe Loss = 182.1521, Acc = 0.5202
+Epoch 35 finished in 596.17s.
+  Avg Backbone Loss: 1.1727
+  Avg Probe Loss:    181.4484
+  Avg Probe Accuracy: 0.5202
+
+Epoch 36/100
+  Step 0: Backbone Loss = 1.1541, Probe Loss = 175.2057, Acc = 0.5233
+  Step 50: Backbone Loss = 1.1627, Probe Loss = 182.2280, Acc = 0.5218
+  Step 100: Backbone Loss = 1.1732, Probe Loss = 192.1102, Acc = 0.5197
+  Step 150: Backbone Loss = 1.1516, Probe Loss = 173.7230, Acc = 0.5241
+  Step 200: Backbone Loss = 1.1769, Probe Loss = 176.1778, Acc = 0.5220
+  Step 250: Backbone Loss = 1.2251, Probe Loss = 186.6058, Acc = 0.5199
+  Step 300: Backbone Loss = 1.1657, Probe Loss = 172.8274, Acc = 0.5249
+Epoch 36 finished in 596.54s.
+  Avg Backbone Loss: 1.1733
+  Avg Probe Loss:    181.3878
+  Avg Probe Accuracy: 0.5202
+
+Epoch 37/100
+  Step 0: Backbone Loss = 1.1906, Probe Loss = 177.5898, Acc = 0.5207
+  Step 50: Backbone Loss = 1.2125, Probe Loss = 184.0855, Acc = 0.5276
+  Step 100: Backbone Loss = 1.1597, Probe Loss = 181.3070, Acc = 0.5153
+  Step 150: Backbone Loss = 1.1677, Probe Loss = 175.7973, Acc = 0.5241
+  Step 200: Backbone Loss = 1.1517, Probe Loss = 188.1367, Acc = 0.5134
+  Step 250: Backbone Loss = 1.1523, Probe Loss = 179.6272, Acc = 0.5183
+  Step 300: Backbone Loss = 1.1507, Probe Loss = 172.5194, Acc = 0.5263
+Epoch 37 finished in 597.67s.
+  Avg Backbone Loss: 1.1702
+  Avg Probe Loss:    181.2398
+  Avg Probe Accuracy: 0.5206
+
+Epoch 38/100
+  Step 0: Backbone Loss = 1.2042, Probe Loss = 169.9926, Acc = 0.5277
+  Step 50: Backbone Loss = 1.1593, Probe Loss = 180.3685, Acc = 0.5239
+  Step 100: Backbone Loss = 1.2186, Probe Loss = 181.6402, Acc = 0.5179
+  Step 150: Backbone Loss = 1.1988, Probe Loss = 179.0162, Acc = 0.5155
+  Step 200: Backbone Loss = 1.2001, Probe Loss = 172.2264, Acc = 0.5240
+  Step 250: Backbone Loss = 1.1546, Probe Loss = 186.8134, Acc = 0.5196
+  Step 300: Backbone Loss = 1.1638, Probe Loss = 176.5611, Acc = 0.5235
+Epoch 38 finished in 597.01s.
+  Avg Backbone Loss: 1.1716
+  Avg Probe Loss:    181.1716
+  Avg Probe Accuracy: 0.5201
+
+Epoch 39/100
+  Step 0: Backbone Loss = 1.1735, Probe Loss = 168.6406, Acc = 0.5191
+  Step 50: Backbone Loss = 1.1859, Probe Loss = 180.1965, Acc = 0.5192
+  Step 100: Backbone Loss = 1.2027, Probe Loss = 179.3234, Acc = 0.5173
+  Step 150: Backbone Loss = 1.1786, Probe Loss = 186.2186, Acc = 0.5196
+  Step 200: Backbone Loss = 1.1721, Probe Loss = 182.7370, Acc = 0.5208
+  Step 250: Backbone Loss = 1.1569, Probe Loss = 174.1465, Acc = 0.5249
+  Step 300: Backbone Loss = 1.1866, Probe Loss = 182.2676, Acc = 0.5230
+Epoch 39 finished in 597.20s.
+  Avg Backbone Loss: 1.1679
+  Avg Probe Loss:    180.9861
+  Avg Probe Accuracy: 0.5204
+
+Epoch 40/100
+  Step 0: Backbone Loss = 1.1816, Probe Loss = 185.0106, Acc = 0.5197
+  Step 50: Backbone Loss = 1.1465, Probe Loss = 183.4586, Acc = 0.5156

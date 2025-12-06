@@ -389,10 +389,10 @@ class ViT_Ti(tf.keras.Model):
         # Define Tiny Config
         # Hidden: 192, Layers: 12, Heads: 3
         self.hf_config = HFViTConfig(
-            hidden_size=192,
-            num_hidden_layers=12,
+            hidden_size=384,
+            num_hidden_layers=4,
             num_attention_heads=3,
-            intermediate_size=192 * 4,
+            intermediate_size=384 * 4,
             hidden_act="gelu",
             hidden_dropout_prob=config.dropout_rate,
             attention_probs_dropout_prob=config.attention_dropout_rate,
@@ -410,7 +410,7 @@ class ViT_Ti(tf.keras.Model):
         
         # Mask token
         self.mask_token = self.add_weight(
-            shape=(1, 1, 192),
+            shape=(1, 1, self.hf_config.hidden_size),
             initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
             trainable=True,
             name="mask_token",
@@ -481,7 +481,7 @@ class ViT_Ti(tf.keras.Model):
         
         # 7. Reshape back
         # (B*V, 257, D) -> (B, V, 257, D)
-        x = tf.reshape(sequence_output, [B, V, -1, 192])
+        x = tf.reshape(sequence_output, [B, V, -1, self.hf_config.hidden_size])
         
         return x
     

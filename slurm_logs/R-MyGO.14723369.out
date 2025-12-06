@@ -1,0 +1,158 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 14723369
+##  Job Name : MyGO
+##  Nodelist : gpu2002
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/MyGO/MyGo
+##   Job Started : Fri Dec  5 10:14:21 PM EST 2025
+###############################################################################
+
+==========================================
+Job started at: Fri Dec  5 10:14:21 PM EST 2025
+Job ID: 14723369
+Node: gpu2002
+==========================================
+
+GPU Information (from host):
+Fri Dec  5 22:14:21 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  Quadro RTX 6000                On  | 00000000:3D:00.0 Off |                  Off |
+| 33%   22C    P8              17W / 260W |     10MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  Quadro RTX 6000                On  | 00000000:3E:00.0 Off |                  Off |
+| 33%   23C    P8               9W / 260W |     10MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     30660      G   /usr/libexec/Xorg                             8MiB |
+|    1   N/A  N/A     30660      G   /usr/libexec/Xorg                             8MiB |
++---------------------------------------------------------------------------------------+
+
+mygo conda environment loaded
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys/bin/ffmpeg
+ffmpeg version 7.0 Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc 11 (GCC)
+configuration: --prefix=/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys --enable-pic --cc=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/gcc --cxx=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/g++ --disable-libxcb --disable-libxcb-shape --disable-libxcb-shm --disable-libxcb-xfixes --disable-xlib --disable-libfontconfig --disable-libfreetype --disable-libfribidi --enable-bzlib --enable-gpl --disable-libmp3lame --disable-libopenjpeg --disable-libopus --disable-libspeex --disable-libvorbis --enable-libvpx --enable-libx264 --disable-nonfree --disable-openssl --enable-shared --enable-version3 --disable-libzmq --disable-libssh --enable-libwebp --disable-lzma --disable-libsnappy --disable-sdl2 --disable-libaom --disable-libxml2
+libavutil      59.  8.100 / 59.  8.100
+libavcodec     61.  3.100 / 61.  3.100
+libavformat    61.  1.100 / 61.  1.100
+libavdevice    61.  1.100 / 61.  1.100
+libavfilter    10.  1.100 / 10.  1.100
+libswscale      8.  1.100 /  8.  1.100
+libswresample   5.  1.100 /  5.  1.100
+libpostproc    58.  1.100 / 58.  1.100
+TF version: 2.16.1
+Built with CUDA: True
+GPUs detected: 2
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+==========================================
+Installing dependencies
+==========================================
+
+
+==========================================
+Starting main Python script at Fri Dec  5 10:14:51 PM EST 2025
+==========================================
+
+Working directory: /users/lwang223/MyGO/MyGo
+
+[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Using MirroredStrategy for multi-GPU training.
+Number of devices: 2
+Model: "vi_t__ti"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ vit (TFViTMainLayer)        multiple                  0 (unused)
+                                                                 
+=================================================================
+Total params: 5536128 (21.12 MB)
+Trainable params: 5536128 (21.12 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Model: "linear_probe"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense (Dense)               multiple                  101711    
+                                                                 
+=================================================================
+Total params: 101711 (397.31 KB)
+Trainable params: 101711 (397.31 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Building optimizer variables...
+Optimizer built.
+Starting training...
+
+Epoch 1/100
+  Step 0: Backbone Loss = 33.5112, Probe Loss = 456.5802, Acc = 0.4976
+  Step 50: Backbone Loss = 3.4875, Probe Loss = 428.9517, Acc = 0.5283
+  Step 100: Backbone Loss = 4.4283, Probe Loss = 403.4174, Acc = 0.5123
+  Step 150: Backbone Loss = 4.3384, Probe Loss = 409.4771, Acc = 0.4834
+  Step 200: Backbone Loss = 4.4828, Probe Loss = 421.6760, Acc = 0.4577
+  Step 250: Backbone Loss = 2.7520, Probe Loss = 396.8062, Acc = 0.5001
+  Step 300: Backbone Loss = 2.4862, Probe Loss = 373.4207, Acc = 0.5168
+  Step 350: Backbone Loss = 1.9764, Probe Loss = 355.6057, Acc = 0.5081
+  Step 400: Backbone Loss = 2.0501, Probe Loss = 353.1963, Acc = 0.5274
+  Step 450: Backbone Loss = 1.9210, Probe Loss = 354.6858, Acc = 0.5526
+Epoch 1 finished in 853.69s.
+  Avg Backbone Loss: 3.9400
+  Avg Probe Loss:    388.2827
+  Avg Probe Accuracy: 0.5113
+
+Epoch 2/100
+  Step 0: Backbone Loss = 1.7516, Probe Loss = 341.4927, Acc = 0.5065
+  Step 50: Backbone Loss = 1.7664, Probe Loss = 327.3696, Acc = 0.5021
+  Step 100: Backbone Loss = 1.7455, Probe Loss = 320.5096, Acc = 0.5101
+  Step 150: Backbone Loss = 1.5539, Probe Loss = 295.0795, Acc = 0.5364
+  Step 200: Backbone Loss = 1.5681, Probe Loss = 298.5609, Acc = 0.5233
+  Step 250: Backbone Loss = 1.5232, Probe Loss = 292.9643, Acc = 0.5249
+  Step 300: Backbone Loss = 1.5095, Probe Loss = 281.0943, Acc = 0.5137
+  Step 350: Backbone Loss = 1.4926, Probe Loss = 275.8030, Acc = 0.5279
+  Step 400: Backbone Loss = 1.4635, Probe Loss = 264.5200, Acc = 0.5411
+  Step 450: Backbone Loss = 1.4211, Probe Loss = 264.9248, Acc = 0.5266
+Epoch 2 finished in 737.20s.
+  Avg Backbone Loss: 1.5748
+  Avg Probe Loss:    297.8283
+  Avg Probe Accuracy: 0.5284
+
+Epoch 3/100
+  Step 0: Backbone Loss = 1.4414, Probe Loss = 261.2259, Acc = 0.5233
+  Step 50: Backbone Loss = 1.4438, Probe Loss = 252.6799, Acc = 0.5425
+  Step 100: Backbone Loss = 1.3813, Probe Loss = 244.1887, Acc = 0.5416
+  Step 150: Backbone Loss = 1.3510, Probe Loss = 236.9478, Acc = 0.5243
+  Step 200: Backbone Loss = 1.3646, Probe Loss = 229.4754, Acc = 0.5365
+  Step 250: Backbone Loss = 1.3339, Probe Loss = 231.9223, Acc = 0.5232
+  Step 300: Backbone Loss = 1.3844, Probe Loss = 218.0681, Acc = 0.5302
+  Step 350: Backbone Loss = 1.3104, Probe Loss = 211.8536, Acc = 0.5209
+  Step 400: Backbone Loss = 1.3302, Probe Loss = 215.2008, Acc = 0.5434
+  Step 450: Backbone Loss = 1.3289, Probe Loss = 194.1221, Acc = 0.5360
+Epoch 3 finished in 736.38s.
+  Avg Backbone Loss: 1.3672
+  Avg Probe Loss:    229.9016
+  Avg Probe Accuracy: 0.5298
+
+Epoch 4/100
+  Step 0: Backbone Loss = 1.3065, Probe Loss = 199.7361, Acc = 0.5252
+  Step 50: Backbone Loss = 1.2792, Probe Loss = 190.4428, Acc = 0.5311
+  Step 100: Backbone Loss = 1.2505, Probe Loss = 208.5272, Acc = 0.5275
+  Step 150: Backbone Loss = 1.2643, Probe Loss = 198.5151, Acc = 0.5257
+  Step 200: Backbone Loss = 1.2501, Probe Loss = 185.5675, Acc = 0.5217
+  Step 250: Backbone Loss = 1.2201, Probe Loss = 193.0687, Acc = 0.5392
+  Step 300: Backbone Loss = 1.2227, Probe Loss = 181.7957, Acc = 0.5186
+  Step 350: Backbone Loss = 1.2201, Probe Loss = 179.6836, Acc = 0.5347
+  Step 400: Backbone Loss = 1.2284, Probe Loss = 196.2380, Acc = 0.5312

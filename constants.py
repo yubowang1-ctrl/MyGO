@@ -39,8 +39,8 @@ NUM_LOCAL_VIEWS = 6
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
 
 # Distributed Training Config
-GLOBAL_BATCH_SIZE = 64 #128  # Total batch size across all GPUs
-BASE_LEARNING_RATE = 5e-3
+GLOBAL_BATCH_SIZE = 32  # Total batch size across all GPUs
+BASE_LEARNING_RATE = 5e-4
 NUM_EPOCHS = 100
 LOG_EVERY_STEPS = 50
 
@@ -48,7 +48,7 @@ LOG_EVERY_STEPS = 50
 DATA_DIR = "spectrogram/audioset/balanced_train_segments"
 CSV_PATH = "data/audioset/balanced_train_segments.csv"
 IMAGE_HEIGHT = 256
-IMAGE_WIDTH = 208 # 236
+IMAGE_WIDTH = 256 #208
 NUM_CHANNELS = 2
 AUDIOSET_NUM_CLASSES = 527
 
@@ -56,7 +56,7 @@ AUDIOSET_NUM_CLASSES = 527
 NUM_GLOBAL_VIEWS = 2    # G
 NUM_LOCAL_VIEWS = 6     # Local views
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
-LAMBDA_SIGREG = 0.05
+LAMBDA_SIGREG = 0.3
 
     
 # Tiny ViT with 16x16 patches, ~5M parameters
@@ -117,10 +117,10 @@ CONFIG = ViTConfig(
     patch_height=16,
     patch_width=16,
     patch_overlap=0,
-    num_layers=4, # num_layers=12, 
-    hidden_dim=192,
-    mlp_dim=768,
-    num_heads=3,
+    num_layers=12, # num_layers=12, 
+    hidden_dim=384,
+    mlp_dim=1536,
+    num_heads=6,
     dropout_rate=0.1,
     attention_dropout_rate=0.1,
     G=NUM_GLOBAL_VIEWS,
