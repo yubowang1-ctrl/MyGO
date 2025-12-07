@@ -176,33 +176,33 @@ def train_step(inputs):
         per_replica_loss_backbone, per_replica_sigreg_loss_backbone = loss_fn.call(global_emb, all_emb, step=optimizer.iterations)
         
         # ============= DEBUGGING CODE FOR SIGREG =============
-        # tf.print("std:", tf.math.reduce_std(global_emb[:, 0]), ", ", tf.math.reduce_std(global_emb[:, 1]), "SigReg:", per_replica_sigreg_loss_backbone, output_stream=sys.stdout)
+        tf.print("std:", tf.math.reduce_std(global_emb[:, 0]), ", ", tf.math.reduce_std(global_emb[:, 1]), "SigReg:", per_replica_sigreg_loss_backbone, output_stream=sys.stdout)
         
         
-        # # plot the 1 and 2 dimensions of global_emb
-        # ctx = tf.distribute.get_replica_context()
-        # cls_2d = global_emb[:, :2]  # (local_B*G, 2)
+        # plot the 1 and 2 dimensions of global_emb
+        ctx = tf.distribute.get_replica_context()
+        cls_2d = global_emb[:, :2]  # (local_B*G, 2)
 
-        # # gather all replicas
-        # cls_2d_all = ctx.all_gather(cls_2d, axis=0)
+        # gather all replicas
+        cls_2d_all = ctx.all_gather(cls_2d, axis=0)
 
-        # def _plot(arr, sigreg_loss):
-        #     import numpy as np, matplotlib.pyplot as plt
-        #     arr = np.asarray(arr, dtype=np.float32)
-        #     plt.figure(figsize=(6,6))
-        #     plt.scatter(arr[:,0], arr[:,1], alpha=0.5)
-        #     plt.title("CLS dist - std ({:.2f}, {:.2f}) - SIGReg {:.4f}".format(float(np.std(arr[:,0])), float(np.std(arr[:,1])), float(sigreg_loss)) )
-        #     plt.savefig(f"figures/cls_token_distribution_step{int(optimizer.iterations)}.png")
-        #     plt.close()
-        #     return np.int64(0)
+        def _plot(arr, sigreg_loss):
+            import numpy as np, matplotlib.pyplot as plt
+            arr = np.asarray(arr, dtype=np.float32)
+            plt.figure(figsize=(6,6))
+            plt.scatter(arr[:,0], arr[:,1], alpha=0.5)
+            plt.title("CLS dist - std ({:.2f}, {:.2f}) - SIGReg {:.4f}".format(float(np.std(arr[:,0])), float(np.std(arr[:,1])), float(sigreg_loss)) )
+            plt.savefig(f"figures/cls_token_distribution_step{int(optimizer.iterations)}.png")
+            plt.close()
+            return np.int64(0)
 
-        # # run plotting only on one replica to avoid duplicate files
-        # def host_plot(v, sigreg_loss):
-        #     if ctx.replica_id_in_sync_group == 0:
-        #         tf.py_function(_plot, [v, sigreg_loss], Tout=tf.int64)
-        #     return v
+        # run plotting only on one replica to avoid duplicate files
+        def host_plot(v, sigreg_loss):
+            if ctx.replica_id_in_sync_group == 0:
+                tf.py_function(_plot, [v, sigreg_loss], Tout=tf.int64)
+            return v
 
-        # cls_2d_all = host_plot(cls_2d_all, per_replica_sigreg_loss_backbone)
+        cls_2d_all = host_plot(cls_2d_all, per_replica_sigreg_loss_backbone)
         
         # 6. Calculate Probe Loss (Linear Probe)
         # Input to probe: Average of Global Views
@@ -297,21 +297,32 @@ def main():
                     "epoch": epoch
                 })
 
-                def replica_step(batch_inputs):
-                    views, labels = batch_inputs
-                    
-                    outputs = model(views, training=False)
-                    cls_tokens = outputs[:, :, 0, :]
-                    cls_2d = cls_tokens[:, :NUM_GLOBAL_VIEWS, :2]      
-                    cls_2d = tf.reshape(cls_2d, [-1, 2])
-                    return cls_2d
+                # --- MODIFIED VISUALIZATION BLOCK ---
+                # Instead of defining a function and using strategy.run, 
+                # we extract the first replica's data and run locally.
                 
-                # Run on each replica (returns PerReplica object)
-                cls_2d_per_replica = strategy.run(replica_step, args=(batch_inputs,))
+                # 1. Unwrap the distributed batch to get local tensors
+                # batch_inputs is (views, labels)
+                views_replicas = strategy.experimental_local_results(batch_inputs[0])
                 
-                # Concatenate results from all replicas on the host
-                cls_2d = tf.concat(strategy.experimental_local_results(cls_2d_per_replica), axis=0)
-        
+                # 2. Take the first replica's data
+                # Shape: (Local_Batch_Size, V, H, W, C)
+                local_views = views_replicas[0]
+                
+                # 3. Run model inference (Training=False)
+                # We use the model directly. Since variables are distributed, 
+                # this works fine for inference on a single batch.
+                outputs = model(local_views, training=False)
+                
+                # 4. Process outputs for plotting
+                cls_tokens = outputs[:, :, 0, :] # (B, V, D)
+                
+                # Flatten B and V
+                cls_tokens_flat = tf.reshape(cls_tokens, [-1, CONFIG.hidden_dim])
+                
+                # Take the first 2 dimensions for plotting (as per your original logic)
+                cls_2d = cls_tokens_flat[:, :2]
+                
                 cls_2d_np = tf.cast(cls_2d, tf.float32).numpy()
 
                 plt.figure(figsize=(6,6))
