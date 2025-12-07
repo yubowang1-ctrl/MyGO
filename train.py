@@ -65,7 +65,7 @@ with strategy.scope():
     probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
     # Initialize Optimizer
     steps_per_epoch = tot_num_batches
-    total_steps = steps_per_epoch * NUM_EPOCHS
+    total_steps = steps_per_epoch * (NUM_EPOCHS * 2)  # *2 so larger lr for later epochs
     warmup_steps = steps_per_epoch * 5 # warmup
     decay_steps = total_steps - warmup_steps
     initial_learning_rate = 0.0
@@ -74,8 +74,6 @@ with strategy.scope():
         initial_learning_rate, decay_steps, warmup_target=target_learning_rate,
         warmup_steps=warmup_steps
     )
-    
-    bn_for_loss = tf.keras.layers.BatchNormalization(center=False, scale=False, epsilon=1e-5)
 
     optimizer = tf.keras.optimizers.AdamW(
         learning_rate=lr_warmup_decayed_fn, 
@@ -93,21 +91,29 @@ with strategy.scope():
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory="./checkpoints", max_to_keep=5
     )
-
+    
     latest_ckpt = checkpoint_manager.latest_checkpoint
-    latest_ckpt = None
+    start_epoch = 0
     if latest_ckpt:
         print(f"Found checkpoint: {latest_ckpt}")
-        print("Restoring BACKBONE ONLY (resetting probe and optimizer)...")
         
-        # Create a temporary checkpoint that ONLY tracks the model.
-        # This ignores 'probe' and 'optimizer' in the file.
-        backbone_restorer = tf.train.Checkpoint(model=model)
+        # 1. Restore EVERYTHING (Model, Probe, Optimizer)
+        # This loads the weights and the optimizer's internal state (momentum, step count, etc.)
+        status = checkpoint.restore(latest_ckpt)
         
-        # expect_partial() is required because the file has keys we are ignoring
-        backbone_restorer.restore(latest_ckpt).expect_partial()
+        # Optional: Assert that the restore was successful
+        # status.assert_consumed() 
+        print("Full checkpoint restored (Backbone, Probe, Optimizer).")
         
-        print("Backbone restored. Probe and Optimizer are fresh.")
+        # 2. Parse the epoch number from the filename
+        try:
+            # Format is usually ".../ckpt-14" -> start_epoch = 14
+            ckpt_num = int(latest_ckpt.split('-')[-1])
+            start_epoch = ckpt_num
+            print(f"Resuming from Epoch {start_epoch + 1}")
+        except ValueError:
+            print("Could not parse epoch from filename. Starting loop from 0 (but weights are restored).")
+            start_epoch = 0
     else:
         print("No checkpoint found. Starting from scratch.")
     
@@ -223,30 +229,23 @@ def train_step(inputs):
         # cls_2d_all = host_plot(cls_2d_all, per_replica_sigreg_loss_backbone)
         
         # 6. Calculate Probe Loss (Linear Probe)
+        # Input to probe: Average of Global Views
+        # We use stop_gradient to ensure backbone is FROZEN for this part
+        probe_input = tf.stop_gradient(tf.reduce_mean(global_views, axis=1)) # (B, D)
         
-        # FIX 1: Train on individual global views, not the mean.
-        # This matches evaluation (which uses single views) and provides more samples.
-        # global_views shape: (B, G, D) -> Flatten to (B*G, D)
-        probe_input = tf.reshape(global_views, [B * NUM_GLOBAL_VIEWS, -1])
-        probe_input = tf.stop_gradient(probe_input)
+        probe_logits = probe(probe_input, training=True) # (B, Num_Classes)
         
-        probe_logits = probe(probe_input, training=True) # (B*G, Num_Classes)
+        # Labels: Take the label of the first view (since all views have same label)
+        batch_labels = labels[:, 0, :] # (B, Num_Classes)
         
-        # Expand labels to match: (B, V, Num_Classes) -> (B, G, Num_Classes) -> (B*G, Num_Classes)
-        batch_labels = tf.reshape(labels[:, :NUM_GLOBAL_VIEWS, :], [-1, AUDIOSET_NUM_CLASSES])
-        
-        # FIX 2: Remove or drastically lower pos_weight.
-        # pos_weight=30 forces the model to over-predict frequent classes (Music/Speech).
-        # Set to 1.0 for standard BCE, or ~5.0 if you really want recall.
+        # Binary Cross Entropy for Multi-label classification
+        # Sum over classes, mean over batch
+        # Cast probe_logits to float32 for loss calculation stability
         probe_logits = tf.cast(probe_logits, tf.float32)
         
         per_replica_loss_probe = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.weighted_cross_entropy_with_logits(
-                    labels=batch_labels, 
-                    logits=probe_logits, 
-                    pos_weight=2.0  # CHANGED FROM 30.0
-                ),
+                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=30.0),
                 axis=1
             )
         )
@@ -293,7 +292,7 @@ def main():
     print("Starting training...")
     wandb.init(project="MyGO", config=asdict(CONFIG))
     
-    for epoch in range(NUM_EPOCHS):
+    for epoch in range(start_epoch, NUM_EPOCHS):
         print(f"\nEpoch {epoch+1}/{NUM_EPOCHS}")
         start_time = time.time()
         
@@ -352,10 +351,6 @@ def main():
                     cls_2d_np = tf.cast(cls_2d, tf.float32).numpy()
 
                     plt.figure(figsize=(6,6))
-                    plt.scatter(cls_2d_np[TOTAL_VIEWS:, 0], cls_2d_np[TOTAL_VIEWS:, 1], alpha=0.5)
-                    plt.scatter(cls_2d_np[:NUM_GLOBAL_VIEWS, 0], cls_2d_np[:NUM_GLOBAL_VIEWS, 1], color='red', label='Sample Global Views')
-                    plt.scatter(cls_2d_np[NUM_GLOBAL_VIEWS:TOTAL_VIEWS, 0], cls_2d_np[NUM_GLOBAL_VIEWS:TOTAL_VIEWS, 1], color='green', label='Sample Local Views')
-                    plt.legend()
                     plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
                     plt.xlabel("Dimension 1")
                     plt.ylabel("Dimension 2")

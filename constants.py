@@ -35,8 +35,8 @@ EPSILON = 1e-6
 
 # Distributed Training Config
 GLOBAL_BATCH_SIZE = 64  # Total batch size across all GPUs
-BASE_LEARNING_RATE = 1e-4
-NUM_EPOCHS = 100
+BASE_LEARNING_RATE =  1e-5 # use 1e-4 for fresh start
+NUM_EPOCHS = 300
 LOG_EVERY_STEPS = 50
 
 # Data Config
