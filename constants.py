@@ -60,7 +60,7 @@ LAMBDA_SIGREG = 0.05
 
 # Model Configs
 HIDDEN_DIM = 384
-NUM_LAYERS = 8
+NUM_LAYERS = 8 #1
 NUM_HEADS = 6
 
 # Tiny ViT with 16x16 patches, ~5M parameters

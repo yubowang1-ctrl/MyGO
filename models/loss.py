@@ -183,6 +183,8 @@ class LeJEPA(tf.keras.losses.Loss):
         all_emb = tf.reshape(all_emb, [-1, self.V, tf.shape(all_emb)[-1]])          # (B, V, D)
         
         global_centers = tf.reduce_mean(global_emb, axis=1, keepdims=True) # (B, 1, D)
+        # remeber to stop the gradient!
+        global_centers = tf.stop_gradient(global_centers)
         diff = all_emb - global_centers  # (B, V, D)
         inv_loss = tf.reduce_mean(tf.square(diff))  # (scalar)
         
