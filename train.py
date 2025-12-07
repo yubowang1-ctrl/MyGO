@@ -95,6 +95,7 @@ with strategy.scope():
     )
 
     latest_ckpt = checkpoint_manager.latest_checkpoint
+    latest_ckpt = None
     if latest_ckpt:
         print(f"Found checkpoint: {latest_ckpt}")
         print("Restoring BACKBONE ONLY (resetting probe and optimizer)...")
@@ -244,7 +245,7 @@ def train_step(inputs):
                 tf.nn.weighted_cross_entropy_with_logits(
                     labels=batch_labels, 
                     logits=probe_logits, 
-                    pos_weight=1.0  # CHANGED FROM 30.0
+                    pos_weight=2.0  # CHANGED FROM 30.0
                 ),
                 axis=1
             )
@@ -351,7 +352,10 @@ def main():
                     cls_2d_np = tf.cast(cls_2d, tf.float32).numpy()
 
                     plt.figure(figsize=(6,6))
-                    plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
+                    plt.scatter(cls_2d_np[TOTAL_VIEWS:, 0], cls_2d_np[TOTAL_VIEWS:, 1], alpha=0.5)
+                    plt.scatter(cls_2d_np[:NUM_GLOBAL_VIEWS, 0], cls_2d_np[:NUM_GLOBAL_VIEWS, 1], color='red', label='Sample Global Views')
+                    plt.scatter(cls_2d_np[NUM_GLOBAL_VIEWS:TOTAL_VIEWS, 0], cls_2d_np[NUM_GLOBAL_VIEWS:TOTAL_VIEWS, 1], color='green', label='Sample Local Views')
+                    plt.legend()
                     plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
                     plt.xlabel("Dimension 1")
                     plt.ylabel("Dimension 2")
