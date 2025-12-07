@@ -1,11 +1,12 @@
 import argparse
 import os
+import sys
 import numpy as np
 from sklearn.decomposition import PCA
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from models.transformer import ViT
+from models.transformer import ViT, ViT_Ti
 from models.probe import LinearProbe
 # from data.dataset import get_dataset
 from data.spec_dataset import get_dataset
@@ -59,15 +60,46 @@ def evaluate(data_dir, csv_path, ckpt_dir, batch_size):
     )
 
     with strategy.scope():
-        model = ViT(CONFIG)
+        # model = ViT(CONFIG)
+        model = ViT_Ti(CONFIG)
         probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
 
-        # Restore checkpoint (model and probe only; optimizer is not required)
+        # 1. Build Model: Run dummy data to create variables
+        dummy_input = tf.zeros((1, 1, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels))
+        model(dummy_input, training=False)
+        
+        # 2. Build Probe: Call it on data! .build() is often insufficient for nested layers
+        dummy_cls = tf.zeros((1, CONFIG.hidden_dim))
+        probe(dummy_cls) 
+
+        # Restore checkpoint
         latest = tf.train.latest_checkpoint(ckpt_dir)
         if latest is None:
             raise RuntimeError(f"No checkpoint found in {ckpt_dir}")
         print(f"Restoring from: {latest}")
-        tf.train.Checkpoint(model=model, probe=probe).restore(latest).expect_partial()
+        
+        # 3. CRITICAL: Assign to a variable 'ckpt' to prevent Garbage Collection
+        ckpt = tf.train.Checkpoint(model=model, probe=probe)
+        status = ckpt.restore(latest)
+        
+        # 5. Verify restoration (Check if weights are non-random)
+        # Random init usually has mean ~0.0. Trained weights might shift.
+        # Better: check if they change from random.
+        print("Probe weight mean:", tf.reduce_mean(probe.trainable_variables[0]).numpy())
+        print("Model first layer weight mean:", tf.reduce_mean(model.vit.embeddings.patch_embeddings.projection.kernel).numpy())
+
+        # --- DEBUG: Check if Probe Biases match your static predictions ---
+        if len(probe.trainable_variables) > 1:
+            # Variable 0 is kernel, 1 is bias
+            biases = probe.trainable_variables[1]
+            top_bias_values, top_bias_indices = tf.math.top_k(biases, k=5)
+            print("\n========== PROBE DIAGNOSTICS ==========")
+            print("Top Class Biases (Indices):", top_bias_indices.numpy())
+            print("Top Class Bias Values:      ", top_bias_values.numpy())
+            print("If these match [137, 0, 300], our model is relying purely on bias.")
+            print("=======================================\n")
+        # -----------------------------------------------------------------
+
 
     y_true_list = []
     y_score_list = []
@@ -131,18 +163,80 @@ def evaluate(data_dir, csv_path, ckpt_dir, batch_size):
         
         
         cls_embed = outputs[:, 0, 0, :]                       # (B, D)
+        
+        # --- DIAGNOSTIC: Check for Model Collapse ---
+        # We calculate the std dev ACROSS THE BATCH (axis=0).
+        # If the model works, different images should have different embeddings (Std > 0).
+        # If the model collapsed, every image has the same embedding (Std ~ 0).
+        batch_std = tf.math.reduce_std(cls_embed, axis=0)
+        mean_batch_std = tf.reduce_mean(batch_std)
+        
+        tf.print("Embedding Batch Std (Should be > 0.01):", mean_batch_std)
+        # --------------------------------------------
+
+
         logits = probe(cls_embed)                              # (B, C)
         probs = tf.nn.sigmoid(logits)                          # (B, C)
-        # tf.print(probs[0])
-        tf.print(cls_embed[0])
+        # tf.print("Input Stats - Min:", tf.reduce_min(batch_views), 
+        #          "Max:", tf.reduce_max(batch_views), 
+        #          "Mean:", tf.reduce_mean(batch_views))
+        # tf.print("Output Probs - Max:", tf.reduce_max(probs), 
+        #          "Min:", tf.reduce_min(probs), 
+        #          "Mean:", tf.reduce_mean(probs))
+        # tf.print(probs[0, :10], output_stream=sys.stdout)
+        # show the cls embedding distribution
+        # plot the 1 and 2 dimensions of global_emb
+        ctx = tf.distribute.get_replica_context()
+        cls_2d = cls_embed[:, :2]  # (local_B*G, 2)
+
+        # gather all replicas
+        cls_2d_all = ctx.all_gather(cls_2d, axis=0)
+
+        def _plot(arr):
+            import numpy as np, matplotlib.pyplot as plt
+            arr = np.asarray(arr, dtype=np.float32)
+            plt.figure(figsize=(6,6))
+            plt.scatter(arr[:,0], arr[:,1], alpha=0.5)
+            plt.title("CLS dist - std ({:.2f}, {:.2f})".format(float(np.std(arr[:,0])), float(np.std(arr[:,1]))) )
+            # plt.show()
+            plt.savefig("cls_dist.png")
+            plt.close()
+            return np.int64(0)
+
+        # run plotting only on one replica to avoid duplicate files
+        def host_plot(v):
+            if ctx.replica_id_in_sync_group == 0:
+                tf.py_function(_plot, [v], Tout=tf.int64)
+            return v
+
+        cls_2d_all = host_plot(cls_2d_all)
         return probs
 
     for batch_views, batch_labels in tqdm(ds, desc="Evaluating"):
         # shape: batch_views: (B, 1, H, W, C), batch_labels: (B, 1, CLASSES)
         probs = forward_step(batch_views)
         batch_labels = tf.squeeze(batch_labels, axis=1)  # (B, CLASSES)
+        
+        # --- DEBUG: Check first batch for index mismatch ---
+        if len(y_true_list) == 0: 
+            tf.print("\n\n========== DEBUG PREDICTIONS ==========")
+            # Check the first few samples in the batch
+            for i in range(min(8, probs.shape[0])):
+                true_inds = tf.where(batch_labels[i] == 1)[:, 0].numpy()
+                # Get top 5 predictions
+                pred_probs, pred_inds = tf.math.top_k(probs[i], k=5)
+                
+                tf.print(f"Sample {i}:")
+                tf.print(f"  True Indices: {true_inds}")
+                tf.print(f"  Pred Indices: {pred_inds.numpy()}")
+                tf.print(f"  Pred Probs:   {pred_probs.numpy()}")
+            tf.print("=======================================\n")
+        # ---------------------------------------------------
+
+
         y_true_list.append(batch_labels.numpy())
         y_score_list.append(probs.numpy())
+        # y_score_list.append(batch_labels.numpy())  # DEBUG: use labels as scores to get 100% mAP
 
     y_true = np.concatenate(y_true_list, axis=0)
     y_score = np.concatenate(y_score_list, axis=0)
@@ -170,7 +264,7 @@ def main():
     parser.add_argument("--data_dir", default="spectrogram/audioset/eval_segments", help="Directory containing evaluation audio files (.m4a)")
     parser.add_argument("--csv_path", default="data/audioset/eval_segments.csv", help="Path to the AudioSet eval CSV")
     parser.add_argument("--ckpt_dir", default="./checkpoints", help="Directory of saved training checkpoints")
-    parser.add_argument("--batch_size", type=int, default=8)
+    parser.add_argument("--batch_size", type=int, default=64, help="Batch size for evaluation")
     args = parser.parse_args()
 
     evaluate(

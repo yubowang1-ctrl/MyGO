@@ -39,8 +39,8 @@ NUM_LOCAL_VIEWS = 6
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS
 
 # Distributed Training Config
-GLOBAL_BATCH_SIZE = 32  # Total batch size across all GPUs
-BASE_LEARNING_RATE = 5e-4
+GLOBAL_BATCH_SIZE = 128  # Total batch size across all GPUs
+BASE_LEARNING_RATE = 5e-3
 NUM_EPOCHS = 100
 LOG_EVERY_STEPS = 50
 
@@ -54,11 +54,15 @@ AUDIOSET_NUM_CLASSES = 527
 
 # LeJEPA Config
 NUM_GLOBAL_VIEWS = 2    # G
-NUM_LOCAL_VIEWS = 6     # Local views
+NUM_LOCAL_VIEWS = 8     # Local views
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
-LAMBDA_SIGREG = 0.3
+LAMBDA_SIGREG = 0.05
 
-    
+# Model Configs
+HIDDEN_DIM = 384
+NUM_LAYERS = 8
+NUM_HEADS = 6
+
 # Tiny ViT with 16x16 patches, ~5M parameters
 ViT_Ti_16 = ViTConfig(
     image_height=224,
@@ -117,30 +121,12 @@ CONFIG = ViTConfig(
     patch_height=16,
     patch_width=16,
     patch_overlap=0,
-    num_layers=12, # num_layers=12, 
-    hidden_dim=384,
-    mlp_dim=1536,
-    num_heads=6,
-    dropout_rate=0.1,
-    attention_dropout_rate=0.1,
+    num_layers=NUM_LAYERS, # num_layers=12, 
+    hidden_dim=HIDDEN_DIM,
+    mlp_dim=HIDDEN_DIM*4,
+    num_heads=NUM_HEADS,
+    dropout_rate=0.0,
+    attention_dropout_rate=0.0,
     G=NUM_GLOBAL_VIEWS,
     V=TOTAL_VIEWS,
 )
-
-# # Use this for final training with larger model
-# CONFIG = ViTConfig(
-#     image_height=IMAGE_HEIGHT,
-#     image_width=IMAGE_WIDTH,
-#     num_channels=NUM_CHANNELS,
-#     patch_height=16,
-#     patch_width=16,
-#     patch_overlap=0,
-#     num_layers=12,
-#     hidden_dim=512,
-#     mlp_dim=2048,
-#     num_heads=12,
-#     dropout_rate=0.1,
-#     attention_dropout_rate=0.1,
-#     G=NUM_GLOBAL_VIEWS,
-#     V=TOTAL_VIEWS,
-# )

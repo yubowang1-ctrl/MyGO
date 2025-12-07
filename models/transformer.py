@@ -389,13 +389,13 @@ class ViT_Ti(tf.keras.Model):
         # Define Tiny Config
         # Hidden: 192, Layers: 12, Heads: 3
         self.hf_config = HFViTConfig(
-            hidden_size=384,
-            num_hidden_layers=4,
-            num_attention_heads=3,
-            intermediate_size=384 * 4,
+            hidden_size=config.hidden_dim,
+            num_hidden_layers=config.num_layers,
+            num_attention_heads=config.num_heads,
+            intermediate_size=config.hidden_dim * 4,
             hidden_act="gelu",
-            hidden_dropout_prob=config.dropout_rate,
-            attention_probs_dropout_prob=config.attention_dropout_rate,
+            hidden_dropout_prob=0,
+            attention_probs_dropout_prob=0,
             initializer_range=0.02,
             layer_norm_eps=1e-12,
             image_size=256, # We will pad to 256x256
@@ -477,7 +477,7 @@ class ViT_Ti(tf.keras.Model):
         sequence_output = encoder_outputs.last_hidden_state
         
         # 6. LayerNorm
-        sequence_output = self.vit.layernorm(sequence_output)
+        sequence_output = self.vit.layernorm(sequence_output, training=training)
         
         # 7. Reshape back
         # (B*V, 257, D) -> (B, V, 257, D)

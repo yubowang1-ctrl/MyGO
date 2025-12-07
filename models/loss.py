@@ -158,7 +158,6 @@ class SIGReg(tf.keras.losses.Loss):
         
         # Aggregate results (mean over slices)
         m = tf.reduce_mean(stats)
-        # tf.print("SIGReg loss:", m, output_stream=sys.stdout)
         return m
     
     
@@ -174,6 +173,8 @@ class LeJEPA(tf.keras.losses.Loss):
         # tf.print("DEBUG: Shapes of global_emb and all_emb", tf.shape(global_emb), tf.shape(all_emb), output_stream=sys.stdout)
         # global_emb has shape (B*G, D) where B is batch size
         # all_emb has shape (B*V, D) 
+        global_emb = tf.cast(global_emb, tf.float32)
+        all_emb = tf.cast(all_emb, tf.float32)
         if step is None:
             step = 0
         sigreg_loss = self.sigreg(all_emb, step)
@@ -184,8 +185,5 @@ class LeJEPA(tf.keras.losses.Loss):
         global_centers = tf.reduce_mean(global_emb, axis=1, keepdims=True) # (B, 1, D)
         diff = all_emb - global_centers  # (B, V, D)
         inv_loss = tf.reduce_mean(tf.square(diff))  # (scalar)
-        
-        # Cast inv_loss to float32 to match sigreg_loss (which is float32)
-        inv_loss = tf.cast(inv_loss, tf.float32)
         
         return inv_loss * (1 - self.lambd) + sigreg_loss * self.lambd, sigreg_loss
