@@ -59,9 +59,9 @@ TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
 LAMBDA_SIGREG = 0.05
 
 # Model Configs
-HIDDEN_DIM = 384
-NUM_LAYERS = 8 #1
-NUM_HEADS = 6
+HIDDEN_DIM = 192
+NUM_LAYERS = 12 #1
+NUM_HEADS = 4
 
 # Tiny ViT with 16x16 patches, ~5M parameters
 ViT_Ti_16 = ViTConfig(

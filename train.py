@@ -93,6 +93,22 @@ with strategy.scope():
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory="./checkpoints", max_to_keep=5
     )
+
+    latest_ckpt = checkpoint_manager.latest_checkpoint
+    if latest_ckpt:
+        print(f"Found checkpoint: {latest_ckpt}")
+        print("Restoring BACKBONE ONLY (resetting probe and optimizer)...")
+        
+        # Create a temporary checkpoint that ONLY tracks the model.
+        # This ignores 'probe' and 'optimizer' in the file.
+        backbone_restorer = tf.train.Checkpoint(model=model)
+        
+        # expect_partial() is required because the file has keys we are ignoring
+        backbone_restorer.restore(latest_ckpt).expect_partial()
+        
+        print("Backbone restored. Probe and Optimizer are fresh.")
+    else:
+        print("No checkpoint found. Starting from scratch.")
     
     # print model summary
     dummy_input = tf.zeros((1, 1, CONFIG.image_height, CONFIG.image_width, CONFIG.num_channels))
@@ -206,23 +222,30 @@ def train_step(inputs):
         # cls_2d_all = host_plot(cls_2d_all, per_replica_sigreg_loss_backbone)
         
         # 6. Calculate Probe Loss (Linear Probe)
-        # Input to probe: Average of Global Views
-        # We use stop_gradient to ensure backbone is FROZEN for this part
-        probe_input = tf.stop_gradient(tf.reduce_mean(global_views, axis=1)) # (B, D)
         
-        probe_logits = probe(probe_input, training=True) # (B, Num_Classes)
+        # FIX 1: Train on individual global views, not the mean.
+        # This matches evaluation (which uses single views) and provides more samples.
+        # global_views shape: (B, G, D) -> Flatten to (B*G, D)
+        probe_input = tf.reshape(global_views, [B * NUM_GLOBAL_VIEWS, -1])
+        probe_input = tf.stop_gradient(probe_input)
         
-        # Labels: Take the label of the first view (since all views have same label)
-        batch_labels = labels[:, 0, :] # (B, Num_Classes)
+        probe_logits = probe(probe_input, training=True) # (B*G, Num_Classes)
         
-        # Binary Cross Entropy for Multi-label classification
-        # Sum over classes, mean over batch
-        # Cast probe_logits to float32 for loss calculation stability
+        # Expand labels to match: (B, V, Num_Classes) -> (B, G, Num_Classes) -> (B*G, Num_Classes)
+        batch_labels = tf.reshape(labels[:, :NUM_GLOBAL_VIEWS, :], [-1, AUDIOSET_NUM_CLASSES])
+        
+        # FIX 2: Remove or drastically lower pos_weight.
+        # pos_weight=30 forces the model to over-predict frequent classes (Music/Speech).
+        # Set to 1.0 for standard BCE, or ~5.0 if you really want recall.
         probe_logits = tf.cast(probe_logits, tf.float32)
         
         per_replica_loss_probe = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=30.0),
+                tf.nn.weighted_cross_entropy_with_logits(
+                    labels=batch_labels, 
+                    logits=probe_logits, 
+                    pos_weight=1.0  # CHANGED FROM 30.0
+                ),
                 axis=1
             )
         )

@@ -1,0 +1,227 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 14732259
+##  Job Name : MyGO
+##  Nodelist : gpu2108
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/MyGO/MyGo
+##   Job Started : Sun Dec  7 01:17:55 AM EST 2025
+###############################################################################
+
+==========================================
+Job started at: Sun Dec  7 01:17:55 AM EST 2025
+Job ID: 14732259
+Node: gpu2108
+==========================================
+
+GPU Information (from host):
+Sun Dec  7 01:17:55 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 3090        On  | 00000000:41:00.0 Off |                  N/A |
+| 30%   31C    P8              27W / 350W |     30MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA GeForce RTX 3090        On  | 00000000:81:00.0 Off |                  N/A |
+| 30%   27C    P8              29W / 350W |     30MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     45822      G   /usr/libexec/Xorg                            17MiB |
+|    1   N/A  N/A     45822      G   /usr/libexec/Xorg                            21MiB |
++---------------------------------------------------------------------------------------+
+
+mygo conda environment loaded
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys/bin/ffmpeg
+ffmpeg version 7.0 Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc 11 (GCC)
+configuration: --prefix=/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys --enable-pic --cc=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/gcc --cxx=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/g++ --disable-libxcb --disable-libxcb-shape --disable-libxcb-shm --disable-libxcb-xfixes --disable-xlib --disable-libfontconfig --disable-libfreetype --disable-libfribidi --enable-bzlib --enable-gpl --disable-libmp3lame --disable-libopenjpeg --disable-libopus --disable-libspeex --disable-libvorbis --enable-libvpx --enable-libx264 --disable-nonfree --disable-openssl --enable-shared --enable-version3 --disable-libzmq --disable-libssh --enable-libwebp --disable-lzma --disable-libsnappy --disable-sdl2 --disable-libaom --disable-libxml2
+libavutil      59.  8.100 / 59.  8.100
+libavcodec     61.  3.100 / 61.  3.100
+libavformat    61.  1.100 / 61.  1.100
+libavdevice    61.  1.100 / 61.  1.100
+libavfilter    10.  1.100 / 10.  1.100
+libswscale      8.  1.100 /  8.  1.100
+libswresample   5.  1.100 /  5.  1.100
+libpostproc    58.  1.100 / 58.  1.100
+TF version: 2.16.1
+Built with CUDA: True
+GPUs detected: 2
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+==========================================
+Installing dependencies
+==========================================
+
+
+==========================================
+Starting main Python script at Sun Dec  7 01:18:27 AM EST 2025
+==========================================
+
+Working directory: /users/lwang223/MyGO/MyGo
+
+[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Using MirroredStrategy for multi-GPU training.
+Number of devices: 2
+Model: "vi_t__ti"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ vit (TFViTMainLayer)        multiple                  0 (unused)
+                                                                 
+=================================================================
+Total params: 14591232 (55.66 MB)
+Trainable params: 14591232 (55.66 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Model: "linear_probe"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense (Dense)               multiple                  202895    
+                                                                 
+=================================================================
+Total params: 202895 (792.56 KB)
+Trainable params: 202895 (792.56 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Building optimizer variables...
+Optimizer built.
+Starting training...
+
+Epoch 1/100
+std: 0.0911254883 ,  0.0858154297 SigReg: 580.421936
+std: 0.0665893555 ,  0.0681152344 SigReg: 580.421936
+  Step 0: Backbone Loss = 29.6755, SIGReg Loss = 580.4219 Probe Loss = 478.5779, Acc = 0.4926
+std: 0.0801391602 ,  0.0797729492 SigReg: 599.697571
+std: 0.100280762 ,  0.058013916 SigReg: 599.697571
+std: 0.0946044922 ,  0.0955200195 SigReg: 591.553467
+std: 0.0767211914 ,  0.0808105469 SigReg: 591.553467
+std: 0.0615844727 ,  0.0771484375 SigReg: 595.549072
+std: 0.208374023 ,  0.105895996 SigReg: 595.549072
+std: 0.0452880859 ,  0.0687255859 SigReg: 601.762817
+std: 0.0954589844 ,  0.0780029297 SigReg: 601.762817
+std: 0.0444641113 ,  0.0529174805 SigReg: 624.397461
+std: 0.0444030762 ,  0.0745239258 SigReg: 624.397461
+std: 0.0529174805 ,  0.073059082 SigReg: 574.1828
+std: 0.188842773 ,  0.119018555 SigReg: 574.1828
+std: 0.0543823242 ,  0.0825195312 SigReg: 592.422302
+std: 0.200439453 ,  0.0821533203 SigReg: 592.422302
+std: 0.0543823242 ,  0.0796508789 SigReg: 633.160828
+std: 0.108276367 ,  0.0800170898 SigReg: 633.160828
+std: 0.0582885742 ,  0.0634155273 SigReg: 592.995178
+std: 0.0640869141 ,  0.0776367188 SigReg: 592.995178
+std: 0.13659668 ,  0.095703125 SigReg: 593.419922
+std: 0.0307312012 ,  0.0578308105 SigReg: 593.419922
+std: 0.0464782715 ,  0.0657959 SigReg: 604.373901
+std: 0.0493774414 ,  0.0658569336 SigReg: 604.373901
+std: 0.0539245605 ,  0.0846557617 SigReg: 591.50824
+std: 0.0706787109 ,  0.0745849609 SigReg: 591.50824
+std: 0.151611328 ,  0.0735473633 SigReg: 603.216553
+std: 0.0497131348 ,  0.0709838867 SigReg: 603.216553
+std: 0.0454101562 ,  0.0715942383 SigReg: 564.304321
+std: 0.186645508 ,  0.108825684 SigReg: 564.304321
+std: 0.0897216797 ,  0.0718383789 SigReg: 597.737915
+std: 0.0445861816 ,  0.0739135742 SigReg: 597.737915
+std: 0.0949707 ,  0.0767211914 SigReg: 583.781128
+std: 0.0798339844 ,  0.0837402344 SigReg: 583.781128
+std: 0.0550842285 ,  0.0796508789 SigReg: 578.154541
+std: 0.0577392578 ,  0.0720214844 SigReg: 578.154541
+std: 0.204956055 ,  0.0928344727 SigReg: 595.766724
+std: 0.189819336 ,  0.0980224609 SigReg: 595.766724
+std: 0.197021484 ,  0.102783203 SigReg: 559.688538
+std: 0.0414428711 ,  0.0626831055 SigReg: 559.688538
+std: 0.06640625 ,  0.0918579102 SigReg: 566.681274
+std: 0.0807495117 ,  0.0825805664 SigReg: 566.681274
+std: 0.0559997559 ,  0.0589904785 SigReg: 580.26416
+std: 0.0682983398 ,  0.0661010742 SigReg: 580.26416
+std: 0.0655517578 ,  0.0694580078 SigReg: 599.991577
+std: 0.108276367 ,  0.0863037109 SigReg: 599.991577
+std: 0.0637207 ,  0.0798339844 SigReg: 580.96637
+std: 0.0405273438 ,  0.0665893555 SigReg: 580.96637
+std: 0.120910645 ,  0.0814819336 SigReg: 546.731384
+std: 0.061920166 ,  0.0880737305 SigReg: 546.731384
+std: 0.0397033691 ,  0.0675048828 SigReg: 554.199158
+std: 0.0452270508 ,  0.0717163086 SigReg: 554.199158
+std: 0.0468444824 ,  0.0634765625 SigReg: 588.089
+std: 0.114074707 ,  0.0768432617 SigReg: 588.089
+std: 0.203857422 ,  0.108459473 SigReg: 554.398804
+std: 0.046661377 ,  0.0690918 SigReg: 554.398804
+std: 0.0502319336 ,  0.0772705078 SigReg: 557.606628
+std: 0.0615539551 ,  0.0594482422 SigReg: 557.606628
+std: 0.0458984375 ,  0.076171875 SigReg: 545.753174
+std: 0.0472717285 ,  0.0827026367 SigReg: 545.753174
+std: 0.0614013672 ,  0.0808105469 SigReg: 560.182739
+std: 0.0858154297 ,  0.073425293 SigReg: 560.182739
+std: 0.0533752441 ,  0.0783691406 SigReg: 548.822815
+std: 0.163574219 ,  0.0828857422 SigReg: 548.822815
+std: 0.0593261719 ,  0.0756835938 SigReg: 523.947144
+std: 0.109802246 ,  0.0673217773 SigReg: 523.947144
+std: 0.122375488 ,  0.0932617188 SigReg: 547.538818
+std: 0.0617980957 ,  0.0765380859 SigReg: 547.538818
+std: 0.046661377 ,  0.0728149414 SigReg: 532.209717
+std: 0.080871582 ,  0.0744628906 SigReg: 532.209717
+std: 0.0666503906 ,  0.0690918 SigReg: 562.728577
+std: 0.0442199707 ,  0.0734863281 SigReg: 562.728577
+std: 0.0481872559 ,  0.0778808594 SigReg: 520.271667
+std: 0.0706787109 ,  0.0795288086 SigReg: 520.271667
+std: 0.0629882812 ,  0.0933227539 SigReg: 530.589661
+std: 0.207519531 ,  0.10168457 SigReg: 530.589661
+std: 0.0498657227 ,  0.0710449219 SigReg: 528.965393
+std: 0.208007812 ,  0.0713501 SigReg: 528.965393
+std: 0.0532531738 ,  0.0711669922 SigReg: 557.756042
+std: 0.209594727 ,  0.10949707 SigReg: 557.756042
+std: 0.0666503906 ,  0.0819702148 SigReg: 502.606476
+std: 0.0640869141 ,  0.0742797852 SigReg: 502.606476
+std: 0.0435180664 ,  0.081237793 SigReg: 535.141724
+std: 0.0436401367 ,  0.086730957 SigReg: 535.141724
+std: 0.0667114258 ,  0.0825805664 SigReg: 522.402039
+std: 0.0634765625 ,  0.0715332 SigReg: 522.402039
+std: 0.0523071289 ,  0.0783081055 SigReg: 518.985229
+std: 0.209716797 ,  0.134399414 SigReg: 518.985229
+std: 0.18359375 ,  0.0794067383 SigReg: 525.560852
+std: 0.0844116211 ,  0.0734863281 SigReg: 525.560852
+std: 0.0469970703 ,  0.0762329102 SigReg: 503.758698
+std: 0.202880859 ,  0.123046875 SigReg: 503.758698
+std: 0.083190918 ,  0.0876464844 SigReg: 511.954315
+std: 0.0395813 ,  0.0803833 SigReg: 511.954315
+std: 0.0944213867 ,  0.0914306641 SigReg: 500.266327
+std: 0.221191406 ,  0.104187012 SigReg: 500.266327
+std: 0.0506591797 ,  0.07421875 SigReg: 487.782806
+std: 0.0681762695 ,  0.0783691406 SigReg: 487.782806
+std: 0.0510864258 ,  0.073059082 SigReg: 531.717407
+std: 0.228515625 ,  0.112548828 SigReg: 531.717407
+std: 0.0354919434 ,  0.0698852539 SigReg: 492.5177
+std: 0.0479431152 ,  0.0795288086 SigReg: 492.5177
+  Step 50: Backbone Loss = 26.0301, SIGReg Loss = 492.5177 Probe Loss = 474.3344, Acc = 0.4724
+std: 0.124023438 ,  0.11505127 SigReg: 485.280945
+std: 0.0385131836 ,  0.079284668 SigReg: 485.280945
+std: 0.10333252 ,  0.0882568359 SigReg: 456.055115
+std: 0.0394897461 ,  0.0731811523 SigReg: 456.055115
+std: 0.123352051 ,  0.0822143555 SigReg: 487.349304
+std: 0.0527954102 ,  0.0672607422 SigReg: 487.349304
+std: 0.0843505859 ,  0.0960693359 SigReg: 469.678406
+std: 0.0522155762 ,  0.086730957 SigReg: 469.678406
+std: 0.0517578125 ,  0.0880737305 SigReg: 468.187347
+std: 0.11529541 ,  0.0737915039 SigReg: 468.187347
+std: 0.108032227 ,  0.0823974609 SigReg: 471.77182
+std: 0.239135742 ,  0.11920166 SigReg: 471.77182
+std: 0.0379943848 ,  0.0721435547 SigReg: 475.03064
+std: 0.0751953125 ,  0.10760498 SigReg: 475.03064
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mfrosty-bee-149[0m at: [34m[0m
+[1;34mwandb[0m: Find logs at: [1;35m../../../../oscar/home/lwang223/MyGO/MyGo/wandb/run-20251207_011903-m06rdfcy/logs[0m
+
+==========================================
+Python script finished at Sun Dec  7 01:21:04 AM EST 2025
+Exit code: 1
+==========================================

@@ -1,0 +1,328 @@
+2025-12-07 01:14:16.930374: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-12-07 01:14:44.292919: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-12-07 01:14:57.012972: W tensorflow/core/common_runtime/gpu/gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was 0.
+2025-12-07 01:14:57.013529: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1928] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 22435 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 3090, pci bus id: 0000:81:00.0, compute capability: 8.6
+2025-12-07 01:14:57.013974: W tensorflow/core/common_runtime/gpu/gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was 0.
+2025-12-07 01:14:57.014514: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1928] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 22434 MB memory:  -> device: 1, name: NVIDIA GeForce RTX 3090, pci bus id: 0000:e1:00.0, compute capability: 8.6
+Loading Audioset labels from data/audioset/balanced_train_segments.csv:   0%|          | 0/22160 [00:00<?, ?it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   1%|          | 179/22160 [00:00<00:12, 1779.36it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   2%|▏         | 363/22160 [00:00<00:12, 1809.83it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   2%|▎         | 554/22160 [00:00<00:11, 1851.21it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   3%|▎         | 745/22160 [00:00<00:11, 1869.94it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   4%|▍         | 938/22160 [00:00<00:11, 1890.20it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   5%|▌         | 1131/22160 [00:00<00:11, 1896.83it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   6%|▌         | 1321/22160 [00:00<00:11, 1886.09it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   7%|▋         | 1511/22160 [00:00<00:10, 1889.27it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   8%|▊         | 1705/22160 [00:00<00:10, 1905.03it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   9%|▊         | 1896/22160 [00:01<00:10, 1900.25it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:   9%|▉         | 2087/22160 [00:01<00:10, 1902.99it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  10%|█         | 2278/22160 [00:01<00:10, 1886.82it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  11%|█         | 2467/22160 [00:01<00:10, 1874.25it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  12%|█▏        | 2659/22160 [00:01<00:10, 1886.06it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  13%|█▎        | 2861/22160 [00:01<00:10, 1922.29it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  14%|█▍        | 3054/22160 [00:01<00:09, 1917.99it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  15%|█▍        | 3246/22160 [00:01<00:10, 1875.46it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  15%|█▌        | 3434/22160 [00:01<00:10, 1848.06it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  16%|█▋        | 3619/22160 [00:01<00:10, 1817.40it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  17%|█▋        | 3806/22160 [00:02<00:10, 1829.60it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  18%|█▊        | 3990/22160 [00:02<00:09, 1828.29it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  19%|█▉        | 4178/22160 [00:02<00:09, 1842.60it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  20%|█▉        | 4371/22160 [00:02<00:09, 1867.48it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  21%|██        | 4562/22160 [00:02<00:09, 1879.66it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  21%|██▏       | 4752/22160 [00:02<00:09, 1884.89it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  22%|██▏       | 4943/22160 [00:02<00:09, 1891.12it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  23%|██▎       | 5140/22160 [00:02<00:08, 1914.29it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  24%|██▍       | 5332/22160 [00:02<00:08, 1884.95it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  25%|██▍       | 5521/22160 [00:02<00:08, 1879.22it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  26%|██▌       | 5710/22160 [00:03<00:08, 1862.57it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  27%|██▋       | 5904/22160 [00:03<00:08, 1881.91it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  27%|██▋       | 6093/22160 [00:03<00:08, 1860.47it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  28%|██▊       | 6289/22160 [00:03<00:08, 1886.51it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  29%|██▉       | 6478/22160 [00:03<00:08, 1867.75it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  30%|███       | 6673/22160 [00:03<00:08, 1890.65it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  31%|███       | 6863/22160 [00:03<00:08, 1877.40it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  32%|███▏      | 7052/22160 [00:03<00:08, 1880.02it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  33%|███▎      | 7245/22160 [00:03<00:07, 1893.66it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  34%|███▎      | 7435/22160 [00:03<00:07, 1885.47it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  34%|███▍      | 7624/22160 [00:04<00:07, 1862.26it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  35%|███▌      | 7811/22160 [00:04<00:07, 1847.34it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  36%|███▌      | 8013/22160 [00:04<00:07, 1893.90it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  37%|███▋      | 8218/22160 [00:04<00:07, 1939.99it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  38%|███▊      | 8413/22160 [00:04<00:07, 1936.80it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  39%|███▉      | 8607/22160 [00:04<00:07, 1909.12it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  40%|███▉      | 8799/22160 [00:04<00:06, 1910.41it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  41%|████      | 8991/22160 [00:04<00:06, 1891.94it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  41%|████▏     | 9185/22160 [00:04<00:06, 1900.22it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  42%|████▏     | 9379/22160 [00:04<00:06, 1910.25it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  43%|████▎     | 9571/22160 [00:05<00:06, 1894.23it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  44%|████▍     | 9761/22160 [00:05<00:06, 1891.60it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  45%|████▍     | 9951/22160 [00:05<00:06, 1866.13it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  46%|████▌     | 10138/22160 [00:05<00:06, 1859.07it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  47%|████▋     | 10325/22160 [00:05<00:06, 1856.60it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  47%|████▋     | 10517/22160 [00:05<00:06, 1874.69it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  48%|████▊     | 10709/22160 [00:05<00:06, 1887.22it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  49%|████▉     | 10904/22160 [00:05<00:05, 1903.60it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  50%|█████     | 11106/22160 [00:05<00:05, 1935.51it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  51%|█████     | 11302/22160 [00:05<00:05, 1941.58it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  52%|█████▏    | 11500/22160 [00:06<00:05, 1950.01it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  53%|█████▎    | 11702/22160 [00:06<00:05, 1968.81it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  54%|█████▎    | 11899/22160 [00:06<00:05, 1953.49it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  55%|█████▍    | 12095/22160 [00:06<00:05, 1938.04it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  55%|█████▌    | 12289/22160 [00:06<00:05, 1920.30it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  56%|█████▋    | 12482/22160 [00:06<00:05, 1890.44it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  57%|█████▋    | 12672/22160 [00:06<00:05, 1888.20it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  58%|█████▊    | 12865/22160 [00:06<00:04, 1894.43it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  59%|█████▉    | 13066/22160 [00:06<00:04, 1925.64it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  60%|█████▉    | 13264/22160 [00:07<00:04, 1940.45it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  61%|██████    | 13459/22160 [00:07<00:04, 1935.82it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  62%|██████▏   | 13653/22160 [00:07<00:04, 1928.60it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  62%|██████▏   | 13847/22160 [00:07<00:04, 1931.54it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  63%|██████▎   | 14041/22160 [00:07<00:04, 1901.02it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  64%|██████▍   | 14232/22160 [00:07<00:04, 1895.44it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  65%|██████▌   | 14440/22160 [00:07<00:03, 1947.93it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  66%|██████▌   | 14635/22160 [00:07<00:03, 1936.08it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  67%|██████▋   | 14829/22160 [00:07<00:03, 1892.59it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  68%|██████▊   | 15019/22160 [00:07<00:03, 1884.70it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  69%|██████▊   | 15219/22160 [00:08<00:03, 1917.46it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  70%|██████▉   | 15414/22160 [00:08<00:03, 1926.61it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  70%|███████   | 15615/22160 [00:08<00:03, 1950.70it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  71%|███████▏  | 15811/22160 [00:08<00:03, 1945.98it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  72%|███████▏  | 16006/22160 [00:08<00:03, 1916.77it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  73%|███████▎  | 16198/22160 [00:08<00:03, 1902.98it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  74%|███████▍  | 16389/22160 [00:08<00:03, 1900.79it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  75%|███████▍  | 16580/22160 [00:08<00:02, 1900.63it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  76%|███████▌  | 16772/22160 [00:08<00:02, 1902.97it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  77%|███████▋  | 16963/22160 [00:08<00:02, 1901.78it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  77%|███████▋  | 17158/22160 [00:09<00:02, 1915.03it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  78%|███████▊  | 17357/22160 [00:09<00:02, 1935.81it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  79%|███████▉  | 17551/22160 [00:09<00:02, 1923.32it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  80%|████████  | 17746/22160 [00:09<00:02, 1930.87it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  81%|████████  | 17943/22160 [00:09<00:02, 1940.54it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  82%|████████▏ | 18138/22160 [00:09<00:02, 1928.48it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  83%|████████▎ | 18331/22160 [00:09<00:02, 1909.92it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  84%|████████▎ | 18523/22160 [00:09<00:01, 1875.85it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  84%|████████▍ | 18714/22160 [00:09<00:01, 1881.97it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  85%|████████▌ | 18903/22160 [00:09<00:01, 1870.05it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  86%|████████▌ | 19091/22160 [00:10<00:01, 1834.61it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  87%|████████▋ | 19275/22160 [00:10<00:01, 1833.06it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  88%|████████▊ | 19460/22160 [00:10<00:01, 1837.94it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  89%|████████▊ | 19655/22160 [00:10<00:01, 1866.27it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  90%|████████▉ | 19854/22160 [00:10<00:01, 1901.72it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  90%|█████████ | 20045/22160 [00:10<00:01, 1895.11it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  91%|█████████▏| 20235/22160 [00:10<00:01, 1868.92it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  92%|█████████▏| 20424/22160 [00:10<00:00, 1873.98it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  93%|█████████▎| 20616/22160 [00:10<00:00, 1887.51it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  94%|█████████▍| 20805/22160 [00:10<00:00, 1866.75it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  95%|█████████▍| 20997/22160 [00:11<00:00, 1881.31it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  96%|█████████▌| 21186/22160 [00:11<00:00, 1857.77it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  96%|█████████▋| 21378/22160 [00:11<00:00, 1869.23it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  97%|█████████▋| 21566/22160 [00:11<00:00, 1867.47it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  98%|█████████▊| 21753/22160 [00:11<00:00, 1854.50it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv:  99%|█████████▉| 21950/22160 [00:11<00:00, 1886.17it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv: 100%|█████████▉| 22143/22160 [00:11<00:00, 1897.43it/s]Loading Audioset labels from data/audioset/balanced_train_segments.csv: 100%|██████████| 22160/22160 [00:11<00:00, 1893.05it/s]
+TensorFlow and JAX classes are deprecated and will be removed in Transformers v5. We recommend migrating to PyTorch classes or pinning your version of Transformers.
+2025-12-07 01:15:14.418179: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:465] Loaded cuDNN version 8907
+wandb: Currently logged in as: sabrina_xm (sabrina_xm-brown-university) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.23.1
+wandb: Run data is saved locally in /oscar/home/lwang223/MyGO/MyGo/wandb/run-20251207_011517-0jumje1j
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run celestial-hill-148
+wandb: ⭐️ View project at https://wandb.ai/sabrina_xm-brown-university/MyGO
+wandb: 🚀 View run at https://wandb.ai/sabrina_xm-brown-university/MyGO/runs/0jumje1j
+Training Epoch 1/100:   0%|          | 0/373 [00:00<?, ?batch/s]2025-12-07 01:15:50.578737: W tensorflow/core/grappler/optimizers/loop_optimizer.cc:933] Skipping loop optimization for Merge node with control input: replica_1/cond/StatefulPartitionedCall/replica_1/cond/branch_executed/_53
+2025-12-07 01:15:53.918548: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:465] Loaded cuDNN version 8907
+2025-12-07 01:15:57.426527: W tensorflow/core/framework/op_kernel.cc:1827] INVALID_ARGUMENT: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+2025-12-07 01:15:57.426572: W tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: INVALID_ARGUMENT: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+	 [[{{function_node cond_true_21610}}{{node cond/EagerPyFunc}}]]
+2025-12-07 01:15:57.426585: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 9398496101921301177
+2025-12-07 01:15:57.426594: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 205540445345250189
+2025-12-07 01:15:57.426603: W tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: INVALID_ARGUMENT: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+	 [[{{function_node cond_true_21610}}{{node cond/EagerPyFunc}}]]
+	 [[cond/StatefulPartitionedCall/cond/branch_executed/_44/_159]]
+2025-12-07 01:15:57.426615: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 17986856063332128991
+2025-12-07 01:15:57.426623: W tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: INVALID_ARGUMENT: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+	 [[{{function_node cond_true_21610}}{{node cond/EagerPyFunc}}]]
+	 [[cond/StatefulPartitionedCall/cond/branch_executed/_44/_159]]
+	 [[Identity_8/_192]]
+2025-12-07 01:15:57.426632: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 6505461768183032495
+2025-12-07 01:15:57.426640: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 6032215486694034467
+2025-12-07 01:15:57.426647: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 13929036916842093368
+2025-12-07 01:15:57.426710: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 13650927459534390289
+2025-12-07 01:15:57.426718: I tensorflow/core/framework/local_rendezvous.cc:422] Local rendezvous recv item cancelled. Key hash: 4176694252352355705
+Training Epoch 1/100:   0%|          | 0/373 [00:37<?, ?batch/s]
+Traceback (most recent call last):
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 362, in <module>
+    main()
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 283, in main
+    loss_backbone, loss_probe, acc, sigreg_loss_backbone = distributed_train_step(batch_inputs)
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py", line 153, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/eager/execute.py", line 59, in quick_execute
+    except TypeError as e:
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Graph execution error:
+
+Detected at node cond/EagerPyFunc defined at (most recent call last):
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/threading.py", line 1009, in _bootstrap
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/threading.py", line 1052, in _bootstrap_inner
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 205, in train_step
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 201, in host_plot
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 202, in host_plot
+
+Detected at node cond/EagerPyFunc defined at (most recent call last):
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/threading.py", line 1009, in _bootstrap
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/threading.py", line 1052, in _bootstrap_inner
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 205, in train_step
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 201, in host_plot
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 202, in host_plot
+
+Detected at node cond/EagerPyFunc defined at (most recent call last):
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/threading.py", line 1009, in _bootstrap
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/threading.py", line 1052, in _bootstrap_inner
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 205, in train_step
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 201, in host_plot
+
+  File "/oscar/home/lwang223/MyGO/MyGo/train.py", line 202, in host_plot
+
+3 root error(s) found.
+  (0) INVALID_ARGUMENT:  TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+	 [[{{node cond/EagerPyFunc}}]]
+	 [[cond/StatefulPartitionedCall/cond/branch_executed/_44/_159]]
+	 [[Identity_8/_192]]
+  (1) INVALID_ARGUMENT:  TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+	 [[{{node cond/EagerPyFunc}}]]
+	 [[cond/StatefulPartitionedCall/cond/branch_executed/_44/_159]]
+  (2) INVALID_ARGUMENT:  TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+Traceback (most recent call last):
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 268, in __call__
+    return func(device, token, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 146, in __call__
+    outputs = self._call(device, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/ops/script_ops.py", line 153, in _call
+    ret = self._func(*args)
+          ^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 643, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+
+  File "/tmp/__autograph_generated_file8hoaq2wd.py", line 41, in _plot
+    ag__.converted_call(ag__.ld(plt).savefig, (f'figures/cls_token_distribution_step{ag__.converted_call(ag__.ld(int), (ag__.ld(optimizer).iterations,), None, fscope_1)}.png',), None, fscope_1)
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 335, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/users/lwang223/.conda/envs/mygo/lib/python3.12/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'MirroredVariable'
+
+
+	 [[{{node cond/EagerPyFunc}}]]
+0 successful operations.
+0 derived errors ignored. [Op:__inference_distributed_train_step_46527]
+Exception ignored in: Exception ignored in sys.unraisablehookException ignored in: Exception ignored in sys.unraisablehookException ignored in: Exception ignored in sys.unraisablehook
