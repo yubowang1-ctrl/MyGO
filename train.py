@@ -298,47 +298,50 @@ def main():
                     "epoch": epoch
                 })
 
-                # --- MODIFIED VISUALIZATION BLOCK ---
-                # Instead of defining a function and using strategy.run, 
-                # we extract the first replica's data and run locally.
-                
-                # 1. Unwrap the distributed batch to get local tensors
-                # batch_inputs is (views, labels)
-                views_replicas = strategy.experimental_local_results(batch_inputs[0])
-                
-                # 2. Take the first replica's data
-                # Shape: (Local_Batch_Size, V, H, W, C)
-                local_views = views_replicas[0]
-                
-                # 3. Run model inference (Training=False)
-                # We use the model directly. Since variables are distributed, 
-                # this works fine for inference on a single batch.
-                outputs = model(local_views, training=False)
-                
-                # 4. Process outputs for plotting
-                cls_tokens = outputs[:, :, 0, :] # (B, V, D)
-                
-                # Flatten B and V
-                cls_tokens_flat = tf.reshape(cls_tokens, [-1, CONFIG.hidden_dim])
-                
-                # Take the first 2 dimensions for plotting (as per your original logic)
-                cls_2d = cls_tokens_flat[:, :2]
-                
-                cls_2d_np = tf.cast(cls_2d, tf.float32).numpy()
+                try:
+                    # --- MODIFIED VISUALIZATION BLOCK ---
+                    # Instead of defining a function and using strategy.run, 
+                    # we extract the first replica's data and run locally.
+                    
+                    # 1. Unwrap the distributed batch to get local tensors
+                    # batch_inputs is (views, labels)
+                    views_replicas = strategy.experimental_local_results(batch_inputs[0])
+                    
+                    # 2. Take the first replica's data
+                    # Shape: (Local_Batch_Size, V, H, W, C)
+                    local_views = views_replicas[0]
+                    
+                    # 3. Run model inference (Training=False)
+                    # We use the model directly. Since variables are distributed, 
+                    # this works fine for inference on a single batch.
+                    outputs = model(local_views, training=False)
+                    
+                    # 4. Process outputs for plotting
+                    cls_tokens = outputs[:, :, 0, :] # (B, V, D)
+                    
+                    # Flatten B and V
+                    cls_tokens_flat = tf.reshape(cls_tokens, [-1, CONFIG.hidden_dim])
+                    
+                    # Take the first 2 dimensions for plotting (as per your original logic)
+                    cls_2d = cls_tokens_flat[:, :2]
+                    
+                    cls_2d_np = tf.cast(cls_2d, tf.float32).numpy()
 
-                plt.figure(figsize=(6,6))
-                plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
-                plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
-                plt.xlabel("Dimension 1")
-                plt.ylabel("Dimension 2")
-                # plt.show()
-                plt.savefig(f"figures/cls_token_distribution_epoch{epoch+1}_step{step}.png")
-                wandb.log({
-                    "cls_token_distribution": wandb.Image(plt),
-                    "epoch": epoch,
-                    "step": step
-                })
-                plt.close()
+                    plt.figure(figsize=(6,6))
+                    plt.scatter(cls_2d_np[:, 0], cls_2d_np[:, 1], alpha=0.5)
+                    plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
+                    plt.xlabel("Dimension 1")
+                    plt.ylabel("Dimension 2")
+                    # plt.show()
+                    plt.savefig(f"figures/cls_token_distribution_epoch{epoch+1}_step{step}.png")
+                    wandb.log({
+                        "cls_token_distribution": wandb.Image(plt),
+                        "epoch": epoch,
+                        "step": step
+                    })
+                    plt.close()
+                except Exception as e:
+                    print(f"Skipping visualization due to error during visualization at step {step}: {e}")
         avg_loss_backbone = total_loss_backbone / num_batches if num_batches > 0 else 0.0
         avg_loss_probe = total_loss_probe / num_batches if num_batches > 0 else 0.0
         avg_acc = total_acc / num_batches if num_batches > 0 else 0.0
