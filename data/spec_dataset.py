@@ -2,7 +2,7 @@ import tensorflow as tf
 import librosa
 import numpy as np
 import os
-from models.transformer import mask_patches, mask_timeframe
+from models.transformer import mask_freq_band, mask_patches, mask_timeframe
 from constants import *
 import pandas as pd
 from tqdm import tqdm
@@ -117,20 +117,23 @@ def generate_views(spectrogram, label):
     
     # 1. Global Views
     for _ in range(NUM_GLOBAL_VIEWS):
-        # masked = random_mask(spectrogram, num_masks=2, mask_size=30, fill_value=0.0) # mask handled at patch-level masking in transformer
+        # mask handled at patch-level masking in transformer
         shifted = random_pitch_shift(spectrogram, max_shift=2)
         dilated = random_time_dilation(shifted, scale_range=(1.0, 1.1))
-        views.append(dilated)
+        scaled = random_volumn_scale(dilated, scale_range=(0.8, 1.2))
+        views.append(scaled)
         
     # 2. Local Views
     for _ in range(NUM_LOCAL_VIEWS):
-        # cropped = random_time_crop(spectrogram, percent=0.3) # time crop handled at patch-level masking in transformer
+        # time crop handled at patch-level masking in transformer
         dilated = random_time_dilation(spectrogram, scale_range=(0.7, 1.3))
-        shifted = random_pitch_shift(spectrogram, max_shift=5)
-        conved = random_conv2d(shifted, magnitude=0.1)
+        shifted = random_pitch_shift(spectrogram, max_shift=10)
+        conved = random_conv2d(shifted, magnitude=0.2)
         
-        # masked = random_mask(conved, num_masks=20, mask_size=30, fill_value=0.0) # mask handled at patch-level masking in transformer
-        dropped = random_drop_channels(conved, prob=0.05)
+        # mask handled at patch-level masking in transformer
+        noised = random_noise(conved, noise_level=0.03)
+        scaled = random_volumn_scale(noised, scale_range=(0.6, 1.4))
+        dropped = random_drop_channels(scaled, prob=0.05)
         views.append(dropped)
     
     label = tf.expand_dims(label, axis=0)  # (1, NUM_CLASSES)
@@ -299,6 +302,32 @@ def random_conv2d(spec, magnitude=0.5):
     summed = tf.clip_by_value((1 - magnitude) * spec + magnitude * convolved, 0.0, 1.0)
     return summed
 
+def random_noise(spec, noise_level=0.05):
+    """
+    Adds random Gaussian noise to the spectrogram.
+    spec: (H, W, C)
+    noise_level: standard deviation of the Gaussian noise
+    
+    Returns (H, W, C)
+    """
+    
+    # randomize noise level
+    noise_level += tf.random.uniform([], 0.0, noise_level*2)
+    noise = tf.random.normal(tf.shape(spec), mean=0.0, stddev=noise_level)
+    noised = tf.clip_by_value(spec + noise, 0.0, 1.0)
+    return noised
+
+def random_volumn_scale(spec, scale_range=(0.8, 1.2)):
+    """
+    Randomly scales the volume of the spectrogram.
+    spec: (H, W, C)
+    scale_range: tuple of (min_scale, max_scale)
+    
+    Returns (H, W, C)
+    """
+    scale = tf.random.uniform([], minval=scale_range[0], maxval=scale_range[1])
+    scaled = tf.clip_by_value(spec * scale, 0.0, 1.0)
+    return scaled
 # ==============================================================================
 # 5. Dataset Pipeline
 # ==============================================================================
@@ -405,6 +434,7 @@ def visualize_sample(data_dir, csv_path):
         # 2. Apply masking
         mask = mask_patches(batch_size, num_row_patches, num_col_patches, CONFIG.G, CONFIG.V)
         mask |= mask_timeframe(batch_size, num_row_patches, num_col_patches, CONFIG.G, CONFIG.V)
+        mask |= mask_freq_band(batch_size, num_row_patches, num_col_patches, CONFIG.G, CONFIG.V)
         x = tf.where(mask, tf.zeros_like(x), x)
         # 3. Unflatten patches
         patches = tf.reshape(x, [batch_size, num_row_patches, num_col_patches, CONFIG.patch_height, CONFIG.patch_width, CONFIG.num_channels])
@@ -447,7 +477,7 @@ def visualize_sample(data_dir, csv_path):
         
         # Plot
         # Increased figure width to accommodate stereo views
-        fig, axes = plt.subplots(4, (num_views + 1) // 4, figsize=(8, 8/CONFIG.image_width*CONFIG.image_height))
+        fig, axes = plt.subplots((num_views + 1) // 2, 2, figsize=(8, 8/CONFIG.image_width*CONFIG.image_height))
         fig.suptitle(f"Generated Views (Labels: {', '.join(label_names)})", fontsize=12)
         axes = axes.flatten()
         
@@ -475,4 +505,4 @@ def visualize_sample(data_dir, csv_path):
         plt.show()
         break
 
-#visualize_sample(DATA_DIR, CSV_PATH)
+# visualize_sample(DATA_DIR, CSV_PATH)

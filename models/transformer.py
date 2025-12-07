@@ -97,7 +97,7 @@ def mask_patches(batch_size, num_row_patches, num_col_patches, G, V):
     mask = tf.expand_dims(mask, axis=-1)  # shape (batch_size, seq_len, 1)
     return mask
     
-def mask_timeframe(batch_size, num_row_patches, num_col_patches, G, V, ratio=0.5):
+def mask_timeframe(batch_size, num_row_patches, num_col_patches, G, V, ratio=0.7):
     """
     Mask entire time frames (colums of patches) in the input tensor x.
     
@@ -150,6 +150,36 @@ def mask_timeframe(batch_size, num_row_patches, num_col_patches, G, V, ratio=0.5
     full_mask = tf.expand_dims(mask_expanded, axis=-1) # (B, Seq, 1)
     return full_mask
 
+def mask_freq_band(batch_size, num_row_patches, num_col_patches, G, V, ratio=0.5):
+    # randomly select vertical bands to mask
+    
+    band_ids = tf.range(num_row_patches)
+    num_bands = tf.cast(tf.cast(num_row_patches, tf.float32) * ratio, tf.int32)
+    
+    # build mask id, need shape (batch_size, seq_len, 1)
+    batch_indices = tf.range(batch_size)
+    is_local = (batch_indices % V) >= G # (batch_size,) boolean
+    # do not mask bands for global views
+    is_local_expanded = is_local[:, None] # (B, 1)
+    is_local_expanded = tf.tile(is_local_expanded, [1, num_row_patches * num_col_patches])  # (B, seq_len)
+    # vectorize band id selection. each sample gets different band ids
+    band_ids = tf.random.uniform([batch_size, num_bands], minval=0, maxval=num_row_patches, dtype=tf.int32)
+    # create mask
+    # for each sample, set the selected band ids to True with tf.scatter_nd
+    band_ids = tf.expand_dims(band_ids, -1)  # (batch_size, num_bands, 1)
+    # add batch indices 
+    batch_ids = tf.reshape(tf.range(batch_size), [-1, 1, 1])  # (batch_size, 1, 1)
+    batch_ids = tf.tile(batch_ids, [1, num_bands, 1])  # (batch_size, num_bands, 1)
+    band_ids = tf.concat([batch_ids, band_ids], axis=-1)  # (batch_size, num_bands, 2)
+    mask = tf.scatter_nd(band_ids, tf.ones([batch_size, num_bands], dtype=tf.bool), [batch_size, num_row_patches])
+    
+    # expand to patch level, tile across time frames
+    mask = mask[:, :, None]  # (batch_size, num_row_patches, 1)
+    mask = tf.tile(mask, [1, 1, num_col_patches])  # (batch_size, num_row_patches, num_col_patches)
+    mask = tf.reshape(mask, [batch_size, num_row_patches * num_col_patches, 1])  # (batch_size, seq_len, 1)
+    mask = mask & is_local_expanded[:, :, None]  # only apply to local views
+    return mask
+    
 class ViT(tf.keras.Model):
     def __init__(self, config: ViTConfig, **kwargs):
         super(ViT, self).__init__(**kwargs)
@@ -231,6 +261,7 @@ class ViT(tf.keras.Model):
         if training: # mask patches
             mask = mask_patches(batch_size, num_row_patches, num_col_patches, self.config.G, self.config.V)
             mask |= mask_timeframe(batch_size, num_row_patches, num_col_patches, self.config.G, self.config.V)
+            mask |= mask_freq_band(batch_size, num_row_patches, num_col_patches, self.config.G, self.config.V)
             x = tf.where(mask, tf.broadcast_to(self.mask_token, tf.shape(x)), x)
         
         # add frequency positional embedding
@@ -455,7 +486,7 @@ class ViT_Ti(tf.keras.Model):
             # mask_patches expects flattened batch size
             mask = mask_patches(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
             mask |= mask_timeframe(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
-            
+            mask |= mask_freq_band(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
             # Mask shape: (B*V, 256, 1)
             # Embedding shape: (B*V, 257, D) (includes CLS at index 0)
             
