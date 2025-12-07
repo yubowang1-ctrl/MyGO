@@ -184,26 +184,26 @@ def train_step(inputs):
         ctx = tf.distribute.get_replica_context()
         cls_2d = global_emb[:, :2]  # (local_B*G, 2)
 
-        # gather all replicas
-        cls_2d_all = ctx.all_gather(cls_2d, axis=0)
+        # # gather all replicas
+        # cls_2d_all = ctx.all_gather(cls_2d, axis=0)
 
-        def _plot(arr, sigreg_loss):
-            import numpy as np, matplotlib.pyplot as plt
-            arr = np.asarray(arr, dtype=np.float32)
-            plt.figure(figsize=(6,6))
-            plt.scatter(arr[:,0], arr[:,1], alpha=0.5)
-            plt.title("CLS dist - std ({:.2f}, {:.2f}) - SIGReg {:.4f}".format(float(np.std(arr[:,0])), float(np.std(arr[:,1])), float(sigreg_loss)) )
-            plt.savefig(f"figures/cls_token_distribution_step{int(optimizer.iterations)}.png")
-            plt.close()
-            return np.int64(0)
+        # def _plot(arr, sigreg_loss):
+        #     import numpy as np, matplotlib.pyplot as plt
+        #     arr = np.asarray(arr, dtype=np.float32)
+        #     plt.figure(figsize=(6,6))
+        #     plt.scatter(arr[:,0], arr[:,1], alpha=0.5)
+        #     plt.title("CLS dist - std ({:.2f}, {:.2f}) - SIGReg {:.4f}".format(float(np.std(arr[:,0])), float(np.std(arr[:,1])), float(sigreg_loss)) )
+        #     plt.savefig(f"figures/cls_token_distribution_step{int(optimizer.iterations)}.png")
+        #     plt.close()
+        #     return np.int64(0)
 
-        # run plotting only on one replica to avoid duplicate files
-        def host_plot(v, sigreg_loss):
-            if ctx.replica_id_in_sync_group == 0:
-                tf.py_function(_plot, [v, sigreg_loss], Tout=tf.int64)
-            return v
+        # # run plotting only on one replica to avoid duplicate files
+        # def host_plot(v, sigreg_loss):
+        #     if ctx.replica_id_in_sync_group == 0:
+        #         tf.py_function(_plot, [v, sigreg_loss], Tout=tf.int64)
+        #     return v
 
-        cls_2d_all = host_plot(cls_2d_all, per_replica_sigreg_loss_backbone)
+        # cls_2d_all = host_plot(cls_2d_all, per_replica_sigreg_loss_backbone)
         
         # 6. Calculate Probe Loss (Linear Probe)
         # Input to probe: Average of Global Views
