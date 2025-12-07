@@ -200,7 +200,7 @@ def train_step(inputs):
         per_replica_loss_backbone, per_replica_sigreg_loss_backbone = loss_fn.call(global_emb, all_emb, step=optimizer.iterations)
         
         # ============= DEBUGGING CODE FOR SIGREG =============
-        tf.print("std:", tf.math.reduce_std(global_emb[:, 0]), ", ", tf.math.reduce_std(global_emb[:, 1]), "SigReg:", per_replica_sigreg_loss_backbone, output_stream=sys.stdout)
+        # tf.print("std:", tf.math.reduce_std(global_emb[:, 0]), ", ", tf.math.reduce_std(global_emb[:, 1]), "SigReg:", per_replica_sigreg_loss_backbone, output_stream=sys.stdout)
         
         
         # plot the 1 and 2 dimensions of global_emb
@@ -347,10 +347,20 @@ def main():
                     
                     # Take the first 2 dimensions for plotting (as per your original logic)
                     cls_2d = cls_tokens_flat[:, :2]
+                    cls_2d_global = cls_2d[:NUM_GLOBAL_VIEWS, :]  # Take global views of a sample
+                    cls_2d_local = cls_2d[NUM_GLOBAL_VIEWS:TOTAL_VIEWS, :]  # Local views of a sample
+                    cls_2d_remaining = cls_2d[TOTAL_VIEWS:, :]  # Remaining samples
                     
                     cls_2d_np = tf.cast(cls_2d, tf.float32).numpy()
+                    cls_2d_global = tf.cast(cls_2d_global, tf.float32).numpy()
+                    cls_2d_local = tf.cast(cls_2d_local, tf.float32).numpy()
+                    cls_2d_remaining = tf.cast(cls_2d_remaining, tf.float32).numpy()
 
                     plt.figure(figsize=(6,6))
+                    plt.scatter(cls_2d_global[:,0], cls_2d_global[:,1], alpha=0.7, label="Sample Global Views", color='red')
+                    plt.scatter(cls_2d_local[:,0], cls_2d_local[:,1], alpha=0.5, label="Sample Local Views", color='yellow')
+                    plt.scatter(cls_2d_remaining[:,0], cls_2d_remaining[:,1], alpha=0.2, color='blue')
+                    plt.legend()
                     plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
                     plt.xlabel("Dimension 1")
                     plt.ylabel("Dimension 2")
