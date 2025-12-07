@@ -21,8 +21,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
-
-tf.keras.mixed_precision.set_global_policy('mixed_bfloat16')
+# OSCAR might have issues with bf16
+# tf.keras.mixed_precision.set_global_policy('mixed_bfloat16')
+tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
 # ==============================================================================
 # 2. Setup Distributed Strategy
