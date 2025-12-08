@@ -158,6 +158,10 @@ class SIGReg(tf.keras.losses.Loss):
         
         # Aggregate results (mean over slices)
         m = tf.reduce_mean(stats)
+        
+        # nan check
+        m = tf.clip_by_value(m, -1e5, 1e5)
+        
         return m
     
     
@@ -188,4 +192,10 @@ class LeJEPA(tf.keras.losses.Loss):
         diff = all_emb - global_centers  # (B, V, D)
         inv_loss = tf.reduce_mean(tf.square(diff))  # (scalar)
         
+        # NaN check
+        if tf.math.is_nan(inv_loss) or tf.math.is_nan(sigreg_loss):
+            tf.print("DEBUG: NaN detected in LeJEPA loss computation", output_stream=sys.stdout)
+            tf.print("DEBUG: inv_loss:", inv_loss, "sigreg_loss:", sigreg_loss, output_stream=sys.stdout)
+            inv_loss = tf.constant(0.0, dtype=tf.float32)
+            sigreg_loss = tf.constant(0.0, dtype=tf.float32)
         return inv_loss * (1 - self.lambd) + sigreg_loss * self.lambd, sigreg_loss

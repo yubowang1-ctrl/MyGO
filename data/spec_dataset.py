@@ -113,6 +113,10 @@ def generate_views(spectrogram, label):
     Input: (H, W, C), (NUM_CLASSES,)
     Output: (V, H, W, C), (V, NUM_CLASSES)
     """
+    # clean NaN
+    spectrogram = tf.where(tf.math.is_nan(spectrogram), tf.zeros_like(spectrogram), spectrogram)
+    spectrogram = tf.where(tf.math.is_inf(spectrogram), tf.zeros_like(spectrogram), spectrogram)
+    
     views = []
     
     # 1. Global Views
