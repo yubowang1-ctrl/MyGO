@@ -34,7 +34,7 @@ FMAX = 12000.0
 EPSILON = 1e-6
 
 # Distributed Training Config
-GLOBAL_BATCH_SIZE = 64  # Total batch size across all GPUs
+GLOBAL_BATCH_SIZE = 96  # Total batch size across all GPUs
 BASE_LEARNING_RATE =  1e-4 # use 1e-4 for fresh start
 NUM_EPOCHS = 300
 LOG_EVERY_STEPS = 50
@@ -42,8 +42,8 @@ LOG_EVERY_STEPS = 50
 # Data Config
 DATA_DIR = "spectrogram/audioset/balanced_train_segments"
 CSV_PATH = "data/audioset/balanced_train_segments.csv"
-IMAGE_HEIGHT = 256
-IMAGE_WIDTH = 256 #208
+IMAGE_HEIGHT = 224
+IMAGE_WIDTH = 224 #208
 NUM_CHANNELS = 2
 AUDIOSET_NUM_CLASSES = 527
 

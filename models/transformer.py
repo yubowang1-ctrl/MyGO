@@ -429,9 +429,9 @@ class ViT_Ti(tf.keras.Model):
             attention_probs_dropout_prob=0,
             initializer_range=0.02,
             layer_norm_eps=1e-6, # 1-12 too small for tf.float16
-            image_size=256, # We will pad to 256x256
+            image_size=224, #
             patch_size=16,
-            num_channels=3, # We will pad to 3 channels
+            num_channels=3, # we pad to 3 channels
             qkv_bias=True,
             encoder_stride=16,
         )
@@ -456,14 +456,14 @@ class ViT_Ti(tf.keras.Model):
         H = self.config.image_height # 256
         W = self.config.image_width  # 208
         C = self.config.num_channels # 2
-        
+
         # Flatten views
         x = tf.reshape(x, [-1, H, W, C]) # (B*V, 256, 208, 2)
         
         # 1. Pad to 256x256
         # Pad width from 208 to 256 (48 pixels)
-        paddings = [[0, 0], [0, 0], [0, 256 - W], [0, 0]]
-        x = tf.pad(x, paddings) # (B*V, 256, 256, 2)
+        # paddings = [[0, 0], [0, 0], [0, self.hf_config.image_size - W], [0, 0]]
+        # x = tf.pad(x, paddings) # (B*V, 256, 256, 2)
         
         # 2. Pad channels to 3
         # Pad channel from 2 to 3
@@ -480,15 +480,15 @@ class ViT_Ti(tf.keras.Model):
         # 4. Apply Masking
         if training:
             # Generate mask for 16x16 grid
-            num_row_patches = 256 // 16
-            num_col_patches = 256 // 16
+            num_row_patches = self.hf_config.image_size // 16
+            num_col_patches = self.hf_config.image_size // 16
             
             # mask_patches expects flattened batch size
             mask = mask_patches(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
             mask |= mask_timeframe(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
             mask |= mask_freq_band(B * V, num_row_patches, num_col_patches, self.config.G, self.config.V)
-            # Mask shape: (B*V, 256, 1)
-            # Embedding shape: (B*V, 257, D) (includes CLS at index 0)
+            # Mask shape: (B*V, seq_len, 1)
+            # Embedding shape: (B*V, seq_len+1, D) (includes CLS at index 0)
             
             # We need to pad mask to (B*V, 257, 1) with False for CLS
             mask = tf.pad(mask, [[0, 0], [1, 0], [0, 0]], constant_values=False)
