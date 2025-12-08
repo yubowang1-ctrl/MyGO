@@ -23,7 +23,8 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 # OSCAR might have issues with bf16
 # tf.keras.mixed_precision.set_global_policy('mixed_bfloat16')
-tf.keras.mixed_precision.set_global_policy('mixed_float16')
+# tf.keras.mixed_precision.set_global_policy('mixed_float16')
+tf.keras.mixed_precision.set_global_policy('float32') # im tired of nans
 
 # ==============================================================================
 # 2. Setup Distributed Strategy
@@ -397,7 +398,7 @@ def main():
         # Best model saving 
         current_loss = avg_loss_backbone
         
-        if current_loss < best_loss_var:
+        if current_loss < best_loss_var and current_loss > 1e-5:
             print(f"  [IMPROVEMENT] Loss improved from {best_loss_var.numpy():.4f} to {current_loss:.4f}!")
             best_loss_var.assign(current_loss)
             # Save to the 'best' directory with explicit epoch number
