@@ -428,7 +428,7 @@ class ViT_Ti(tf.keras.Model):
             hidden_dropout_prob=0,
             attention_probs_dropout_prob=0,
             initializer_range=0.02,
-            layer_norm_eps=1e-12,
+            layer_norm_eps=1e-6, # 1-12 too small for tf.float16
             image_size=256, # We will pad to 256x256
             patch_size=16,
             num_channels=3, # We will pad to 3 channels
@@ -513,7 +513,7 @@ class ViT_Ti(tf.keras.Model):
         # 7. Reshape back
         # (B*V, 257, D) -> (B, V, 257, D)
         x = tf.reshape(sequence_output, [B, V, -1, self.hf_config.hidden_size])
-        
+        x = tf.cast(x, tf.float32)  # convert back to float32 if using mixed precision
         return x
     
     
