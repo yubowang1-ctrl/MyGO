@@ -86,10 +86,20 @@ with strategy.scope():
     # Initialize Loss
     loss_fn = LeJEPA(G=NUM_GLOBAL_VIEWS, V=TOTAL_VIEWS, lambd=LAMBDA_SIGREG)
     
+    # --- ADDED: Variable to track best loss ---
+    best_loss_var = tf.Variable(float('inf'), trainable=False, dtype=tf.float32, name='best_loss')
+
     # Checkpoint Manager (Optional but recommended)
-    checkpoint = tf.train.Checkpoint(optimizer=optimizer, model=model, probe=probe)
+    checkpoint = tf.train.Checkpoint(optimizer=optimizer, model=model, probe=probe, best_loss=best_loss_var)
+    
+    # 1. Regular Manager (For Resuming - Saves Every Epoch)
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory="./checkpoints", max_to_keep=5
+    )
+    
+    # 2. Best Manager (For Inference - Saves Only Best)
+    best_checkpoint_manager = tf.train.CheckpointManager(
+        checkpoint, directory="./checkpoints/best", max_to_keep=1
     )
     
     latest_ckpt = checkpoint_manager.latest_checkpoint
@@ -384,10 +394,24 @@ def main():
         print(f"  Avg Probe Loss:    {avg_loss_probe:.4f}")
         print(f"  Avg Probe Accuracy: {avg_acc:.4f}")
         
+        # Best model saving 
+        current_loss = avg_loss_backbone
+        
+        if current_loss < best_loss_var:
+            print(f"  [IMPROVEMENT] Loss improved from {best_loss_var.numpy():.4f} to {current_loss:.4f}!")
+            best_loss_var.assign(current_loss)
+            # Save to the 'best' directory with explicit epoch number
+            save_path = best_checkpoint_manager.save(checkpoint_number=epoch+1)
+            print(f"  Saved Best Model to: {save_path}")
+        else:
+            print(f"  [INFO] Loss {current_loss:.4f} did not beat best {best_loss_var.numpy():.4f}.")
+        # --------------------------------------
+
         wandb.log({
             "epoch_avg_backbone_loss": avg_loss_backbone,
             "epoch_avg_probe_loss": avg_loss_probe,
             "epoch_avg_probe_accuracy": avg_acc,
+            "best_loss": best_loss_var.numpy(),
             "epoch": epoch
         })
         
