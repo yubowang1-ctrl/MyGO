@@ -1,0 +1,1130 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 14738663
+##  Job Name : MyGO
+##  Nodelist : gpu2101
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/MyGO/MyGo
+##   Job Started : Sun Dec  7 11:10:09 PM EST 2025
+###############################################################################
+
+==========================================
+Job started at: Sun Dec  7 11:10:09 PM EST 2025
+Job ID: 14738663
+Node: gpu2101
+==========================================
+
+GPU Information (from host):
+Sun Dec  7 23:10:09 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 3090        On  | 00000000:C1:00.0 Off |                  N/A |
+| 36%   37C    P8              45W / 350W |     26MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA GeForce RTX 3090        On  | 00000000:E1:00.0 Off |                  N/A |
+| 49%   38C    P8              44W / 350W |     33MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     50185      G   /usr/libexec/Xorg                            17MiB |
+|    1   N/A  N/A     50185      G   /usr/libexec/Xorg                            25MiB |
++---------------------------------------------------------------------------------------+
+
+mygo conda environment loaded
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys/bin/ffmpeg
+ffmpeg version 7.0 Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc 11 (GCC)
+configuration: --prefix=/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys --enable-pic --cc=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/gcc --cxx=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/g++ --disable-libxcb --disable-libxcb-shape --disable-libxcb-shm --disable-libxcb-xfixes --disable-xlib --disable-libfontconfig --disable-libfreetype --disable-libfribidi --enable-bzlib --enable-gpl --disable-libmp3lame --disable-libopenjpeg --disable-libopus --disable-libspeex --disable-libvorbis --enable-libvpx --enable-libx264 --disable-nonfree --disable-openssl --enable-shared --enable-version3 --disable-libzmq --disable-libssh --enable-libwebp --disable-lzma --disable-libsnappy --disable-sdl2 --disable-libaom --disable-libxml2
+libavutil      59.  8.100 / 59.  8.100
+libavcodec     61.  3.100 / 61.  3.100
+libavformat    61.  1.100 / 61.  1.100
+libavdevice    61.  1.100 / 61.  1.100
+libavfilter    10.  1.100 / 10.  1.100
+libswscale      8.  1.100 /  8.  1.100
+libswresample   5.  1.100 /  5.  1.100
+libpostproc    58.  1.100 / 58.  1.100
+TF version: 2.16.1
+Built with CUDA: True
+GPUs detected: 2
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+==========================================
+Installing dependencies
+==========================================
+
+
+==========================================
+Starting main Python script at Sun Dec  7 11:10:18 PM EST 2025
+==========================================
+
+Working directory: /users/lwang223/MyGO/MyGo
+
+[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Using MirroredStrategy for multi-GPU training.
+Number of devices: 2
+No checkpoint found. Starting from scratch.
+Model: "vi_t__ti"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ vit (TFViTMainLayer)        multiple                  0 (unused)
+                                                                 
+=================================================================
+Total params: 21689088 (82.74 MB)
+Trainable params: 21689088 (82.74 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Model: "linear_probe"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense (Dense)               multiple                  202895    
+                                                                 
+=================================================================
+Total params: 202895 (792.56 KB)
+Trainable params: 202895 (792.56 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Building optimizer variables...
+Optimizer built.
+Starting training...
+
+Epoch 1/300
+  Step 0: Backbone Loss = 17.8243, SIGReg Loss = 332.8249 Probe Loss = 481.3270, Acc = 0.4850
+  Step 50: Backbone Loss = 17.3131, SIGReg Loss = 302.5288 Probe Loss = 489.0092, Acc = 0.4740
+  Step 100: Backbone Loss = 17.1553, SIGReg Loss = 290.9133 Probe Loss = 485.1546, Acc = 0.4783
+  Step 150: Backbone Loss = 16.1044, SIGReg Loss = 267.9947 Probe Loss = 456.3903, Acc = 0.5206
+  Step 200: Backbone Loss = 16.4636, SIGReg Loss = 274.8798 Probe Loss = 440.7435, Acc = 0.4615
+  Step 250: Backbone Loss = 16.9885, SIGReg Loss = 284.7550 Probe Loss = 415.4265, Acc = 0.4801
+  Step 300: Backbone Loss = 16.3805, SIGReg Loss = 272.6016 Probe Loss = 395.9962, Acc = 0.4596
+  Step 350: Backbone Loss = 14.0748, SIGReg Loss = 243.8810 Probe Loss = 370.9268, Acc = 0.5732
+  Step 400: Backbone Loss = 4.8418, SIGReg Loss = 63.6798 Probe Loss = 390.8436, Acc = 0.5317
+  Step 450: Backbone Loss = 4.5256, SIGReg Loss = 56.0548 Probe Loss = 340.4891, Acc = 0.5132
+Epoch 1 finished in 498.25s.
+  Avg Backbone Loss: 14.1273
+  Avg Probe Loss:    424.6082
+  Avg Probe Accuracy: 0.5103
+
+Epoch 2/300
+  Step 0: Backbone Loss = 4.7384, SIGReg Loss = 64.5221 Probe Loss = 327.5128, Acc = 0.5626
+  Step 50: Backbone Loss = 4.3381, SIGReg Loss = 53.9032 Probe Loss = 294.8484, Acc = 0.5443
+  Step 100: Backbone Loss = 4.1563, SIGReg Loss = 50.3162 Probe Loss = 267.1025, Acc = 0.5331
+  Step 150: Backbone Loss = 4.0272, SIGReg Loss = 46.7845 Probe Loss = 241.3361, Acc = 0.5322
+  Step 200: Backbone Loss = 3.7817, SIGReg Loss = 41.7764 Probe Loss = 221.1437, Acc = 0.5320
+  Step 250: Backbone Loss = 3.6691, SIGReg Loss = 40.9048 Probe Loss = 214.8891, Acc = 0.5329
+  Step 300: Backbone Loss = 3.6495, SIGReg Loss = 39.2952 Probe Loss = 227.6516, Acc = 0.5241
+  Step 350: Backbone Loss = 2.8768, SIGReg Loss = 28.2832 Probe Loss = 355.1492, Acc = 0.5187
+  Step 400: Backbone Loss = 2.9106, SIGReg Loss = 29.1836 Probe Loss = 321.3793, Acc = 0.5205
+  Step 450: Backbone Loss = 2.6765, SIGReg Loss = 25.1505 Probe Loss = 303.4526, Acc = 0.5579
+Epoch 2 finished in 402.51s.
+  Avg Backbone Loss: 3.6782
+  Avg Probe Loss:    269.1270
+  Avg Probe Accuracy: 0.5312
+
+Epoch 3/300
+  Step 0: Backbone Loss = 2.7369, SIGReg Loss = 26.0313 Probe Loss = 304.5348, Acc = 0.5566
+  Step 50: Backbone Loss = 2.6573, SIGReg Loss = 24.5429 Probe Loss = 262.6968, Acc = 0.5601
+  Step 100: Backbone Loss = 2.8497, SIGReg Loss = 28.7958 Probe Loss = 310.5794, Acc = 0.5313
+  Step 150: Backbone Loss = 2.7169, SIGReg Loss = 26.5740 Probe Loss = 283.6829, Acc = 0.5106
+  Step 200: Backbone Loss = 2.4771, SIGReg Loss = 22.3639 Probe Loss = 274.1408, Acc = 0.5347
+  Step 250: Backbone Loss = 2.6326, SIGReg Loss = 26.4260 Probe Loss = 291.2924, Acc = 0.5352
+  Step 300: Backbone Loss = 2.3699, SIGReg Loss = 21.7379 Probe Loss = 304.0647, Acc = 0.5190
+  Step 350: Backbone Loss = 2.1690, SIGReg Loss = 17.9444 Probe Loss = 321.3398, Acc = 0.5220
+  Step 400: Backbone Loss = 2.1858, SIGReg Loss = 17.8016 Probe Loss = 335.0064, Acc = 0.5293
+  Step 450: Backbone Loss = 2.5422, SIGReg Loss = 25.2423 Probe Loss = 283.0793, Acc = 0.5463
+Epoch 3 finished in 401.71s.
+  Avg Backbone Loss: 2.4961
+  Avg Probe Loss:    299.0507
+  Avg Probe Accuracy: 0.5296
+
+Epoch 4/300
+  Step 0: Backbone Loss = 2.1721, SIGReg Loss = 17.2003 Probe Loss = 299.5562, Acc = 0.5255
+  Step 50: Backbone Loss = 2.3705, SIGReg Loss = 21.7343 Probe Loss = 283.6061, Acc = 0.5447
+  Step 100: Backbone Loss = 2.4594, SIGReg Loss = 24.3654 Probe Loss = 285.1325, Acc = 0.5108
+  Step 150: Backbone Loss = 2.0517, SIGReg Loss = 15.8579 Probe Loss = 285.3103, Acc = 0.5452
+  Step 200: Backbone Loss = 2.0585, SIGReg Loss = 15.9998 Probe Loss = 272.1813, Acc = 0.5541
+  Step 250: Backbone Loss = 2.2038, SIGReg Loss = 18.2644 Probe Loss = 290.3910, Acc = 0.5415
+  Step 300: Backbone Loss = 2.1064, SIGReg Loss = 16.8949 Probe Loss = 275.1299, Acc = 0.5162
+  Step 350: Backbone Loss = 2.0538, SIGReg Loss = 16.2231 Probe Loss = 265.8065, Acc = 0.5563
+  Step 400: Backbone Loss = 2.0783, SIGReg Loss = 16.9058 Probe Loss = 278.6418, Acc = 0.5599
+  Step 450: Backbone Loss = 2.1681, SIGReg Loss = 18.6035 Probe Loss = 250.0463, Acc = 0.5169
+Epoch 4 finished in 401.71s.
+  Avg Backbone Loss: 2.1485
+  Avg Probe Loss:    277.9944
+  Avg Probe Accuracy: 0.5316
+
+Epoch 5/300
+  Step 0: Backbone Loss = 2.0110, SIGReg Loss = 16.3086 Probe Loss = 262.3805, Acc = 0.5305
+  Step 50: Backbone Loss = 1.9144, SIGReg Loss = 14.2793 Probe Loss = 241.6168, Acc = 0.5340
+  Step 100: Backbone Loss = 1.9053, SIGReg Loss = 14.0757 Probe Loss = 232.7503, Acc = 0.5264
+  Step 150: Backbone Loss = 1.8702, SIGReg Loss = 13.9768 Probe Loss = 243.5010, Acc = 0.5304
+  Step 200: Backbone Loss = 2.0730, SIGReg Loss = 17.1867 Probe Loss = 254.2807, Acc = 0.5393
+  Step 250: Backbone Loss = 2.0169, SIGReg Loss = 15.3250 Probe Loss = 247.1607, Acc = 0.5363
+  Step 300: Backbone Loss = 1.7542, SIGReg Loss = 12.3728 Probe Loss = 251.4759, Acc = 0.5359
+  Step 350: Backbone Loss = 1.8902, SIGReg Loss = 13.3624 Probe Loss = 236.1029, Acc = 0.5316
+  Step 400: Backbone Loss = 1.9573, SIGReg Loss = 14.9167 Probe Loss = 266.3820, Acc = 0.5483
+  Step 450: Backbone Loss = 1.7927, SIGReg Loss = 12.2422 Probe Loss = 261.8768, Acc = 0.5323
+Epoch 5 finished in 403.24s.
+  Avg Backbone Loss: 1.9593
+  Avg Probe Loss:    247.4987
+  Avg Probe Accuracy: 0.5353
+
+Epoch 6/300
+  Step 0: Backbone Loss = 1.8232, SIGReg Loss = 12.8845 Probe Loss = 251.3435, Acc = 0.5326
+  Step 50: Backbone Loss = 1.7825, SIGReg Loss = 12.3118 Probe Loss = 241.2896, Acc = 0.5378
+  Step 100: Backbone Loss = 2.0706, SIGReg Loss = 18.4240 Probe Loss = 226.7386, Acc = 0.5313
+  Step 150: Backbone Loss = 1.8744, SIGReg Loss = 13.5905 Probe Loss = 220.2961, Acc = 0.5341
+  Step 200: Backbone Loss = 1.9295, SIGReg Loss = 15.1428 Probe Loss = 223.5003, Acc = 0.5284
+  Step 250: Backbone Loss = 1.6819, SIGReg Loss = 10.8892 Probe Loss = 244.4347, Acc = 0.5257
+  Step 300: Backbone Loss = 1.8133, SIGReg Loss = 12.8959 Probe Loss = 231.5024, Acc = 0.5335
+  Step 350: Backbone Loss = 1.8013, SIGReg Loss = 13.1434 Probe Loss = 222.9190, Acc = 0.5342
+  Step 400: Backbone Loss = 1.8421, SIGReg Loss = 14.7938 Probe Loss = 243.4721, Acc = 0.5437
+  Step 450: Backbone Loss = 1.9103, SIGReg Loss = 15.7411 Probe Loss = 213.5285, Acc = 0.5306
+Epoch 6 finished in 408.23s.
+  Avg Backbone Loss: 1.8458
+  Avg Probe Loss:    243.2856
+  Avg Probe Accuracy: 0.5366
+
+Epoch 7/300
+  Step 0: Backbone Loss = 2.0067, SIGReg Loss = 16.8827 Probe Loss = 233.5488, Acc = 0.5447
+  Step 50: Backbone Loss = 1.9286, SIGReg Loss = 15.7111 Probe Loss = 259.2002, Acc = 0.5224
+  Step 100: Backbone Loss = 1.7484, SIGReg Loss = 12.5882 Probe Loss = 243.4879, Acc = 0.5258
+  Step 150: Backbone Loss = 1.7014, SIGReg Loss = 10.9046 Probe Loss = 213.7524, Acc = 0.5430
+  Step 200: Backbone Loss = 1.6368, SIGReg Loss = 10.4804 Probe Loss = 254.5484, Acc = 0.5397
+  Step 250: Backbone Loss = 1.9425, SIGReg Loss = 18.2626 Probe Loss = 244.3178, Acc = 0.5336
+  Step 300: Backbone Loss = 1.7910, SIGReg Loss = 13.0617 Probe Loss = 231.6077, Acc = 0.5406
+  Step 350: Backbone Loss = 1.8221, SIGReg Loss = 13.5810 Probe Loss = 245.2952, Acc = 0.5671
+  Step 400: Backbone Loss = 1.7644, SIGReg Loss = 12.8637 Probe Loss = 244.8044, Acc = 0.5593
+  Step 450: Backbone Loss = 1.7341, SIGReg Loss = 12.4836 Probe Loss = 231.0775, Acc = 0.5500
+Epoch 7 finished in 404.99s.
+  Avg Backbone Loss: 1.7974
+  Avg Probe Loss:    235.7797
+  Avg Probe Accuracy: 0.5353
+
+Epoch 8/300
+  Step 0: Backbone Loss = 1.8120, SIGReg Loss = 14.2546 Probe Loss = 244.6381, Acc = 0.5255
+  Step 50: Backbone Loss = 1.9514, SIGReg Loss = 16.2411 Probe Loss = 243.5573, Acc = 0.5330
+  Step 100: Backbone Loss = 1.9142, SIGReg Loss = 15.6865 Probe Loss = 230.3960, Acc = 0.5329
+  Step 150: Backbone Loss = 2.5113, SIGReg Loss = 27.3934 Probe Loss = 242.1124, Acc = 0.5187
+  Step 200: Backbone Loss = 1.8886, SIGReg Loss = 15.0018 Probe Loss = 247.6377, Acc = 0.5207
+  Step 250: Backbone Loss = 1.8326, SIGReg Loss = 13.5232 Probe Loss = 235.0264, Acc = 0.5300
+  Step 300: Backbone Loss = 2.2140, SIGReg Loss = 19.8491 Probe Loss = 242.2325, Acc = 0.5405
+  Step 350: Backbone Loss = 1.8795, SIGReg Loss = 13.3718 Probe Loss = 246.5846, Acc = 0.5387
+  Step 400: Backbone Loss = 1.8289, SIGReg Loss = 13.8459 Probe Loss = 246.8527, Acc = 0.5366
+  Step 450: Backbone Loss = 1.7996, SIGReg Loss = 12.5188 Probe Loss = 242.5177, Acc = 0.5448
+Epoch 8 finished in 405.42s.
+  Avg Backbone Loss: 1.9334
+  Avg Probe Loss:    241.8183
+  Avg Probe Accuracy: 0.5350
+
+Epoch 9/300
+  Step 0: Backbone Loss = 1.8964, SIGReg Loss = 14.8914 Probe Loss = 221.5727, Acc = 0.5380
+  Step 50: Backbone Loss = 1.7215, SIGReg Loss = 11.9247 Probe Loss = 237.1910, Acc = 0.5424
+  Step 100: Backbone Loss = 1.7879, SIGReg Loss = 12.7243 Probe Loss = 267.5158, Acc = 0.5406
+  Step 150: Backbone Loss = 1.8040, SIGReg Loss = 13.2779 Probe Loss = 246.8774, Acc = 0.5370
+  Step 200: Backbone Loss = 1.9301, SIGReg Loss = 15.2325 Probe Loss = 249.2635, Acc = 0.5395
+  Step 250: Backbone Loss = 1.7611, SIGReg Loss = 12.3615 Probe Loss = 267.7397, Acc = 0.5373
+  Step 300: Backbone Loss = 1.8352, SIGReg Loss = 13.4421 Probe Loss = 247.2306, Acc = 0.5485
+  Step 350: Backbone Loss = 1.8717, SIGReg Loss = 14.8683 Probe Loss = 268.6375, Acc = 0.5315
+  Step 400: Backbone Loss = 2.0123, SIGReg Loss = 16.6047 Probe Loss = 263.8353, Acc = 0.5465
+  Step 450: Backbone Loss = 1.8173, SIGReg Loss = 12.8954 Probe Loss = 233.8651, Acc = 0.5275
+Epoch 9 finished in 406.56s.
+  Avg Backbone Loss: 1.8273
+  Avg Probe Loss:    252.5711
+  Avg Probe Accuracy: 0.5387
+
+Epoch 10/300
+  Step 0: Backbone Loss = 2.1656, SIGReg Loss = 19.9607 Probe Loss = 197.3714, Acc = 0.5489
+  Step 50: Backbone Loss = 2.1890, SIGReg Loss = 21.1465 Probe Loss = 329.1752, Acc = 0.5114
+  Step 100: Backbone Loss = 2.3640, SIGReg Loss = 24.1423 Probe Loss = 370.9349, Acc = 0.5071
+  Step 150: Backbone Loss = 2.0116, SIGReg Loss = 17.5491 Probe Loss = 292.7782, Acc = 0.5350
+  Step 200: Backbone Loss = 2.5832, SIGReg Loss = 27.7702 Probe Loss = 378.0921, Acc = 0.5610
+  Step 250: Backbone Loss = 4.8982, SIGReg Loss = 70.2333 Probe Loss = 207.8864, Acc = 0.5311
+  Step 300: Backbone Loss = 6.8934, SIGReg Loss = 119.1052 Probe Loss = 200.7213, Acc = 0.5212
+  Step 350: Backbone Loss = 5.0067, SIGReg Loss = 70.5706 Probe Loss = 171.2066, Acc = 0.5248
+  Step 400: Backbone Loss = 4.5405, SIGReg Loss = 62.3607 Probe Loss = 190.0923, Acc = 0.5223
+  Step 450: Backbone Loss = 4.2553, SIGReg Loss = 57.5617 Probe Loss = 179.8756, Acc = 0.5364
+Epoch 10 finished in 404.46s.
+  Avg Backbone Loss: 3.7553
+  Avg Probe Loss:    267.7750
+  Avg Probe Accuracy: 0.5267
+
+Epoch 11/300
+  Step 0: Backbone Loss = 4.2322, SIGReg Loss = 56.4216 Probe Loss = 200.3754, Acc = 0.5311
+  Step 50: Backbone Loss = 3.8827, SIGReg Loss = 50.3545 Probe Loss = 182.6600, Acc = 0.5267
+  Step 100: Backbone Loss = 4.2533, SIGReg Loss = 55.6712 Probe Loss = 197.2397, Acc = 0.5272
+  Step 150: Backbone Loss = 3.6124, SIGReg Loss = 44.4402 Probe Loss = 179.9697, Acc = 0.5333
+  Step 200: Backbone Loss = 3.8430, SIGReg Loss = 50.9350 Probe Loss = 186.3757, Acc = 0.5213
+  Step 250: Backbone Loss = 3.3762, SIGReg Loss = 41.2641 Probe Loss = 181.6897, Acc = 0.5319
+  Step 300: Backbone Loss = 3.6970, SIGReg Loss = 48.1447 Probe Loss = 178.2960, Acc = 0.5280
+  Step 350: Backbone Loss = 3.1759, SIGReg Loss = 37.0460 Probe Loss = 175.9971, Acc = 0.5243
+  Step 400: Backbone Loss = 3.2597, SIGReg Loss = 39.1013 Probe Loss = 174.7852, Acc = 0.5202
+  Step 450: Backbone Loss = 3.8328, SIGReg Loss = 50.5364 Probe Loss = 173.4994, Acc = 0.5326
+Epoch 11 finished in 405.06s.
+  Avg Backbone Loss: 3.6772
+  Avg Probe Loss:    182.0619
+  Avg Probe Accuracy: 0.5278
+
+Epoch 12/300
+  Step 0: Backbone Loss = 3.5242, SIGReg Loss = 43.7823 Probe Loss = 182.5313, Acc = 0.5284
+  Step 50: Backbone Loss = 3.1437, SIGReg Loss = 36.7971 Probe Loss = 196.8723, Acc = 0.5254
+  Step 100: Backbone Loss = 3.1024, SIGReg Loss = 36.4907 Probe Loss = 185.8200, Acc = 0.5170
+  Step 150: Backbone Loss = 3.2268, SIGReg Loss = 39.7947 Probe Loss = 185.7777, Acc = 0.5244
+  Step 200: Backbone Loss = 3.5842, SIGReg Loss = 45.2703 Probe Loss = 181.1064, Acc = 0.5243
+  Step 250: Backbone Loss = 3.2858, SIGReg Loss = 40.0113 Probe Loss = 176.0211, Acc = 0.5521
+  Step 300: Backbone Loss = 3.3030, SIGReg Loss = 40.6179 Probe Loss = 167.9085, Acc = 0.5275
+  Step 350: Backbone Loss = 4.9762, SIGReg Loss = 73.3818 Probe Loss = 176.8871, Acc = 0.5300
+  Step 400: Backbone Loss = 3.4407, SIGReg Loss = 43.3978 Probe Loss = 186.7092, Acc = 0.5270
+  Step 450: Backbone Loss = 3.6747, SIGReg Loss = 49.8505 Probe Loss = 176.3409, Acc = 0.5182
+Epoch 12 finished in 404.53s.
+  Avg Backbone Loss: 3.4086
+  Avg Probe Loss:    183.5536
+  Avg Probe Accuracy: 0.5284
+
+Epoch 13/300
+  Step 0: Backbone Loss = 3.2937, SIGReg Loss = 41.7501 Probe Loss = 182.5284, Acc = 0.5367
+  Step 50: Backbone Loss = 3.5535, SIGReg Loss = 46.2984 Probe Loss = 198.9926, Acc = 0.5301
+  Step 100: Backbone Loss = 3.7293, SIGReg Loss = 50.7914 Probe Loss = 197.6125, Acc = 0.5197
+  Step 150: Backbone Loss = 3.4690, SIGReg Loss = 44.4865 Probe Loss = 165.5832, Acc = 0.5213
+  Step 200: Backbone Loss = 3.2419, SIGReg Loss = 39.8785 Probe Loss = 181.0085, Acc = 0.5405
+  Step 250: Backbone Loss = 4.5599, SIGReg Loss = 66.1021 Probe Loss = 195.5646, Acc = 0.5277
+  Step 300: Backbone Loss = 3.3967, SIGReg Loss = 43.3262 Probe Loss = 199.8269, Acc = 0.5364
+  Step 350: Backbone Loss = 3.4316, SIGReg Loss = 44.2733 Probe Loss = 182.9576, Acc = 0.5273
+  Step 400: Backbone Loss = 3.3397, SIGReg Loss = 42.7325 Probe Loss = 178.3722, Acc = 0.5401
+  Step 450: Backbone Loss = 3.2462, SIGReg Loss = 41.0588 Probe Loss = 178.3416, Acc = 0.5312
+Epoch 13 finished in 405.50s.
+  Avg Backbone Loss: 3.7096
+  Avg Probe Loss:    187.3357
+  Avg Probe Accuracy: 0.5289
+
+Epoch 14/300
+  Step 0: Backbone Loss = 3.1279, SIGReg Loss = 38.2935 Probe Loss = 184.5005, Acc = 0.5254
+  Step 50: Backbone Loss = 2.9929, SIGReg Loss = 35.4805 Probe Loss = 173.2278, Acc = 0.5253
+  Step 100: Backbone Loss = 3.9369, SIGReg Loss = 53.2400 Probe Loss = 187.9828, Acc = 0.5327
+  Step 150: Backbone Loss = 4.6384, SIGReg Loss = 69.7172 Probe Loss = 189.9943, Acc = 0.5220
+  Step 200: Backbone Loss = 3.4552, SIGReg Loss = 47.4701 Probe Loss = 272.5292, Acc = 0.5250
+  Step 250: Backbone Loss = 2.7951, SIGReg Loss = 34.6596 Probe Loss = 292.2341, Acc = 0.5012
+  Step 300: Backbone Loss = 4.0591, SIGReg Loss = 58.9260 Probe Loss = 206.5002, Acc = 0.5310
+  Step 350: Backbone Loss = 5.4677, SIGReg Loss = 84.3928 Probe Loss = 204.3029, Acc = 0.5374
+  Step 400: Backbone Loss = 4.0459, SIGReg Loss = 57.0247 Probe Loss = 228.0453, Acc = 0.5312
+  Step 450: Backbone Loss = 4.2250, SIGReg Loss = 58.8152 Probe Loss = 181.2916, Acc = 0.5285
+Epoch 14 finished in 403.07s.
+  Avg Backbone Loss: 4.2705
+  Avg Probe Loss:    220.2719
+  Avg Probe Accuracy: 0.5282
+
+Epoch 15/300
+  Step 0: Backbone Loss = 9.2252, SIGReg Loss = 162.5693 Probe Loss = 198.0457, Acc = 0.5238
+  Step 50: Backbone Loss = 4.4556, SIGReg Loss = 64.4323 Probe Loss = 212.0490, Acc = 0.5233
+  Step 100: Backbone Loss = 3.5861, SIGReg Loss = 48.1637 Probe Loss = 208.4127, Acc = 0.5255
+  Step 150: Backbone Loss = 3.2102, SIGReg Loss = 41.1065 Probe Loss = 194.7715, Acc = 0.5275
+  Step 200: Backbone Loss = 3.3481, SIGReg Loss = 44.1979 Probe Loss = 193.7475, Acc = 0.5305
+  Step 250: Backbone Loss = 3.0534, SIGReg Loss = 37.7838 Probe Loss = 187.6273, Acc = 0.5252
+  Step 300: Backbone Loss = 2.8582, SIGReg Loss = 34.8934 Probe Loss = 209.1718, Acc = 0.5391
+  Step 350: Backbone Loss = 2.7376, SIGReg Loss = 33.2069 Probe Loss = 190.3121, Acc = 0.5331
+  Step 400: Backbone Loss = 2.9769, SIGReg Loss = 37.4493 Probe Loss = 189.1016, Acc = 0.5214
+  Step 450: Backbone Loss = 2.7868, SIGReg Loss = 34.6794 Probe Loss = 191.8097, Acc = 0.5305
+Epoch 15 finished in 405.13s.
+  Avg Backbone Loss: 3.5738
+  Avg Probe Loss:    192.7605
+  Avg Probe Accuracy: 0.5286
+
+Epoch 16/300
+  Step 0: Backbone Loss = 2.7538, SIGReg Loss = 33.1536 Probe Loss = 197.6238, Acc = 0.5293
+  Step 50: Backbone Loss = 2.4900, SIGReg Loss = 28.5633 Probe Loss = 195.2099, Acc = 0.5254
+  Step 100: Backbone Loss = 3.0387, SIGReg Loss = 39.8865 Probe Loss = 254.6197, Acc = 0.5456
+  Step 150: Backbone Loss = 2.7302, SIGReg Loss = 32.2615 Probe Loss = 199.0735, Acc = 0.5318
+  Step 200: Backbone Loss = 3.0098, SIGReg Loss = 37.7617 Probe Loss = 185.9280, Acc = 0.5185
+  Step 250: Backbone Loss = 2.8117, SIGReg Loss = 34.2624 Probe Loss = 211.5177, Acc = 0.5210
+  Step 300: Backbone Loss = 2.5034, SIGReg Loss = 28.1677 Probe Loss = 217.3439, Acc = 0.5357
+  Step 350: Backbone Loss = 2.6377, SIGReg Loss = 34.8112 Probe Loss = 529.5849, Acc = 0.4851
+  Step 400: Backbone Loss = 2.4759, SIGReg Loss = 29.6799 Probe Loss = 358.0742, Acc = 0.5449
+  Step 450: Backbone Loss = 2.3162, SIGReg Loss = 28.0936 Probe Loss = 272.4555, Acc = 0.5449
+Epoch 16 finished in 402.49s.
+  Avg Backbone Loss: 2.7134
+  Avg Probe Loss:    251.2548
+  Avg Probe Accuracy: 0.5276
+
+Epoch 17/300
+  Step 0: Backbone Loss = 3.0801, SIGReg Loss = 41.9884 Probe Loss = 322.3227, Acc = 0.5375
+  Step 50: Backbone Loss = 2.3652, SIGReg Loss = 27.5479 Probe Loss = 257.4608, Acc = 0.5379
+  Step 100: Backbone Loss = 2.5524, SIGReg Loss = 32.2848 Probe Loss = 233.6978, Acc = 0.5491
+  Step 150: Backbone Loss = 2.5340, SIGReg Loss = 31.7476 Probe Loss = 221.1121, Acc = 0.5343
+  Step 200: Backbone Loss = 2.4632, SIGReg Loss = 28.7362 Probe Loss = 196.1492, Acc = 0.5333
+  Step 250: Backbone Loss = 2.6587, SIGReg Loss = 33.5594 Probe Loss = 282.6014, Acc = 0.5446
+  Step 300: Backbone Loss = 2.9638, SIGReg Loss = 42.1294 Probe Loss = 234.1444, Acc = 0.5310
+  Step 350: Backbone Loss = 2.8815, SIGReg Loss = 38.2387 Probe Loss = 259.4548, Acc = 0.5383
+  Step 400: Backbone Loss = 2.3563, SIGReg Loss = 28.5312 Probe Loss = 198.3665, Acc = 0.5271
+  Step 450: Backbone Loss = 2.0865, SIGReg Loss = 23.7416 Probe Loss = 209.1381, Acc = 0.5599
+Epoch 17 finished in 402.75s.
+  Avg Backbone Loss: 2.5104
+  Avg Probe Loss:    241.7643
+  Avg Probe Accuracy: 0.5318
+
+Epoch 18/300
+  Step 0: Backbone Loss = 2.3286, SIGReg Loss = 27.4716 Probe Loss = 226.4825, Acc = 0.5107
+  Step 50: Backbone Loss = 2.5805, SIGReg Loss = 32.8092 Probe Loss = 180.8599, Acc = 0.5222
+  Step 100: Backbone Loss = 2.2715, SIGReg Loss = 26.2501 Probe Loss = 275.1920, Acc = 0.5346
+  Step 150: Backbone Loss = 4.1433, SIGReg Loss = 65.7733 Probe Loss = 373.4040, Acc = 0.5216
+  Step 200: Backbone Loss = 7.1170, SIGReg Loss = 117.6118 Probe Loss = 289.4806, Acc = 0.5384
+  Step 250: Backbone Loss = 23.0841, SIGReg Loss = 461.6707 Probe Loss = 707.9352, Acc = 0.4801
+  Step 300: Backbone Loss = 21.9719, SIGReg Loss = 439.2863 Probe Loss = 264.1107, Acc = 0.5416
+  Step 350: Backbone Loss = 20.8392, SIGReg Loss = 416.7386 Probe Loss = 185.9043, Acc = 0.5220
+  Step 400: Backbone Loss = 18.4066, SIGReg Loss = 367.9857 Probe Loss = 191.2527, Acc = 0.5246
+  Step 450: Backbone Loss = 17.9362, SIGReg Loss = 358.2064 Probe Loss = 203.4459, Acc = 0.5442
+Epoch 18 finished in 403.16s.
+  Avg Backbone Loss: 12.7413
+  Avg Probe Loss:    285.2372
+  Avg Probe Accuracy: 0.5206
+
+Epoch 19/300
+  Step 0: Backbone Loss = 17.2152, SIGReg Loss = 343.7552 Probe Loss = 195.5347, Acc = 0.5310
+  Step 50: Backbone Loss = 17.1104, SIGReg Loss = 341.5779 Probe Loss = 184.9388, Acc = 0.5375
+  Step 100: Backbone Loss = 11.6259, SIGReg Loss = 210.0680 Probe Loss = 365.1205, Acc = 0.5302
+  Step 150: Backbone Loss = 10.2554, SIGReg Loss = 182.2164 Probe Loss = 280.0164, Acc = 0.5249
+  Step 200: Backbone Loss = 9.7953, SIGReg Loss = 175.0593 Probe Loss = 298.3602, Acc = 0.5195
+  Step 250: Backbone Loss = 9.5096, SIGReg Loss = 170.3466 Probe Loss = 231.5701, Acc = 0.5391
+  Step 300: Backbone Loss = 9.6843, SIGReg Loss = 174.5405 Probe Loss = 194.2801, Acc = 0.5304
+  Step 350: Backbone Loss = 9.3040, SIGReg Loss = 167.5342 Probe Loss = 216.2270, Acc = 0.5232
+  Step 400: Backbone Loss = 9.2215, SIGReg Loss = 166.5181 Probe Loss = 218.8633, Acc = 0.5251
+  Step 450: Backbone Loss = 9.3738, SIGReg Loss = 170.2109 Probe Loss = 207.5115, Acc = 0.5282
+Epoch 19 finished in 403.39s.
+  Avg Backbone Loss: 11.1520
+  Avg Probe Loss:    239.3733
+  Avg Probe Accuracy: 0.5263
+
+Epoch 20/300
+  Step 0: Backbone Loss = 9.3179, SIGReg Loss = 169.1125 Probe Loss = 211.4158, Acc = 0.5237
+  Step 50: Backbone Loss = 9.4780, SIGReg Loss = 172.7161 Probe Loss = 235.2003, Acc = 0.5274
+  Step 100: Backbone Loss = 9.1974, SIGReg Loss = 166.4283 Probe Loss = 211.3633, Acc = 0.5421
+  Step 150: Backbone Loss = 9.3229, SIGReg Loss = 169.4228 Probe Loss = 190.5028, Acc = 0.5142
+  Step 200: Backbone Loss = 9.2443, SIGReg Loss = 167.8070 Probe Loss = 188.4347, Acc = 0.5183
+  Step 250: Backbone Loss = 8.9863, SIGReg Loss = 163.0136 Probe Loss = 196.3682, Acc = 0.5301
+  Step 300: Backbone Loss = 8.8590, SIGReg Loss = 160.5434 Probe Loss = 179.4631, Acc = 0.5270
+  Step 350: Backbone Loss = 8.9077, SIGReg Loss = 161.6545 Probe Loss = 177.5855, Acc = 0.5239
+  Step 400: Backbone Loss = 9.3819, SIGReg Loss = 170.2605 Probe Loss = 179.3902, Acc = 0.5238
+  Step 450: Backbone Loss = 8.9319, SIGReg Loss = 162.1919 Probe Loss = 185.3841, Acc = 0.5319
+Epoch 20 finished in 403.03s.
+  Avg Backbone Loss: 9.1203
+  Avg Probe Loss:    197.9876
+  Avg Probe Accuracy: 0.5277
+
+Epoch 21/300
+  Step 0: Backbone Loss = 8.9481, SIGReg Loss = 162.5007 Probe Loss = 170.0959, Acc = 0.5238
+  Step 50: Backbone Loss = 8.7010, SIGReg Loss = 157.4734 Probe Loss = 179.9736, Acc = 0.5336
+  Step 100: Backbone Loss = 8.8862, SIGReg Loss = 161.1553 Probe Loss = 183.0029, Acc = 0.5294
+  Step 150: Backbone Loss = 8.8880, SIGReg Loss = 161.1727 Probe Loss = 175.5978, Acc = 0.5245
+  Step 200: Backbone Loss = 8.8523, SIGReg Loss = 160.7301 Probe Loss = 172.0099, Acc = 0.5305
+  Step 250: Backbone Loss = 8.7164, SIGReg Loss = 158.1696 Probe Loss = 175.1228, Acc = 0.5186
+  Step 300: Backbone Loss = 8.7574, SIGReg Loss = 158.7184 Probe Loss = 178.5773, Acc = 0.5271
+  Step 350: Backbone Loss = 8.6864, SIGReg Loss = 157.3367 Probe Loss = 186.8413, Acc = 0.5289
+  Step 400: Backbone Loss = 8.6904, SIGReg Loss = 157.3115 Probe Loss = 181.7892, Acc = 0.5277
+  Step 450: Backbone Loss = 8.6910, SIGReg Loss = 157.4655 Probe Loss = 177.6898, Acc = 0.5430
+Epoch 21 finished in 400.90s.
+  Avg Backbone Loss: 8.8278
+  Avg Probe Loss:    181.2243
+  Avg Probe Accuracy: 0.5282
+
+Epoch 22/300
+  Step 0: Backbone Loss = 8.8575, SIGReg Loss = 160.5498 Probe Loss = 171.5186, Acc = 0.5373
+  Step 50: Backbone Loss = 9.0265, SIGReg Loss = 163.9789 Probe Loss = 180.7439, Acc = 0.5300
+  Step 100: Backbone Loss = 12.3239, SIGReg Loss = 244.4445 Probe Loss = 342.1024, Acc = 0.5202
+  Step 150: Backbone Loss = 8.5800, SIGReg Loss = 154.9654 Probe Loss = 180.1836, Acc = 0.5320
+  Step 200: Backbone Loss = 8.5744, SIGReg Loss = 154.5796 Probe Loss = 188.6456, Acc = 0.5260
+  Step 250: Backbone Loss = 18.2170, SIGReg Loss = 362.1465 Probe Loss = 187.0153, Acc = 0.5281
+  Step 300: Backbone Loss = 4.2371, SIGReg Loss = 64.8009 Probe Loss = 199.3320, Acc = 0.5162
+  Step 350: Backbone Loss = 3.1499, SIGReg Loss = 44.0678 Probe Loss = 223.6324, Acc = 0.5383
+  Step 400: Backbone Loss = 6.7767, SIGReg Loss = 120.8995 Probe Loss = 880.4828, Acc = 0.4898
+  Step 450: Backbone Loss = 4.0529, SIGReg Loss = 60.6823 Probe Loss = 272.8219, Acc = 0.5323
+Epoch 22 finished in 402.39s.
+  Avg Backbone Loss: 7.2637
+  Avg Probe Loss:    257.6874
+  Avg Probe Accuracy: 0.5228
+
+Epoch 23/300
+  Step 0: Backbone Loss = 3.7893, SIGReg Loss = 55.9261 Probe Loss = 237.6613, Acc = 0.5148
+  Step 50: Backbone Loss = 3.3283, SIGReg Loss = 47.0176 Probe Loss = 212.9877, Acc = 0.5313
+  Step 100: Backbone Loss = 3.1757, SIGReg Loss = 43.6162 Probe Loss = 193.6572, Acc = 0.5219
+  Step 150: Backbone Loss = 3.3847, SIGReg Loss = 48.5651 Probe Loss = 195.2186, Acc = 0.5276
+  Step 200: Backbone Loss = 2.7236, SIGReg Loss = 35.8008 Probe Loss = 190.2247, Acc = 0.5281
+  Step 250: Backbone Loss = 2.7422, SIGReg Loss = 35.9755 Probe Loss = 197.6154, Acc = 0.5331
+  Step 300: Backbone Loss = 2.5511, SIGReg Loss = 32.3549 Probe Loss = 246.4561, Acc = 0.5381
+  Step 350: Backbone Loss = 2.5715, SIGReg Loss = 32.4722 Probe Loss = 237.3001, Acc = 0.5331
+  Step 400: Backbone Loss = 2.4630, SIGReg Loss = 29.0230 Probe Loss = 217.2926, Acc = 0.5226
+  Step 450: Backbone Loss = 2.1147, SIGReg Loss = 22.6952 Probe Loss = 201.0878, Acc = 0.5348
+Epoch 23 finished in 404.88s.
+  Avg Backbone Loss: 2.9153
+  Avg Probe Loss:    225.5072
+  Avg Probe Accuracy: 0.5274
+
+Epoch 24/300
+  Step 0: Backbone Loss = 2.3551, SIGReg Loss = 27.7002 Probe Loss = 182.7850, Acc = 0.5413
+  Step 50: Backbone Loss = 2.2714, SIGReg Loss = 25.8983 Probe Loss = 203.4961, Acc = 0.5393
+  Step 100: Backbone Loss = 3.6149, SIGReg Loss = 52.1284 Probe Loss = 188.3865, Acc = 0.5311
+  Step 150: Backbone Loss = 2.4197, SIGReg Loss = 27.6601 Probe Loss = 183.6551, Acc = 0.5367
+  Step 200: Backbone Loss = 2.4482, SIGReg Loss = 26.8030 Probe Loss = 198.1864, Acc = 0.5332
+  Step 250: Backbone Loss = 2.5454, SIGReg Loss = 29.8128 Probe Loss = 197.1110, Acc = 0.5419
+  Step 300: Backbone Loss = 2.3397, SIGReg Loss = 26.3229 Probe Loss = 202.2541, Acc = 0.5199
+  Step 350: Backbone Loss = 4.0265, SIGReg Loss = 61.7893 Probe Loss = 202.1015, Acc = 0.5277
+  Step 400: Backbone Loss = 3.6876, SIGReg Loss = 53.2029 Probe Loss = 181.3480, Acc = 0.5196
+  Step 450: Backbone Loss = 3.6478, SIGReg Loss = 51.7049 Probe Loss = 178.8537, Acc = 0.5321
+Epoch 24 finished in 406.07s.
+  Avg Backbone Loss: 2.9716
+  Avg Probe Loss:    198.5451
+  Avg Probe Accuracy: 0.5301
+
+Epoch 25/300
+  Step 0: Backbone Loss = 3.2446, SIGReg Loss = 43.1016 Probe Loss = 193.5677, Acc = 0.5263
+  Step 50: Backbone Loss = 2.9070, SIGReg Loss = 37.6637 Probe Loss = 194.7049, Acc = 0.5302
+  Step 100: Backbone Loss = 2.6536, SIGReg Loss = 30.8475 Probe Loss = 170.5178, Acc = 0.5312
+  Step 150: Backbone Loss = 2.7048, SIGReg Loss = 31.0291 Probe Loss = 181.4736, Acc = 0.5182
+  Step 200: Backbone Loss = 3.1121, SIGReg Loss = 39.7263 Probe Loss = 195.1029, Acc = 0.5232
+  Step 250: Backbone Loss = 2.9818, SIGReg Loss = 38.5903 Probe Loss = 173.1358, Acc = 0.5330
+  Step 300: Backbone Loss = 2.4041, SIGReg Loss = 24.9447 Probe Loss = 175.7358, Acc = 0.5260
+  Step 350: Backbone Loss = 2.9864, SIGReg Loss = 37.8997 Probe Loss = 198.5269, Acc = 0.5378
+  Step 400: Backbone Loss = 2.6094, SIGReg Loss = 28.9599 Probe Loss = 185.5359, Acc = 0.5325
+  Step 450: Backbone Loss = 2.5406, SIGReg Loss = 29.5334 Probe Loss = 175.3604, Acc = 0.5361
+Epoch 25 finished in 403.16s.
+  Avg Backbone Loss: 2.9418
+  Avg Probe Loss:    189.8447
+  Avg Probe Accuracy: 0.5286
+
+Epoch 26/300
+  Step 0: Backbone Loss = 2.4320, SIGReg Loss = 25.7529 Probe Loss = 188.6535, Acc = 0.5237
+  Step 50: Backbone Loss = 2.2791, SIGReg Loss = 23.6353 Probe Loss = 187.0021, Acc = 0.5319
+Error loading spectrogram/audioset/balanced_train_segments/85OY8T4UCkw_1.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 50: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 25264128 values, but the requested shape requires a multiple of 786432 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 256, 256, 2), dtype=float16)
+  • training=False
+  Step 100: Backbone Loss = 2.4393, SIGReg Loss = 26.3943 Probe Loss = 182.6487, Acc = 0.5319
+  Step 150: Backbone Loss = 2.2998, SIGReg Loss = 24.8428 Probe Loss = 174.9350, Acc = 0.5344
+  Step 200: Backbone Loss = 2.3778, SIGReg Loss = 25.9700 Probe Loss = 171.8002, Acc = 0.5313
+  Step 250: Backbone Loss = 2.5542, SIGReg Loss = 29.0014 Probe Loss = 166.2249, Acc = 0.5375
+  Step 300: Backbone Loss = 2.2701, SIGReg Loss = 24.5787 Probe Loss = 186.6391, Acc = 0.5273
+  Step 350: Backbone Loss = 2.3091, SIGReg Loss = 24.2577 Probe Loss = 189.5044, Acc = 0.5312
+  Step 400: Backbone Loss = 2.2345, SIGReg Loss = 22.1211 Probe Loss = 174.2921, Acc = 0.5356
+  Step 450: Backbone Loss = 2.1901, SIGReg Loss = 21.3088 Probe Loss = 178.7905, Acc = 0.5305
+Epoch 26 finished in 402.93s.
+  Avg Backbone Loss: 2.3356
+  Avg Probe Loss:    182.8260
+  Avg Probe Accuracy: 0.5293
+
+Epoch 27/300
+  Step 0: Backbone Loss = 2.2765, SIGReg Loss = 22.8001 Probe Loss = 189.9230, Acc = 0.5325
+  Step 50: Backbone Loss = 2.1107, SIGReg Loss = 20.9035 Probe Loss = 194.9060, Acc = 0.5282
+  Step 100: Backbone Loss = 2.1704, SIGReg Loss = 21.1608 Probe Loss = 195.5235, Acc = 0.5316
+  Step 150: Backbone Loss = 2.2706, SIGReg Loss = 22.4254 Probe Loss = 188.8403, Acc = 0.5284
+  Step 200: Backbone Loss = 2.2441, SIGReg Loss = 22.8308 Probe Loss = 194.5333, Acc = 0.5263
+  Step 250: Backbone Loss = 2.1733, SIGReg Loss = 21.9026 Probe Loss = 176.3212, Acc = 0.5297
+  Step 300: Backbone Loss = 2.3171, SIGReg Loss = 22.2074 Probe Loss = 210.5033, Acc = 0.5327
+  Step 350: Backbone Loss = 2.3088, SIGReg Loss = 23.9226 Probe Loss = 198.0643, Acc = 0.5378
+  Step 400: Backbone Loss = 2.2938, SIGReg Loss = 23.9062 Probe Loss = 203.1678, Acc = 0.5328
+  Step 450: Backbone Loss = 2.0872, SIGReg Loss = 19.7575 Probe Loss = 196.3161, Acc = 0.5189
+Epoch 27 finished in 405.66s.
+  Avg Backbone Loss: 2.1690
+  Avg Probe Loss:    189.4707
+  Avg Probe Accuracy: 0.5296
+
+Epoch 28/300
+  Step 0: Backbone Loss = 2.0470, SIGReg Loss = 19.3200 Probe Loss = 198.7954, Acc = 0.5311
+  Step 50: Backbone Loss = 3.1340, SIGReg Loss = 41.1219 Probe Loss = 254.8313, Acc = 0.5518
+  Step 100: Backbone Loss = 2.5211, SIGReg Loss = 28.2053 Probe Loss = 200.1328, Acc = 0.5266
+  Step 150: Backbone Loss = 2.1507, SIGReg Loss = 20.6318 Probe Loss = 185.9762, Acc = 0.5354
+  Step 200: Backbone Loss = 1.9507, SIGReg Loss = 17.5960 Probe Loss = 169.2326, Acc = 0.5282
+  Step 250: Backbone Loss = 2.0970, SIGReg Loss = 20.4970 Probe Loss = 203.4171, Acc = 0.5208
+  Step 300: Backbone Loss = 2.3489, SIGReg Loss = 24.6474 Probe Loss = 165.9487, Acc = 0.5177
+  Step 350: Backbone Loss = 2.4529, SIGReg Loss = 27.2480 Probe Loss = 171.9739, Acc = 0.5288
+  Step 400: Backbone Loss = 2.2706, SIGReg Loss = 22.6891 Probe Loss = 211.9699, Acc = 0.5225
+  Step 450: Backbone Loss = 2.0233, SIGReg Loss = 18.2568 Probe Loss = 183.7378, Acc = 0.5227
+Epoch 28 finished in 404.98s.
+  Avg Backbone Loss: 2.3196
+  Avg Probe Loss:    190.2313
+  Avg Probe Accuracy: 0.5288
+
+Epoch 29/300
+  Step 0: Backbone Loss = 2.1232, SIGReg Loss = 20.6004 Probe Loss = 193.3052, Acc = 0.5207
+  Step 50: Backbone Loss = 2.2196, SIGReg Loss = 22.3226 Probe Loss = 189.3275, Acc = 0.5299
+  Step 100: Backbone Loss = 2.1341, SIGReg Loss = 21.1248 Probe Loss = 214.5025, Acc = 0.5260
+  Step 150: Backbone Loss = 2.0186, SIGReg Loss = 19.1595 Probe Loss = 202.9693, Acc = 0.5305
+  Step 200: Backbone Loss = 1.9450, SIGReg Loss = 16.9174 Probe Loss = 181.3000, Acc = 0.5261
+  Step 250: Backbone Loss = 2.0550, SIGReg Loss = 19.5518 Probe Loss = 192.3889, Acc = 0.5258
+  Step 300: Backbone Loss = 2.2872, SIGReg Loss = 23.2405 Probe Loss = 177.9075, Acc = 0.5240
+  Step 350: Backbone Loss = 2.0445, SIGReg Loss = 18.7286 Probe Loss = 181.2868, Acc = 0.5226
+  Step 400: Backbone Loss = 1.9964, SIGReg Loss = 17.5849 Probe Loss = 179.2981, Acc = 0.5376
+  Step 450: Backbone Loss = 2.0587, SIGReg Loss = 17.7069 Probe Loss = 190.5353, Acc = 0.5415
+Epoch 29 finished in 406.47s.
+  Avg Backbone Loss: 2.1866
+  Avg Probe Loss:    190.3112
+  Avg Probe Accuracy: 0.5309
+
+Epoch 30/300
+  Step 0: Backbone Loss = 1.9505, SIGReg Loss = 16.9239 Probe Loss = 176.7004, Acc = 0.5346
+  Step 50: Backbone Loss = 2.0614, SIGReg Loss = 18.8073 Probe Loss = 189.1417, Acc = 0.5254
+  Step 100: Backbone Loss = 1.9538, SIGReg Loss = 16.6674 Probe Loss = 174.5833, Acc = 0.5362
+  Step 150: Backbone Loss = 1.8858, SIGReg Loss = 15.7154 Probe Loss = 180.1239, Acc = 0.5410
+  Step 200: Backbone Loss = 2.0427, SIGReg Loss = 17.9669 Probe Loss = 192.5702, Acc = 0.5285
+  Step 250: Backbone Loss = 2.2371, SIGReg Loss = 22.3775 Probe Loss = 180.1673, Acc = 0.5301
+  Step 300: Backbone Loss = 2.4391, SIGReg Loss = 25.4369 Probe Loss = 181.4570, Acc = 0.5219
+  Step 350: Backbone Loss = 2.0845, SIGReg Loss = 18.4247 Probe Loss = 193.7525, Acc = 0.5236
+  Step 400: Backbone Loss = 2.2135, SIGReg Loss = 21.2524 Probe Loss = 172.0040, Acc = 0.5206
+  Step 450: Backbone Loss = 2.0934, SIGReg Loss = 18.3156 Probe Loss = 191.6450, Acc = 0.5265
+Epoch 30 finished in 402.64s.
+  Avg Backbone Loss: 2.0999
+  Avg Probe Loss:    185.0216
+  Avg Probe Accuracy: 0.5308
+
+Epoch 31/300
+  Step 0: Backbone Loss = 3.9835, SIGReg Loss = 55.6845 Probe Loss = 190.5128, Acc = 0.5264
+  Step 50: Backbone Loss = 2.4353, SIGReg Loss = 25.5933 Probe Loss = 187.5256, Acc = 0.5240
+  Step 100: Backbone Loss = 2.2623, SIGReg Loss = 22.3139 Probe Loss = 181.7273, Acc = 0.5214
+Error loading spectrogram/audioset/balanced_train_segments/Pu2qr7X5azM_0.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 100: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 25264128 values, but the requested shape requires a multiple of 786432 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 256, 256, 2), dtype=float16)
+  • training=False
+  Step 150: Backbone Loss = 2.3768, SIGReg Loss = 26.5135 Probe Loss = 189.7852, Acc = 0.5182
+  Step 200: Backbone Loss = 2.2166, SIGReg Loss = 21.3040 Probe Loss = 176.0374, Acc = 0.5292
+  Step 250: Backbone Loss = 2.1547, SIGReg Loss = 19.6466 Probe Loss = 187.2105, Acc = 0.5324
+  Step 300: Backbone Loss = 2.1252, SIGReg Loss = 18.9294 Probe Loss = 169.9497, Acc = 0.5271
+  Step 350: Backbone Loss = 2.1438, SIGReg Loss = 19.0087 Probe Loss = 183.6458, Acc = 0.5238
+  Step 400: Backbone Loss = 2.3090, SIGReg Loss = 22.1871 Probe Loss = 184.4495, Acc = 0.5292
+  Step 450: Backbone Loss = 2.4543, SIGReg Loss = 26.3170 Probe Loss = 185.2680, Acc = 0.5308
+Epoch 31 finished in 403.72s.
+  Avg Backbone Loss: 2.4174
+  Avg Probe Loss:    187.7493
+  Avg Probe Accuracy: 0.5297
+
+Epoch 32/300
+  Step 0: Backbone Loss = 2.4255, SIGReg Loss = 24.5105 Probe Loss = 179.2774, Acc = 0.5323
+  Step 50: Backbone Loss = 2.1435, SIGReg Loss = 19.5827 Probe Loss = 181.5386, Acc = 0.5283
+  Step 100: Backbone Loss = 1.9558, SIGReg Loss = 16.7388 Probe Loss = 179.0805, Acc = 0.5214
+  Step 150: Backbone Loss = 2.0055, SIGReg Loss = 17.7615 Probe Loss = 194.8638, Acc = 0.5247
+  Step 200: Backbone Loss = 1.9696, SIGReg Loss = 17.1501 Probe Loss = 189.2642, Acc = 0.5309
+  Step 250: Backbone Loss = 1.9181, SIGReg Loss = 16.3207 Probe Loss = 174.1139, Acc = 0.5159
+  Step 300: Backbone Loss = 2.0416, SIGReg Loss = 18.6300 Probe Loss = 184.4081, Acc = 0.5255
+  Step 350: Backbone Loss = 2.1734, SIGReg Loss = 19.8170 Probe Loss = 184.4223, Acc = 0.5318
+  Step 400: Backbone Loss = 1.8877, SIGReg Loss = 15.9507 Probe Loss = 193.2856, Acc = 0.5248
+  Step 450: Backbone Loss = 2.0273, SIGReg Loss = 17.8495 Probe Loss = 187.6713, Acc = 0.5229
+Epoch 32 finished in 404.82s.
+  Avg Backbone Loss: 2.0525
+  Avg Probe Loss:    181.0822
+  Avg Probe Accuracy: 0.5307
+
+Epoch 33/300
+  Step 0: Backbone Loss = 2.1195, SIGReg Loss = 20.0957 Probe Loss = 183.9758, Acc = 0.5333
+  Step 50: Backbone Loss = 1.9130, SIGReg Loss = 15.7585 Probe Loss = 184.2770, Acc = 0.5363
+  Step 100: Backbone Loss = 1.9833, SIGReg Loss = 17.1071 Probe Loss = 189.0601, Acc = 0.5227
+  Step 150: Backbone Loss = 1.7881, SIGReg Loss = 13.2942 Probe Loss = 184.1543, Acc = 0.5330
+  Step 200: Backbone Loss = 1.9101, SIGReg Loss = 15.7289 Probe Loss = 193.2928, Acc = 0.5284
+  Step 250: Backbone Loss = 1.9684, SIGReg Loss = 16.8218 Probe Loss = 184.5207, Acc = 0.5410
+  Step 300: Backbone Loss = 1.9915, SIGReg Loss = 16.3193 Probe Loss = 178.6402, Acc = 0.5382
+  Step 350: Backbone Loss = 1.9131, SIGReg Loss = 15.2063 Probe Loss = 177.1245, Acc = 0.5369
+  Step 400: Backbone Loss = 2.0407, SIGReg Loss = 17.4484 Probe Loss = 182.0928, Acc = 0.5299
+  Step 450: Backbone Loss = 2.1369, SIGReg Loss = 19.7534 Probe Loss = 175.6800, Acc = 0.5262
+Epoch 33 finished in 405.27s.
+  Avg Backbone Loss: 1.9318
+  Avg Probe Loss:    180.2684
+  Avg Probe Accuracy: 0.5312
+
+Epoch 34/300
+  Step 0: Backbone Loss = 1.9124, SIGReg Loss = 15.7927 Probe Loss = 180.0371, Acc = 0.5273
+  Step 50: Backbone Loss = 2.0251, SIGReg Loss = 16.8609 Probe Loss = 176.8429, Acc = 0.5233
+  Step 100: Backbone Loss = 2.2598, SIGReg Loss = 22.5631 Probe Loss = 210.4797, Acc = 0.5266
+  Step 150: Backbone Loss = 1.8833, SIGReg Loss = 13.9758 Probe Loss = 176.3491, Acc = 0.5332
+  Step 200: Backbone Loss = 1.8166, SIGReg Loss = 13.3884 Probe Loss = 202.3923, Acc = 0.5284
+  Step 250: Backbone Loss = 1.9367, SIGReg Loss = 15.3894 Probe Loss = 189.2039, Acc = 0.5343
+  Step 300: Backbone Loss = 1.9729, SIGReg Loss = 15.7114 Probe Loss = 173.6068, Acc = 0.5282
+  Step 350: Backbone Loss = 2.6975, SIGReg Loss = 28.4475 Probe Loss = 194.1049, Acc = 0.5231
+  Step 400: Backbone Loss = 2.0175, SIGReg Loss = 16.8059 Probe Loss = 178.0444, Acc = 0.5196
+  Step 450: Backbone Loss = 1.8786, SIGReg Loss = 14.3081 Probe Loss = 170.5347, Acc = 0.5381
+Epoch 34 finished in 406.74s.
+  Avg Backbone Loss: 2.0297
+  Avg Probe Loss:    183.3108
+  Avg Probe Accuracy: 0.5304
+
+Epoch 35/300
+  Step 0: Backbone Loss = 1.8699, SIGReg Loss = 14.9374 Probe Loss = 181.4143, Acc = 0.5281
+  Step 50: Backbone Loss = 1.9677, SIGReg Loss = 17.5354 Probe Loss = 187.7604, Acc = 0.5410
+  Step 100: Backbone Loss = 1.8520, SIGReg Loss = 14.1624 Probe Loss = 171.0934, Acc = 0.5306
+  Step 150: Backbone Loss = 1.8693, SIGReg Loss = 13.7012 Probe Loss = 194.2605, Acc = 0.5279
+  Step 200: Backbone Loss = 1.9166, SIGReg Loss = 15.4325 Probe Loss = 186.2984, Acc = 0.5341
+  Step 250: Backbone Loss = 1.9992, SIGReg Loss = 18.4141 Probe Loss = 227.6539, Acc = 0.5443
+  Step 300: Backbone Loss = 2.1409, SIGReg Loss = 21.0099 Probe Loss = 315.6088, Acc = 0.5393
+  Step 350: Backbone Loss = 2.2306, SIGReg Loss = 23.0810 Probe Loss = 335.5067, Acc = 0.5594
+  Step 400: Backbone Loss = 2.5544, SIGReg Loss = 30.4837 Probe Loss = 188.9521, Acc = 0.5328
+  Step 450: Backbone Loss = 1.9872, SIGReg Loss = 16.8205 Probe Loss = 187.7292, Acc = 0.5382
+Epoch 35 finished in 406.42s.
+  Avg Backbone Loss: 2.0677
+  Avg Probe Loss:    220.6203
+  Avg Probe Accuracy: 0.5335
+
+Epoch 36/300
+  Step 0: Backbone Loss = 2.3661, SIGReg Loss = 24.1296 Probe Loss = 203.8715, Acc = 0.5267
+  Step 50: Backbone Loss = 3.2903, SIGReg Loss = 42.7910 Probe Loss = 254.1203, Acc = 0.5332
+  Step 100: Backbone Loss = 2.7652, SIGReg Loss = 31.3300 Probe Loss = 197.1442, Acc = 0.5332
+  Step 150: Backbone Loss = 2.2922, SIGReg Loss = 21.5228 Probe Loss = 191.5965, Acc = 0.5282
+  Step 200: Backbone Loss = 2.1294, SIGReg Loss = 18.1596 Probe Loss = 182.0263, Acc = 0.5329
+  Step 250: Backbone Loss = 2.1223, SIGReg Loss = 19.1445 Probe Loss = 195.3556, Acc = 0.5349
+  Step 300: Backbone Loss = 1.9575, SIGReg Loss = 14.9081 Probe Loss = 172.2219, Acc = 0.5345
+  Step 350: Backbone Loss = 1.9264, SIGReg Loss = 15.8601 Probe Loss = 180.0654, Acc = 0.5431
+  Step 400: Backbone Loss = 1.7582, SIGReg Loss = 12.1974 Probe Loss = 177.6404, Acc = 0.5493
+  Step 450: Backbone Loss = 2.0483, SIGReg Loss = 17.4293 Probe Loss = 191.4812, Acc = 0.5367
+Epoch 36 finished in 404.53s.
+  Avg Backbone Loss: 2.2705
+  Avg Probe Loss:    196.9606
+  Avg Probe Accuracy: 0.5323
+
+Epoch 37/300
+  Step 0: Backbone Loss = 1.9710, SIGReg Loss = 15.6183 Probe Loss = 171.7452, Acc = 0.5456
+  Step 50: Backbone Loss = 2.0055, SIGReg Loss = 17.7007 Probe Loss = 170.0468, Acc = 0.5349
+  Step 100: Backbone Loss = 1.8465, SIGReg Loss = 13.6516 Probe Loss = 192.3684, Acc = 0.5416
+  Step 150: Backbone Loss = 1.9766, SIGReg Loss = 16.6313 Probe Loss = 175.6483, Acc = 0.5410
+  Step 200: Backbone Loss = 2.4149, SIGReg Loss = 25.7130 Probe Loss = 201.1149, Acc = 0.5215
+  Step 250: Backbone Loss = 2.3018, SIGReg Loss = 22.6227 Probe Loss = 189.3428, Acc = 0.5394
+  Step 300: Backbone Loss = 1.9556, SIGReg Loss = 14.7307 Probe Loss = 203.9179, Acc = 0.5221
+  Step 350: Backbone Loss = 2.1665, SIGReg Loss = 20.2706 Probe Loss = 178.9382, Acc = 0.5380
+  Step 400: Backbone Loss = 2.8213, SIGReg Loss = 33.5940 Probe Loss = 303.9238, Acc = 0.5439
+  Step 450: Backbone Loss = 2.2313, SIGReg Loss = 24.0138 Probe Loss = 278.3790, Acc = 0.5692
+Epoch 37 finished in 404.50s.
+  Avg Backbone Loss: 2.3368
+  Avg Probe Loss:    209.8461
+  Avg Probe Accuracy: 0.5321
+
+Epoch 38/300
+  Step 0: Backbone Loss = 3.7754, SIGReg Loss = 53.5427 Probe Loss = 275.9158, Acc = 0.5547
+  Step 50: Backbone Loss = 2.2522, SIGReg Loss = 23.5230 Probe Loss = 274.8961, Acc = 0.5183
+  Step 100: Backbone Loss = 2.1472, SIGReg Loss = 22.3980 Probe Loss = 278.4264, Acc = 0.5379
+  Step 150: Backbone Loss = 2.0607, SIGReg Loss = 20.4970 Probe Loss = 234.1091, Acc = 0.5241
+  Step 200: Backbone Loss = 2.1696, SIGReg Loss = 22.7706 Probe Loss = 248.4338, Acc = 0.5184
+Error loading spectrogram/audioset/balanced_train_segments/-ToQFT3M-Vg_0.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 200: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 25264128 values, but the requested shape requires a multiple of 786432 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 256, 256, 2), dtype=float16)
+  • training=False
+  Step 250: Backbone Loss = 2.2325, SIGReg Loss = 24.8737 Probe Loss = 234.1684, Acc = 0.5157
+  Step 300: Backbone Loss = 2.8940, SIGReg Loss = 36.8420 Probe Loss = 210.1685, Acc = 0.5337
+  Step 350: Backbone Loss = 2.1133, SIGReg Loss = 20.9659 Probe Loss = 346.9661, Acc = 0.5375
+  Step 400: Backbone Loss = 2.0253, SIGReg Loss = 18.3887 Probe Loss = 309.7706, Acc = 0.5423
+  Step 450: Backbone Loss = 1.9366, SIGReg Loss = 16.7754 Probe Loss = 248.6576, Acc = 0.5359
+Epoch 38 finished in 402.73s.
+  Avg Backbone Loss: 2.4542
+  Avg Probe Loss:    272.1869
+  Avg Probe Accuracy: 0.5313
+
+Epoch 39/300
+  Step 0: Backbone Loss = 2.5885, SIGReg Loss = 29.2656 Probe Loss = 250.2514, Acc = 0.5196
+  Step 50: Backbone Loss = 3.6950, SIGReg Loss = 53.1608 Probe Loss = 251.6370, Acc = 0.5357
+  Step 100: Backbone Loss = 2.5986, SIGReg Loss = 29.5174 Probe Loss = 238.6668, Acc = 0.5254
+  Step 150: Backbone Loss = 4.3080, SIGReg Loss = 61.9880 Probe Loss = 264.9060, Acc = 0.5340
+  Step 200: Backbone Loss = 2.6599, SIGReg Loss = 27.3447 Probe Loss = 264.3798, Acc = 0.5286
+  Step 250: Backbone Loss = 2.7652, SIGReg Loss = 31.8681 Probe Loss = 283.5849, Acc = 0.5378
+  Step 300: Backbone Loss = 2.5382, SIGReg Loss = 29.0869 Probe Loss = 262.4986, Acc = 0.5260
+  Step 350: Backbone Loss = 3.4947, SIGReg Loss = 49.8082 Probe Loss = 207.8531, Acc = 0.5201
+  Step 400: Backbone Loss = 2.7282, SIGReg Loss = 34.0540 Probe Loss = 255.7551, Acc = 0.5303
+  Step 450: Backbone Loss = 2.5103, SIGReg Loss = 29.9416 Probe Loss = 191.6575, Acc = 0.5403
+Epoch 39 finished in 403.80s.
+  Avg Backbone Loss: 3.0316
+  Avg Probe Loss:    250.2046
+  Avg Probe Accuracy: 0.5263
+
+Epoch 40/300
+  Step 0: Backbone Loss = 3.9551, SIGReg Loss = 58.3685 Probe Loss = 248.2816, Acc = 0.5347
+  Step 50: Backbone Loss = 2.9152, SIGReg Loss = 38.4718 Probe Loss = 223.0061, Acc = 0.5347
+  Step 100: Backbone Loss = 3.5050, SIGReg Loss = 46.4162 Probe Loss = 212.4018, Acc = 0.5294
+  Step 150: Backbone Loss = 2.5400, SIGReg Loss = 28.9756 Probe Loss = 261.3701, Acc = 0.5315
+  Step 200: Backbone Loss = 2.6890, SIGReg Loss = 34.6500 Probe Loss = 227.0365, Acc = 0.5280
+  Step 250: Backbone Loss = 2.6033, SIGReg Loss = 29.6666 Probe Loss = 203.6148, Acc = 0.5271
+  Step 300: Backbone Loss = 2.2384, SIGReg Loss = 22.8122 Probe Loss = 200.1775, Acc = 0.5193
+  Step 350: Backbone Loss = 2.1875, SIGReg Loss = 21.6595 Probe Loss = 205.7440, Acc = 0.5156
+  Step 400: Backbone Loss = 2.8111, SIGReg Loss = 34.5298 Probe Loss = 224.7979, Acc = 0.5206
+  Step 450: Backbone Loss = 2.3235, SIGReg Loss = 22.9119 Probe Loss = 212.0598, Acc = 0.5228
+Epoch 40 finished in 402.25s.
+  Avg Backbone Loss: 2.7314
+  Avg Probe Loss:    221.5326
+  Avg Probe Accuracy: 0.5266
+
+Epoch 41/300
+  Step 0: Backbone Loss = 2.3355, SIGReg Loss = 24.7296 Probe Loss = 213.7437, Acc = 0.5267
+  Step 50: Backbone Loss = 2.2794, SIGReg Loss = 26.3917 Probe Loss = 253.8630, Acc = 0.5158
+  Step 100: Backbone Loss = 8.4954, SIGReg Loss = 155.9650 Probe Loss = 225.9696, Acc = 0.5268
+  Step 150: Backbone Loss = 2.3326, SIGReg Loss = 26.0750 Probe Loss = 253.4307, Acc = 0.5376
+  Step 200: Backbone Loss = 3.5025, SIGReg Loss = 50.8972 Probe Loss = 222.1174, Acc = 0.5491
+Error loading spectrogram/audioset/balanced_train_segments/33_enN0Bsfs_1.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 200: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 25264128 values, but the requested shape requires a multiple of 786432 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 256, 256, 2), dtype=float16)
+  • training=False
+  Step 250: Backbone Loss = 8.8897, SIGReg Loss = 155.5194 Probe Loss = 228.1909, Acc = 0.5224
+  Step 300: Backbone Loss = 3.0018, SIGReg Loss = 37.0344 Probe Loss = 197.3002, Acc = 0.5262
+  Step 350: Backbone Loss = 3.1261, SIGReg Loss = 40.2223 Probe Loss = 195.5906, Acc = 0.5280
+  Step 400: Backbone Loss = 2.1600, SIGReg Loss = 22.5109 Probe Loss = 211.7679, Acc = 0.5345
+  Step 450: Backbone Loss = 2.1024, SIGReg Loss = 20.8812 Probe Loss = 208.4066, Acc = 0.5171
+Epoch 41 finished in 403.27s.
+  Avg Backbone Loss: 3.3398
+  Avg Probe Loss:    219.5254
+  Avg Probe Accuracy: 0.5279
+
+Epoch 42/300
+  Step 0: Backbone Loss = 2.2069, SIGReg Loss = 22.6681 Probe Loss = 205.3866, Acc = 0.5382
+  Step 50: Backbone Loss = 2.3680, SIGReg Loss = 26.4234 Probe Loss = 205.5965, Acc = 0.5330
+  Step 100: Backbone Loss = 2.0326, SIGReg Loss = 18.4105 Probe Loss = 177.6497, Acc = 0.5419
+  Step 150: Backbone Loss = 2.2433, SIGReg Loss = 22.7137 Probe Loss = 192.4293, Acc = 0.5435
+  Step 200: Backbone Loss = 2.1108, SIGReg Loss = 19.4255 Probe Loss = 191.8588, Acc = 0.5260
+  Step 250: Backbone Loss = 2.0502, SIGReg Loss = 19.0448 Probe Loss = 186.1900, Acc = 0.5329
+  Step 300: Backbone Loss = 2.0454, SIGReg Loss = 18.9177 Probe Loss = 189.1250, Acc = 0.5359
+  Step 350: Backbone Loss = 1.9994, SIGReg Loss = 18.1914 Probe Loss = 225.5187, Acc = 0.5361
+  Step 400: Backbone Loss = 2.1762, SIGReg Loss = 21.5237 Probe Loss = 203.4466, Acc = 0.5347
+  Step 450: Backbone Loss = 2.0668, SIGReg Loss = 18.7889 Probe Loss = 187.2958, Acc = 0.5358
+Epoch 42 finished in 404.31s.
+  Avg Backbone Loss: 2.1696
+  Avg Probe Loss:    196.9632
+  Avg Probe Accuracy: 0.5320
+
+Epoch 43/300
+  Step 0: Backbone Loss = 2.0058, SIGReg Loss = 17.4428 Probe Loss = 179.7463, Acc = 0.5333
+  Step 50: Backbone Loss = 2.0582, SIGReg Loss = 18.6747 Probe Loss = 235.6550, Acc = 0.5459
+  Step 100: Backbone Loss = 2.2254, SIGReg Loss = 21.4208 Probe Loss = 198.9242, Acc = 0.5340
+  Step 150: Backbone Loss = 1.9907, SIGReg Loss = 17.5754 Probe Loss = 180.2324, Acc = 0.5405
+  Step 200: Backbone Loss = 2.0201, SIGReg Loss = 18.5375 Probe Loss = 210.4615, Acc = 0.5249
+  Step 250: Backbone Loss = 2.0678, SIGReg Loss = 18.8432 Probe Loss = 199.8834, Acc = 0.5366
+  Step 300: Backbone Loss = 2.0044, SIGReg Loss = 18.5654 Probe Loss = 199.4987, Acc = 0.5316
+  Step 350: Backbone Loss = 2.0410, SIGReg Loss = 18.1646 Probe Loss = 197.5593, Acc = 0.5400
+  Step 400: Backbone Loss = 2.0858, SIGReg Loss = 19.5566 Probe Loss = 172.2625, Acc = 0.5454
+  Step 450: Backbone Loss = 2.1116, SIGReg Loss = 19.0342 Probe Loss = 201.0475, Acc = 0.5279
+Epoch 43 finished in 402.60s.
+  Avg Backbone Loss: 2.0932
+  Avg Probe Loss:    198.3557
+  Avg Probe Accuracy: 0.5318
+
+Epoch 44/300
+  Step 0: Backbone Loss = 2.2109, SIGReg Loss = 22.0435 Probe Loss = 208.8341, Acc = 0.5266
+  Step 50: Backbone Loss = 2.7736, SIGReg Loss = 32.6955 Probe Loss = 202.7206, Acc = 0.5250
+  Step 100: Backbone Loss = 1.9697, SIGReg Loss = 15.9314 Probe Loss = 183.4151, Acc = 0.5289
+  Step 150: Backbone Loss = 2.3985, SIGReg Loss = 25.3774 Probe Loss = 174.9402, Acc = 0.5318
+  Step 200: Backbone Loss = 2.7423, SIGReg Loss = 31.6971 Probe Loss = 188.4141, Acc = 0.5298
+  Step 250: Backbone Loss = 2.6286, SIGReg Loss = 30.5809 Probe Loss = 185.1437, Acc = 0.5458
+  Step 300: Backbone Loss = 5.8813, SIGReg Loss = 97.4188 Probe Loss = 188.5196, Acc = 0.5384
+  Step 350: Backbone Loss = 2.7405, SIGReg Loss = 33.1124 Probe Loss = 171.5595, Acc = 0.5303
+  Step 400: Backbone Loss = 2.5612, SIGReg Loss = 28.0151 Probe Loss = 194.3095, Acc = 0.5293
+  Step 450: Backbone Loss = 7.2419, SIGReg Loss = 124.0748 Probe Loss = 182.0936, Acc = 0.5349
+Epoch 44 finished in 402.64s.
+  Avg Backbone Loss: 3.2722
+  Avg Probe Loss:    188.3513
+  Avg Probe Accuracy: 0.5302
+
+Epoch 45/300
+  Step 0: Backbone Loss = 5.0624, SIGReg Loss = 81.0532 Probe Loss = 201.3924, Acc = 0.5252
+  Step 50: Backbone Loss = 2.5490, SIGReg Loss = 28.4292 Probe Loss = 174.3814, Acc = 0.5288
+  Step 100: Backbone Loss = 2.4304, SIGReg Loss = 26.8821 Probe Loss = 183.8319, Acc = 0.5215
+  Step 150: Backbone Loss = 2.2866, SIGReg Loss = 24.6351 Probe Loss = 200.2165, Acc = 0.5214
+  Step 200: Backbone Loss = 2.2077, SIGReg Loss = 21.4893 Probe Loss = 173.3448, Acc = 0.5381
+  Step 250: Backbone Loss = 2.3419, SIGReg Loss = 23.1659 Probe Loss = 182.1803, Acc = 0.5299
+  Step 300: Backbone Loss = 2.1459, SIGReg Loss = 20.7483 Probe Loss = 181.4742, Acc = 0.5294
+  Step 350: Backbone Loss = 2.2677, SIGReg Loss = 23.0702 Probe Loss = 180.6411, Acc = 0.5254
+  Step 400: Backbone Loss = 2.1613, SIGReg Loss = 20.7049 Probe Loss = 194.5912, Acc = 0.5267
+  Step 450: Backbone Loss = 2.2918, SIGReg Loss = 22.3193 Probe Loss = 176.9160, Acc = 0.5246
+Epoch 45 finished in 402.91s.
+  Avg Backbone Loss: 2.4520
+  Avg Probe Loss:    189.6143
+  Avg Probe Accuracy: 0.5304
+
+Epoch 46/300
+  Step 0: Backbone Loss = 2.2546, SIGReg Loss = 22.9071 Probe Loss = 195.3153, Acc = 0.5305
+  Step 50: Backbone Loss = 6.4483, SIGReg Loss = 106.5386 Probe Loss = 190.4339, Acc = 0.5339
+  Step 100: Backbone Loss = 2.5615, SIGReg Loss = 28.2052 Probe Loss = 202.0919, Acc = 0.5213
+Error loading spectrogram/audioset/balanced_train_segments/bNbT4l_bfh8_1.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 100: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 25264128 values, but the requested shape requires a multiple of 786432 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 256, 256, 2), dtype=float16)
+  • training=False
+  Step 150: Backbone Loss = 2.6670, SIGReg Loss = 31.8827 Probe Loss = 205.8660, Acc = 0.5294
+  Step 200: Backbone Loss = 3.2351, SIGReg Loss = 41.3788 Probe Loss = 203.7409, Acc = 0.5204
+  Step 250: Backbone Loss = 2.7683, SIGReg Loss = 34.0240 Probe Loss = 186.8420, Acc = 0.5270
+  Step 300: Backbone Loss = 2.3257, SIGReg Loss = 24.1834 Probe Loss = 215.7652, Acc = 0.5294
+  Step 350: Backbone Loss = 3.2686, SIGReg Loss = 42.0666 Probe Loss = 189.3094, Acc = 0.5320
+  Step 400: Backbone Loss = 2.6858, SIGReg Loss = 30.4425 Probe Loss = 187.0660, Acc = 0.5316
+  Step 450: Backbone Loss = 3.9345, SIGReg Loss = 56.1225 Probe Loss = 191.9089, Acc = 0.5328
+Epoch 46 finished in 403.56s.
+  Avg Backbone Loss: 2.9637
+  Avg Probe Loss:    191.9751
+  Avg Probe Accuracy: 0.5287
+
+Epoch 47/300
+  Step 0: Backbone Loss = 3.5559, SIGReg Loss = 49.3316 Probe Loss = 186.3281, Acc = 0.5264
+  Step 50: Backbone Loss = 2.5686, SIGReg Loss = 28.3726 Probe Loss = 210.5152, Acc = 0.5235
+  Step 100: Backbone Loss = 3.7711, SIGReg Loss = 54.6506 Probe Loss = 205.5666, Acc = 0.5289
+  Step 150: Backbone Loss = 2.7161, SIGReg Loss = 33.7013 Probe Loss = 265.1874, Acc = 0.5236
+  Step 200: Backbone Loss = 2.9018, SIGReg Loss = 37.1819 Probe Loss = 215.1506, Acc = 0.5207
+  Step 250: Backbone Loss = 3.1998, SIGReg Loss = 42.6538 Probe Loss = 184.4822, Acc = 0.5399
+  Step 300: Backbone Loss = 3.1612, SIGReg Loss = 40.5658 Probe Loss = 212.8638, Acc = 0.5362
+  Step 350: Backbone Loss = 2.6251, SIGReg Loss = 28.4195 Probe Loss = 181.3888, Acc = 0.5286
+  Step 400: Backbone Loss = 2.7070, SIGReg Loss = 31.3874 Probe Loss = 204.4049, Acc = 0.5268
+  Step 450: Backbone Loss = 2.2762, SIGReg Loss = 21.9858 Probe Loss = 201.0320, Acc = 0.5264
+Epoch 47 finished in 402.93s.
+  Avg Backbone Loss: 2.9391
+  Avg Probe Loss:    201.5916
+  Avg Probe Accuracy: 0.5282
+
+Epoch 48/300
+  Step 0: Backbone Loss = 2.3370, SIGReg Loss = 23.9992 Probe Loss = 199.9609, Acc = 0.5207
+  Step 50: Backbone Loss = 2.0327, SIGReg Loss = 17.6505 Probe Loss = 215.2472, Acc = 0.5200
+  Step 100: Backbone Loss = 2.1354, SIGReg Loss = 19.7482 Probe Loss = 197.8362, Acc = 0.5236
+  Step 150: Backbone Loss = 2.2746, SIGReg Loss = 21.4653 Probe Loss = 184.2378, Acc = 0.5250
+  Step 200: Backbone Loss = 2.4280, SIGReg Loss = 26.1771 Probe Loss = 184.0544, Acc = 0.5272
+  Step 250: Backbone Loss = 2.2899, SIGReg Loss = 22.1777 Probe Loss = 199.2775, Acc = 0.5192
+  Step 300: Backbone Loss = 2.8247, SIGReg Loss = 33.0926 Probe Loss = 190.6992, Acc = 0.5304
+  Step 350: Backbone Loss = 2.0665, SIGReg Loss = 19.2866 Probe Loss = 193.5030, Acc = 0.5302
+  Step 400: Backbone Loss = 2.2725, SIGReg Loss = 21.2384 Probe Loss = 200.4253, Acc = 0.5126
+  Step 450: Backbone Loss = 2.0440, SIGReg Loss = 17.9738 Probe Loss = 197.3325, Acc = 0.5216
+Epoch 48 finished in 402.48s.
+  Avg Backbone Loss: 2.2952
+  Avg Probe Loss:    191.7534
+  Avg Probe Accuracy: 0.5299
+
+Epoch 49/300
+  Step 0: Backbone Loss = 2.2014, SIGReg Loss = 21.1422 Probe Loss = 180.3469, Acc = 0.5348
+  Step 50: Backbone Loss = 2.1404, SIGReg Loss = 19.3532 Probe Loss = 185.6248, Acc = 0.5322
+  Step 100: Backbone Loss = 3.3657, SIGReg Loss = 43.1194 Probe Loss = 185.5299, Acc = 0.5318
+  Step 150: Backbone Loss = 2.8977, SIGReg Loss = 35.0481 Probe Loss = 194.6620, Acc = 0.5257
+  Step 200: Backbone Loss = 2.3473, SIGReg Loss = 24.3339 Probe Loss = 200.1002, Acc = 0.5286
+  Step 250: Backbone Loss = 2.1356, SIGReg Loss = 20.5442 Probe Loss = 190.5215, Acc = 0.5362
+  Step 300: Backbone Loss = 2.4938, SIGReg Loss = 28.2959 Probe Loss = 193.6968, Acc = 0.5312
+  Step 350: Backbone Loss = 1.9888, SIGReg Loss = 16.9439 Probe Loss = 180.8305, Acc = 0.5268
+  Step 400: Backbone Loss = 2.4738, SIGReg Loss = 25.4914 Probe Loss = 173.3510, Acc = 0.5296
+  Step 450: Backbone Loss = 2.4944, SIGReg Loss = 26.1844 Probe Loss = 210.5492, Acc = 0.5268
+Epoch 49 finished in 403.16s.
+  Avg Backbone Loss: 2.4839
+  Avg Probe Loss:    194.6556
+  Avg Probe Accuracy: 0.5299
+
+Epoch 50/300
+  Step 0: Backbone Loss = 4.3081, SIGReg Loss = 64.3473 Probe Loss = 208.1201, Acc = 0.5228
+  Step 50: Backbone Loss = 2.2348, SIGReg Loss = 20.9786 Probe Loss = 180.2430, Acc = 0.5276
+  Step 100: Backbone Loss = 2.8872, SIGReg Loss = 34.4308 Probe Loss = 197.5681, Acc = 0.5221
+  Step 150: Backbone Loss = 2.2045, SIGReg Loss = 20.7428 Probe Loss = 192.9324, Acc = 0.5303
+  Step 200: Backbone Loss = 2.2272, SIGReg Loss = 22.8754 Probe Loss = 197.4273, Acc = 0.5266
+  Step 250: Backbone Loss = 2.0226, SIGReg Loss = 18.1552 Probe Loss = 206.2410, Acc = 0.5218
+  Step 300: Backbone Loss = 2.1720, SIGReg Loss = 20.2975 Probe Loss = 178.6452, Acc = 0.5343
+Error loading spectrogram/audioset/balanced_train_segments/-WmL01c-4ZE_0.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 300: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 25264128 values, but the requested shape requires a multiple of 786432 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 256, 256, 2), dtype=float16)
+  • training=False
+  Step 350: Backbone Loss = 2.3162, SIGReg Loss = 23.4420 Probe Loss = 187.3048, Acc = 0.5356
+  Step 400: Backbone Loss = 2.6903, SIGReg Loss = 29.5453 Probe Loss = 183.2269, Acc = 0.5346
+  Step 450: Backbone Loss = 2.7835, SIGReg Loss = 31.1146 Probe Loss = 205.8049, Acc = 0.5273
+Epoch 50 finished in 403.21s.
+  Avg Backbone Loss: 2.4543
+  Avg Probe Loss:    188.5836
+  Avg Probe Accuracy: 0.5273
+
+Epoch 51/300
+  Step 0: Backbone Loss = 3.8011, SIGReg Loss = 49.2509 Probe Loss = 172.9148, Acc = 0.5292
+  Step 50: Backbone Loss = 3.6775, SIGReg Loss = 49.0923 Probe Loss = 180.9727, Acc = 0.5323
+  Step 100: Backbone Loss = 2.4354, SIGReg Loss = 24.8902 Probe Loss = 185.4769, Acc = 0.5344
+  Step 150: Backbone Loss = 2.6653, SIGReg Loss = 30.2355 Probe Loss = 180.3019, Acc = 0.5298
+  Step 200: Backbone Loss = 2.2980, SIGReg Loss = 23.2542 Probe Loss = 195.8768, Acc = 0.5276
+  Step 250: Backbone Loss = 2.1086, SIGReg Loss = 20.2517 Probe Loss = 190.8079, Acc = 0.5286
+  Step 300: Backbone Loss = 2.6026, SIGReg Loss = 29.3726 Probe Loss = 187.8894, Acc = 0.5277
+  Step 350: Backbone Loss = 2.0444, SIGReg Loss = 19.1521 Probe Loss = 173.1796, Acc = 0.5388
+  Step 400: Backbone Loss = 1.9886, SIGReg Loss = 17.4535 Probe Loss = 171.5610, Acc = 0.5387
+  Step 450: Backbone Loss = 1.8725, SIGReg Loss = 15.6255 Probe Loss = 186.0094, Acc = 0.5302
+Epoch 51 finished in 402.96s.
+  Avg Backbone Loss: 2.4999
+  Avg Probe Loss:    183.5957
+  Avg Probe Accuracy: 0.5295
+
+Epoch 52/300
+  Step 0: Backbone Loss = 2.0789, SIGReg Loss = 19.2584 Probe Loss = 177.4917, Acc = 0.5310
+  Step 50: Backbone Loss = 2.2403, SIGReg Loss = 22.6362 Probe Loss = 178.6267, Acc = 0.5246
+  Step 100: Backbone Loss = 2.2211, SIGReg Loss = 21.6046 Probe Loss = 180.0725, Acc = 0.5232
+  Step 150: Backbone Loss = 2.0349, SIGReg Loss = 18.3381 Probe Loss = 186.0475, Acc = 0.5254
+  Step 200: Backbone Loss = 2.9466, SIGReg Loss = 34.9112 Probe Loss = 193.0156, Acc = 0.5370
+  Step 250: Backbone Loss = 3.3134, SIGReg Loss = 42.8038 Probe Loss = 181.1887, Acc = 0.5291
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 52 finished in 400.04s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5179
+
+Epoch 53/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 53 finished in 396.31s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 54/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 54 finished in 398.58s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 55/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 55 finished in 397.63s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 56/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 56 finished in 397.99s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 57/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 57 finished in 399.99s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 58/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 58 finished in 399.46s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 59/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 59 finished in 398.28s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 60/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 60 finished in 397.53s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 61/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 200: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 250: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 300: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 350: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 400: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 450: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+Epoch 61 finished in 396.16s.
+  Avg Backbone Loss: nan
+  Avg Probe Loss:    nan
+  Avg Probe Accuracy: 0.5000
+
+Epoch 62/300
+  Step 0: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 50: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 100: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000
+  Step 150: Backbone Loss = nan, SIGReg Loss = nan Probe Loss = nan, Acc = 0.5000

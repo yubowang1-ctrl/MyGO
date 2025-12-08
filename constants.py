@@ -35,7 +35,7 @@ EPSILON = 1e-6
 
 # Distributed Training Config
 GLOBAL_BATCH_SIZE = 64  # Total batch size across all GPUs
-BASE_LEARNING_RATE =  1e-5 # use 1e-4 for fresh start
+BASE_LEARNING_RATE =  1e-4 # use 1e-4 for fresh start
 NUM_EPOCHS = 300
 LOG_EVERY_STEPS = 50
 
@@ -49,14 +49,14 @@ AUDIOSET_NUM_CLASSES = 527
 
 # LeJEPA Config
 NUM_GLOBAL_VIEWS = 2    # G
-NUM_LOCAL_VIEWS = 8     # Local views
+NUM_LOCAL_VIEWS = 6     # Local views
 TOTAL_VIEWS = NUM_GLOBAL_VIEWS + NUM_LOCAL_VIEWS # V
 LAMBDA_SIGREG = 0.05
 
 # Model Configs
 HIDDEN_DIM = 384
 NUM_LAYERS = 12 #1
-NUM_HEADS = 4
+NUM_HEADS = 6
 
 # Tiny ViT with 16x16 patches, ~5M parameters
 ViT_Ti_16 = ViTConfig(

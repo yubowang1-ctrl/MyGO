@@ -80,7 +80,7 @@ with strategy.scope():
         weight_decay=5e-6,
         beta_1=0.9,
         beta_2=0.999,
-        global_clipnorm=1.0 # gradient clipping
+        global_clipnorm=0.5 # gradient clipping
     )
     
     # Initialize Loss
@@ -358,7 +358,7 @@ def main():
 
                     plt.figure(figsize=(6,6))
                     plt.scatter(cls_2d_global[:,0], cls_2d_global[:,1], alpha=0.7, label="Sample Global Views", color='red')
-                    plt.scatter(cls_2d_local[:,0], cls_2d_local[:,1], alpha=0.5, label="Sample Local Views", color='yellow')
+                    plt.scatter(cls_2d_local[:,0], cls_2d_local[:,1], alpha=0.5, label="Sample Local Views", color='purple')
                     plt.scatter(cls_2d_remaining[:,0], cls_2d_remaining[:,1], alpha=0.2, color='blue')
                     plt.legend()
                     plt.title(f"CLS Token Distribution - E {epoch+1} S {step} - SIGReg {float(sigreg_loss_backbone):.4f} - Std ({float(np.std(cls_2d_np[:,0])):.2f}, {float(np.std(cls_2d_np[:,1])):.2f})")
