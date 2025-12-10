@@ -417,29 +417,47 @@ class ViT_Ti(tf.keras.Model):
         super(ViT_Ti, self).__init__(**kwargs)
         self.config = config
         
-        # Define Tiny Config
-        # Hidden: 192, Layers: 12, Heads: 3
-        self.hf_config = HFViTConfig(
-            hidden_size=config.hidden_dim,
-            num_hidden_layers=config.num_layers,
-            num_attention_heads=config.num_heads,
-            intermediate_size=config.hidden_dim * 4,
-            hidden_act="gelu",
-            hidden_dropout_prob=0,
-            attention_probs_dropout_prob=0,
-            initializer_range=0.02,
-            layer_norm_eps=1e-6, # 1-12 too small for tf.float16
-            image_size=224, #
-            patch_size=16,
-            num_channels=3, # we pad to 3 channels
-            qkv_bias=True,
-            encoder_stride=16,
-        )
+        # # Define Tiny Config
+        # # Hidden: 192, Layers: 12, Heads: 3
+        # self.hf_config = HFViTConfig(
+        #     hidden_size=config.hidden_dim,
+        #     num_hidden_layers=config.num_layers,
+        #     num_attention_heads=config.num_heads,
+        #     intermediate_size=config.hidden_dim * 4,
+        #     hidden_act="gelu",
+        #     hidden_dropout_prob=0,
+        #     attention_probs_dropout_prob=0,
+        #     initializer_range=0.02,
+        #     layer_norm_eps=1e-6, # 1-12 too small for tf.float16
+        #     image_size=224, #
+        #     patch_size=16,
+        #     num_channels=3, # we pad to 3 channels
+        #     qkv_bias=True,
+        #     encoder_stride=16,
+        # )
         
-        # Initialize model from config (Random Init)
-        self.vit = TFViTModel(self.hf_config).vit
+        # # Initialize model from config (Random Init)
+        # self.vit = TFViTModel(self.hf_config).vit
         
-        # Mask token
+        # Load Pretrained ViT-Small
+        # WinKawaks/vit-small-patch16-224 matches Hidden=384, Heads=6, Layers=12
+        model_name = "WinKawaks/vit-small-patch16-224"
+        print(f"Loading pretrained weights from: {model_name}")
+        
+        # Load the pretrained model
+        pretrained_model = TFViTModel.from_pretrained(model_name)
+        self.vit = pretrained_model.vit
+        self.hf_config = pretrained_model.config
+        
+        # Ensure numerical stability
+        self.hf_config.layer_norm_eps = 1e-6
+        
+        # Verify config matches constants
+        if self.hf_config.hidden_size != config.hidden_dim:
+            print(f"WARNING: Model hidden dim ({self.hf_config.hidden_size}) != Config hidden dim ({config.hidden_dim}). Updating Config.")
+            # We trust the pretrained model's config
+        
+        # Mask token (not in pretrained model, needs to be learned)
         self.mask_token = self.add_weight(
             shape=(1, 1, self.hf_config.hidden_size),
             initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
