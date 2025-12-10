@@ -445,12 +445,18 @@ class ViT_Ti(tf.keras.Model):
         print(f"Loading pretrained weights from: {model_name}")
         
         # Load the pretrained model
-        pretrained_model = TFViTModel.from_pretrained(model_name)
+        # Explicitly set dropout to 0.0 for training
+        pretrained_model = TFViTModel.from_pretrained(
+            model_name,
+            hidden_dropout_prob=0.0,
+            attention_probs_dropout_prob=0.0,
+            layer_norm_eps=1e-6
+        )
         self.vit = pretrained_model.vit
         self.hf_config = pretrained_model.config
         
         # Ensure numerical stability
-        self.hf_config.layer_norm_eps = 1e-6
+        # self.hf_config.layer_norm_eps = 1e-6 # Handled in from_pretrained
         
         # Verify config matches constants
         if self.hf_config.hidden_size != config.hidden_dim:
