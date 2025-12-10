@@ -1,0 +1,140 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 14780480
+##  Job Name : MyGO
+##  Nodelist : gpu2116
+##      CPUs : 1
+##  Mem/Node : 32000 MB
+## Directory : /oscar/home/lwang223/MyGO/MyGo
+##   Job Started : Wed Dec 10 01:02:47 PM EST 2025
+###############################################################################
+
+==========================================
+Job started at: Wed Dec 10 01:02:47 PM EST 2025
+Job ID: 14780480
+Node: gpu2116
+==========================================
+
+GPU Information (from host):
+Wed Dec 10 13:02:47 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce RTX 3090        On  | 00000000:25:00.0 Off |                  N/A |
+| 30%   37C    P8              30W / 350W |     46MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA GeForce RTX 3090        On  | 00000000:81:00.0 Off |                  N/A |
+| 30%   33C    P8              19W / 350W |     26MiB / 24576MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     44431      G   /usr/libexec/Xorg                            33MiB |
+|    1   N/A  N/A     44431      G   /usr/libexec/Xorg                            13MiB |
++---------------------------------------------------------------------------------------+
+
+mygo conda environment loaded
+/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys/bin/ffmpeg
+ffmpeg version 7.0 Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc 11 (GCC)
+configuration: --prefix=/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/ffmpeg-7.0-xny2fb2nz3demdcjhj6x74mcxz4iwmys --enable-pic --cc=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/gcc --cxx=/oscar/rt/9.2/software/0.20-generic/0.20.1/lib/spack/env/gcc/g++ --disable-libxcb --disable-libxcb-shape --disable-libxcb-shm --disable-libxcb-xfixes --disable-xlib --disable-libfontconfig --disable-libfreetype --disable-libfribidi --enable-bzlib --enable-gpl --disable-libmp3lame --disable-libopenjpeg --disable-libopus --disable-libspeex --disable-libvorbis --enable-libvpx --enable-libx264 --disable-nonfree --disable-openssl --enable-shared --enable-version3 --disable-libzmq --disable-libssh --enable-libwebp --disable-lzma --disable-libsnappy --disable-sdl2 --disable-libaom --disable-libxml2
+libavutil      59.  8.100 / 59.  8.100
+libavcodec     61.  3.100 / 61.  3.100
+libavformat    61.  1.100 / 61.  1.100
+libavdevice    61.  1.100 / 61.  1.100
+libavfilter    10.  1.100 / 10.  1.100
+libswscale      8.  1.100 /  8.  1.100
+libswresample   5.  1.100 /  5.  1.100
+libpostproc    58.  1.100 / 58.  1.100
+TF version: 2.16.1
+Built with CUDA: True
+GPUs detected: 2
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+==========================================
+Installing dependencies
+==========================================
+
+
+==========================================
+Starting main Python script at Wed Dec 10 01:03:24 PM EST 2025
+==========================================
+
+Working directory: /users/lwang223/MyGO/MyGo
+
+[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Using MirroredStrategy for multi-GPU training.
+Number of devices: 2
+Found checkpoint: ./checkpoints/ckpt-342
+Full checkpoint restored (Backbone, Probe, Optimizer).
+Resuming from Epoch 343
+Model: "vi_t__ti"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ vit (TFViTMainLayer)        multiple                  0 (unused)
+                                                                 
+=================================================================
+Total params: 21666048 (82.65 MB)
+Trainable params: 21666048 (82.65 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Model: "linear_probe"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense (Dense)               multiple                  202895    
+                                                                 
+=================================================================
+Total params: 202895 (792.56 KB)
+Trainable params: 202895 (792.56 KB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+Building optimizer variables...
+Optimizer built.
+Starting training...
+
+Epoch 343/500
+  Step 0: Backbone Loss = 1.7539, SIGReg Loss = 12.2527 Probe Loss = 188.1425, Acc = 0.5210
+  Step 50: Backbone Loss = 1.6962, SIGReg Loss = 10.5726 Probe Loss = 182.0787, Acc = 0.5315
+  Step 100: Backbone Loss = 1.6455, SIGReg Loss = 10.0386 Probe Loss = 181.2215, Acc = 0.5244
+Error loading spectrogram/audioset/balanced_train_segments/2sbfNvZgrPI_0.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 100: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 19365888 values, but the requested shape requires a multiple of 688128 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 224, 224, 2), dtype=bfloat16)
+  • training=False
+  Step 150: Backbone Loss = 1.8703, SIGReg Loss = 13.6935 Probe Loss = 170.1595, Acc = 0.5250
+  Step 200: Backbone Loss = 1.7720, SIGReg Loss = 13.1492 Probe Loss = 175.8260, Acc = 0.5284
+Error loading spectrogram/audioset/balanced_train_segments/MXdVnDVjSL8_1.npy: 'size' must be a 1-D Tensor of 2 elements: new_height, new_width
+Skipping visualization due to error during visualization at step 200: Exception encountered when calling layer 'vi_t__ti' (type ViT_Ti).
+
+{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:GPU:0}} Input to reshape is a tensor with 19365888 values, but the requested shape requires a multiple of 688128 [Op:Reshape]
+
+Call arguments received by layer 'vi_t__ti' (type ViT_Ti):
+  • x=tf.Tensor(shape=(32, 8, 224, 224, 2), dtype=bfloat16)
+  • training=False
+  Step 250: Backbone Loss = 1.8564, SIGReg Loss = 15.7342 Probe Loss = 183.2394, Acc = 0.5217
+  Step 300: Backbone Loss = 1.7130, SIGReg Loss = 13.5194 Probe Loss = 193.6809, Acc = 0.5159
+  Step 350: Backbone Loss = 2.0612, SIGReg Loss = 18.8075 Probe Loss = 187.8610, Acc = 0.5257
+  Step 400: Backbone Loss = 2.0524, SIGReg Loss = 19.4636 Probe Loss = 190.2378, Acc = 0.5221
+  Step 450: Backbone Loss = 2.1024, SIGReg Loss = 20.8833 Probe Loss = 180.0811, Acc = 0.5295
+Epoch 343 finished in 498.13s.
+  Avg Backbone Loss: 1.9017
+  Avg Probe Loss:    181.1473
+  Avg Probe Accuracy: 0.5285
+  [INFO] Loss 1.9017 did not beat best 1.4662.
+
+Epoch 344/500
+  Step 0: Backbone Loss = 2.1994, SIGReg Loss = 22.4067 Probe Loss = 187.1573, Acc = 0.5233
+  Step 50: Backbone Loss = 2.2674, SIGReg Loss = 22.1302 Probe Loss = 176.0987, Acc = 0.5205
+  Step 100: Backbone Loss = 1.9161, SIGReg Loss = 14.6216 Probe Loss = 173.8679, Acc = 0.5270

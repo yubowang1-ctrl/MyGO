@@ -34,9 +34,9 @@ FMAX = 12000.0
 EPSILON = 1e-6
 
 # Distributed Training Config
-GLOBAL_BATCH_SIZE = 96  # Total batch size across all GPUs
-BASE_LEARNING_RATE =  1e-4 # use 1e-4 for fresh start
-NUM_EPOCHS = 300
+GLOBAL_BATCH_SIZE = 64  # Total batch size across all GPUs
+BASE_LEARNING_RATE =  1e-5 # use 1e-4 for fresh start
+NUM_EPOCHS = 30
 LOG_EVERY_STEPS = 50
 
 # Data Config

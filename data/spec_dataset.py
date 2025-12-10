@@ -82,6 +82,8 @@ def python_load_spectrogram(file_path_tensor):
         H, W, C = np.shape(spec)
         if H != IMAGE_HEIGHT or W != IMAGE_WIDTH:
             spec = tf.image.resize(tf.convert_to_tensor(spec), [IMAGE_HEIGHT, IMAGE_WIDTH], method='bilinear')
+        # normalize to -1 and 1
+        spec = spec * 2.0 - 1.0
         return spec, label_vec
         
     except Exception as e:
