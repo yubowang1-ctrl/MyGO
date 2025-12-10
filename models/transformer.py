@@ -1,4 +1,9 @@
 from dataclasses import dataclass
+import os
+# Fix OMP: Error #15: Initializing libomp.dylib, but found libomp.dylib already initialized.
+# This happens when using both PyTorch (for loading weights) and TensorFlow.
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import random
 import tensorflow as tf 
 import numpy as np
@@ -446,11 +451,15 @@ class ViT_Ti(tf.keras.Model):
         
         # Load the pretrained model
         # Explicitly set dropout to 0.0 for training
+        # WinKawaks/vit-small-patch16-224 only has PyTorch weights.
+        # We set use_safetensors=False to avoid the 'safe_open' error and force loading from pytorch_model.bin
         pretrained_model = TFViTModel.from_pretrained(
             model_name,
             hidden_dropout_prob=0.0,
             attention_probs_dropout_prob=0.0,
-            layer_norm_eps=1e-6
+            layer_norm_eps=1e-6,
+            from_pt=True,            # Explicitly tell it to load from PyTorch
+            use_safetensors=False    # Disable safetensors to avoid the TypeError
         )
         self.vit = pretrained_model.vit
         self.hf_config = pretrained_model.config
