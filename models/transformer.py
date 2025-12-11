@@ -475,7 +475,8 @@ class ViT_Ti(tf.keras.Model):
         # Mask token (not in pretrained model, needs to be learned)
         self.mask_token = self.add_weight(
             shape=(1, 1, self.hf_config.hidden_size),
-            initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
+            # initializer=tf.keras.initializers.TruncatedNormal(stddev=0.02),
+            initializer=tf.keras.initializers.Zeros(),
             trainable=True,
             name="mask_token",
         )

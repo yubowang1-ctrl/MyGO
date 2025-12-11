@@ -256,7 +256,7 @@ def train_step(inputs):
         
         per_replica_loss_probe = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=1.0),
+                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=10.0),
                 axis=1
             )
         )
@@ -275,7 +275,7 @@ def train_step(inputs):
     # 9. Compute and Apply Gradients
     grads_backbone = tape.gradient(scaled_loss_backbone, model.trainable_variables)
     grads_probe = tape.gradient(scaled_loss_probe, probe.trainable_variables)
-    
+    grads_probe = [g * 10.0 for g in grads_probe]  # Scale probe gradients because its trained from scratch
     all_grads = grads_backbone + grads_probe
     all_vars = model.trainable_variables + probe.trainable_variables
     optimizer.apply_gradients(zip(all_grads, all_vars))
