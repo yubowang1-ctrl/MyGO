@@ -256,7 +256,7 @@ def train_step(inputs):
         
         per_replica_loss_probe = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=30.0),
+                tf.nn.weighted_cross_entropy_with_logits(labels=batch_labels, logits=probe_logits, pos_weight=1.0),
                 axis=1
             )
         )
