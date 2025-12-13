@@ -41,8 +41,9 @@ def compute_map_numpy(y_true, y_score):
         for i in range(len(precision) - 2, -1, -1):
             precision[i] = max(precision[i], precision[i + 1])
         # Sum over recall change points
-        idx = np.where(np.diff(recall, prepend=0) > 0)[0]
-        ap = np.sum((recall[idx] - recall[idx - 1]) * precision[idx])
+        recall_diff = np.diff(recall, prepend=0)
+        idx = np.where(recall_diff > 0)[0]
+        ap = np.sum(recall_diff[idx] * precision[idx])
         ap_list.append(ap)
     return float(np.mean(ap_list))
 
@@ -246,7 +247,8 @@ def evaluate(data_dir, csv_path, ckpt_dir, batch_size):
     try:
         from sklearn.metrics import average_precision_score
         mAP = float(average_precision_score(y_true, y_score, average="macro"))
-    except Exception:
+    except Exception as e:
+        print(f"Warning: sklearn mAP calculation failed ({e}). Using NumPy fallback.")
         mAP = compute_map_numpy(y_true, y_score)
 
     # Optional: multi-label binary accuracy at 0.5 threshold (coarse reference)
