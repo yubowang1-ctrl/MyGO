@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from models.transformer import ViT, ViT_Ti
+from models.transformer import ViT, ViT_S
 from models.probe import LinearProbe
 # from data.dataset import get_dataset
 from data.spec_dataset import get_dataset
@@ -61,7 +61,7 @@ def evaluate(data_dir, csv_path, ckpt_dir, batch_size):
 
     with strategy.scope():
         # model = ViT(CONFIG)
-        model = ViT_Ti(CONFIG)
+        model = ViT_S(CONFIG)
         probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
 
         # 1. Build Model: Run dummy data to create variables

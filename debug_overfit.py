@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-from models.transformer import ViT_Ti
+from models.transformer import ViT_S
 from models.probe import LinearProbe
 from data.spec_dataset import get_dataset
 from constants import *
@@ -40,7 +40,7 @@ def debug_overfit():
     print(f"Label Stats - Max: {tf.reduce_max(labels)}, Sum per sample: {tf.reduce_mean(tf.reduce_sum(labels, axis=1))}")
 
     # 2. Model Setup
-    model = ViT_Ti(CONFIG)
+    model = ViT_S(CONFIG)
     probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
     
     # Build models

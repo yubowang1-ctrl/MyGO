@@ -253,9 +253,9 @@ def _hf_vit_ti_tokens_until_block(model, spec_bvhwc, block_index=None):
     C = model.config.num_channels
 
     x = tf.reshape(spec_bvhwc, [-1, H, W, C])  # (B*V, H, W, C)
-    # Pad to 256x256 and 3 channels as in model.call
-    if W != 256 or H != 256:
-        paddings = [[0, 0], [0, 256 - H], [0, 256 - W], [0, 0]]
+    # Pad to target size and 3 channels as in model.call
+    if W != CONFIG.image_width or H != CONFIG.image_height:
+        paddings = [[0, 0], [0, CONFIG.image_height - H], [0, CONFIG.image_width - W], [0, 0]]
         x = tf.pad(x, paddings)
     # channel pad
     if x.shape[-1] == 2:
@@ -324,8 +324,8 @@ def deep_layer_pca(spec, model, block_index=None, smooth_sigma=0.0):
         tokens = _hf_vit_ti_tokens_until_block(model, x, block_index=block_index)  # (1, 1+N, D)
         D = int(tokens.shape[-1])
         tok = tokens[:, 1:, :]
-        # For ViT-Ti 256/16=16
-        Hr, Wr = 16, 16
+        # For ViT-Ti model.config.image_height/16=16
+        Hr, Wr = model.config.image_height // model.hf_config.patch_size, model.config.image_width // model.hf_config.patch_size
         grid = tf.reshape(tok, [Hr, Wr, D]).numpy()
 
     rgb_small, pca = _fit_pca_to_grid(grid, n_components=3, smooth_sigma=smooth_sigma)

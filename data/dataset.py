@@ -208,6 +208,8 @@ def make_spectrogram(audio, label):
         # tf.print("Warning: Spectrogram shape mismatch, given", tf.shape(log_mel), "but defined in constants.py as", IMAGE_HEIGHT, "x", IMAGE_WIDTH, "x2. Reshaped accordingly.")
         log_mel = tf.image.resize(log_mel, [IMAGE_HEIGHT, IMAGE_WIDTH])
     
+    log_mel = log_mel * 2.0 - 1.0  # scale to [-1, 1]
+    
     return log_mel, label
 
 # ==============================================================================

@@ -417,13 +417,12 @@ class SingleHeadAttention(tf.keras.layers.Layer):
         output = tf.matmul(attention_weights, V) # (batch_size, seq_len, key_dim)
         return output
     
-class ViT_Ti(tf.keras.Model):
+class ViT_S(tf.keras.Model):
     def __init__(self, config: ViTConfig, **kwargs):
-        super(ViT_Ti, self).__init__(**kwargs)
+        super(ViT_S, self).__init__(**kwargs)
         self.config = config
         
-        # # Define Tiny Config
-        # # Hidden: 192, Layers: 12, Heads: 3
+        # # Define Config
         # self.hf_config = HFViTConfig(
         #     hidden_size=config.hidden_dim,
         #     num_hidden_layers=config.num_layers,
@@ -494,11 +493,6 @@ class ViT_Ti(tf.keras.Model):
         # Flatten views
         x = tf.reshape(x, [-1, H, W, C]) # (B*V, 256, 208, 2)
         
-        # 1. Pad to 256x256
-        # Pad width from 208 to 256 (48 pixels)
-        # paddings = [[0, 0], [0, 0], [0, self.hf_config.image_size - W], [0, 0]]
-        # x = tf.pad(x, paddings) # (B*V, 256, 256, 2)
-        
         # 2. Pad channels to 3
         # Pad channel from 2 to 3
         paddings_c = [[0, 0], [0, 0], [0, 0], [0, 1]]
@@ -506,7 +500,6 @@ class ViT_Ti(tf.keras.Model):
         
         # 3. Get Embeddings
         # TFViTModel.vit.embeddings returns (B*V, SeqLen, D)
-        # SeqLen = (256/16)*(256/16) + 1 = 257
         # TFViTModel expects NCHW format
         x_nchw = tf.transpose(x, [0, 3, 1, 2])
         embedding_output = self.vit.embeddings(pixel_values=x_nchw, training=training)

@@ -8,7 +8,7 @@ matplotlib.use("Agg")  # add this line before importing pyplot
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from models.transformer import ViT, ViT_Ti, ViTConfig
+from models.transformer import ViT, ViT_S, ViTConfig
 from models.loss import LeJEPA
 from models.probe import LinearProbe
 from data.spec_dataset import get_dataset
@@ -62,7 +62,7 @@ with strategy.scope():
 with strategy.scope():
     # Initialize Model
     # model = ViT(CONFIG)
-    model = ViT_Ti(CONFIG)
+    model = ViT_S(CONFIG)
     probe = LinearProbe(input_dim=CONFIG.hidden_dim, num_classes=AUDIOSET_NUM_CLASSES)
     # Initialize Optimizer
     steps_per_epoch = tot_num_batches
