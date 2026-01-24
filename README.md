@@ -44,9 +44,11 @@ We use a Transformer-based architecture adapted from ViT, similar to AST. In AST
 ### 3.3. The LeJEPA Objective
 The training objective minimizes the distance between the average output embeddings of global views and the output embeddings of all views, while enforcing the embeddings to conform to an isotropic Gaussian distribution. Thus the loss function consists of two components:
 *   Invariance Loss: 
+
     $$
     L_{\text{inv}} = \mathbb{E}_{x \sim \mathcal{D}} \mathbb{E}_{v \sim \mathcal{V}(x)} \left[ \left\lVert z_g^{\text{avg}}(x) - z_v(x) \right\rVert_2^2 \right]
     $$
+    
     where $z_g^{\text{avg}}(x) = \frac{1}{G} \sum_{i=1}^{G} z_{g_i}(x)$
     is the average embedding of all global views of input $x$, and $z_v(x)$ is the embedding of view $v$ of input $x$.
 *   SIGReg: Utilizes the Epps-Pulley test statistic on many random directions of a batch of embeddings to ensure they conform to an isotropic Gaussian distribution.
